@@ -348,6 +348,173 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        /* Color Palette Tool */
+        .color-input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .color-picker {
+            width: 60px;
+            height: 50px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .color-swatch {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.05);
+        }
+
+        .color-swatch::after {
+            content: attr(data-color);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        .color-formats {
+            margin-top: 20px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .color-format {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Hash Calculator */
+        .hash-options {
+            display: flex;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .hash-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        /* Password Generator */
+        .password-controls {
+            margin-bottom: 20px;
+        }
+
+        .password-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .password-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .password-strength {
+            margin-top: 15px;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .strength-weak { background: #ffebee; color: #c62828; }
+        .strength-medium { background: #fff3e0; color: #ef6c00; }
+        .strength-strong { background: #e8f5e8; color: #2e7d32; }
+
+        /* UUID Generator */
+        .uuid-controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Unit Converter */
+        .unit-controls {
+            margin-bottom: 20px;
+        }
+
+        .conversion-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .conversion-arrow {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* URL Shortener */
+        .url-result {
+            margin-top: 20px;
+        }
+
+        .shortened-url {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .shortened-url input {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .conversion-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .conversion-arrow {
+                transform: rotate(90deg);
+            }
+            
+            .color-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
         .conversion-status {
             padding: 15px;
             border-radius: 10px;
@@ -386,6 +553,15 @@
         .tool-card:nth-child(2) { animation-delay: 0.2s; }
         .tool-card:nth-child(3) { animation-delay: 0.3s; }
         .tool-card:nth-child(4) { animation-delay: 0.4s; }
+        .tool-card:nth-child(5) { animation-delay: 0.5s; }
+        .tool-card:nth-child(6) { animation-delay: 0.6s; }
+        .tool-card:nth-child(7) { animation-delay: 0.7s; }
+        .tool-card:nth-child(8) { animation-delay: 0.8s; }
+        .tool-card:nth-child(9) { animation-delay: 0.9s; }
+        .tool-card:nth-child(10) { animation-delay: 1.0s; }
+        .tool-card:nth-child(11) { animation-delay: 1.1s; }
+        .tool-card:nth-child(12) { animation-delay: 1.2s; }
+        .tool-card:nth-child(13) { animation-delay: 1.3s; }
         
         /* Matrix Effect */
         #matrix-overlay {
@@ -614,6 +790,222 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Color Palette Generator -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-palette tool-icon"></i>
+                            <h3 class="tool-title" data-translate="color.title">Générateur de Couleurs</h3>
+                        </div>
+                        <p class="tool-description" data-translate="color.description">
+                            Générez des palettes de couleurs, convertissez entre formats et créez des harmonies colorées.
+                        </p>
+                        <div class="tool-content">
+                            <div class="color-input-group">
+                                <input type="color" id="color-picker" class="color-picker" value="#667eea">
+                                <input type="text" id="color-input" class="tool-input" placeholder="#667eea" value="#667eea">
+                            </div>
+                            <button class="tool-button" onclick="generatePalette()">
+                                <i class="bi bi-palette me-2"></i><span data-translate="color.generate">Générer Palette</span>
+                            </button>
+                            <button class="tool-button" onclick="randomColor()">
+                                <i class="bi bi-shuffle me-2"></i><span data-translate="color.random">Couleur Aléatoire</span>
+                            </button>
+                            <div id="color-palette" class="color-palette"></div>
+                            <div id="color-formats" class="color-formats"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hash Calculator -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-shield-check tool-icon"></i>
+                            <h3 class="tool-title" data-translate="hash.title">Calculateur de Hash</h3>
+                        </div>
+                        <p class="tool-description" data-translate="hash.description">
+                            Calculez les hash MD5, SHA-1, SHA-256 et SHA-512 de vos textes ou fichiers.
+                        </p>
+                        <div class="tool-content">
+                            <textarea id="hash-input" class="tool-textarea" data-translate-placeholder="hash.placeholder" placeholder="Entrez votre texte..."></textarea>
+                            <div class="hash-options">
+                                <label><input type="checkbox" id="md5" checked> MD5</label>
+                                <label><input type="checkbox" id="sha1" checked> SHA-1</label>
+                                <label><input type="checkbox" id="sha256" checked> SHA-256</label>
+                                <label><input type="checkbox" id="sha512"> SHA-512</label>
+                            </div>
+                            <button class="tool-button" onclick="calculateHashes()">
+                                <i class="bi bi-calculator me-2"></i><span data-translate="hash.calculate">Calculer Hash</span>
+                            </button>
+                            <div id="hash-results" class="tool-output" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Generator -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-key tool-icon"></i>
+                            <h3 class="tool-title" data-translate="password.title">Générateur de Mots de Passe</h3>
+                        </div>
+                        <p class="tool-description" data-translate="password.description">
+                            Générez des mots de passe sécurisés avec des options personnalisables.
+                        </p>
+                        <div class="tool-content">
+                            <div class="password-controls">
+                                <div class="lorem-control">
+                                    <label data-translate="password.length">Longueur:</label>
+                                    <input type="range" id="password-length" min="4" max="64" value="16">
+                                    <span id="length-display">16</span>
+                                </div>
+                            </div>
+                            <div class="password-options">
+                                <label><input type="checkbox" id="uppercase" checked> <span data-translate="password.uppercase">Majuscules (A-Z)</span></label>
+                                <label><input type="checkbox" id="lowercase" checked> <span data-translate="password.lowercase">Minuscules (a-z)</span></label>
+                                <label><input type="checkbox" id="numbers" checked> <span data-translate="password.numbers">Chiffres (0-9)</span></label>
+                                <label><input type="checkbox" id="symbols" checked> <span data-translate="password.symbols">Symboles (!@#$%)</span></label>
+                            </div>
+                            <button class="tool-button" onclick="generatePassword()">
+                                <i class="bi bi-key me-2"></i><span data-translate="password.generate">Générer</span>
+                            </button>
+                            <button class="tool-button secondary" onclick="copyPassword()">
+                                <i class="bi bi-clipboard me-2"></i><span data-translate="password.copy">Copier</span>
+                            </button>
+                            <div id="password-output" class="tool-output" style="display: none;"></div>
+                            <div id="password-strength" class="password-strength"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JSON Formatter -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-braces tool-icon"></i>
+                            <h3 class="tool-title" data-translate="json.title">Formatter JSON</h3>
+                        </div>
+                        <p class="tool-description" data-translate="json.description">
+                            Formatez, minifiez et validez vos données JSON facilement.
+                        </p>
+                        <div class="tool-content">
+                            <textarea id="json-input" class="tool-textarea" data-translate-placeholder="json.placeholder" placeholder='{"key": "value"}'></textarea>
+                            <button class="tool-button" onclick="formatJSON()">
+                                <i class="bi bi-code me-2"></i><span data-translate="json.format">Formatter</span>
+                            </button>
+                            <button class="tool-button" onclick="minifyJSON()">
+                                <i class="bi bi-dash-square me-2"></i><span data-translate="json.minify">Minifier</span>
+                            </button>
+                            <button class="tool-button secondary" onclick="validateJSON()">
+                                <i class="bi bi-check-circle me-2"></i><span data-translate="json.validate">Valider</span>
+                            </button>
+                            <div id="json-output" class="tool-output" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UUID Generator -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-fingerprint tool-icon"></i>
+                            <h3 class="tool-title" data-translate="uuid.title">Générateur UUID</h3>
+                        </div>
+                        <p class="tool-description" data-translate="uuid.description">
+                            Générez des UUID/GUID uniques pour vos applications et bases de données.
+                        </p>
+                        <div class="tool-content">
+                            <div class="uuid-controls">
+                                <div class="lorem-control">
+                                    <label data-translate="uuid.count">Nombre:</label>
+                                    <input type="number" id="uuid-count" value="1" min="1" max="100">
+                                </div>
+                                <div class="lorem-control">
+                                    <label data-translate="uuid.format">Format:</label>
+                                    <select id="uuid-format">
+                                        <option value="standard">Standard</option>
+                                        <option value="uppercase">Majuscules</option>
+                                        <option value="nodashes">Sans tirets</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="tool-button" onclick="generateUUID()">
+                                <i class="bi bi-fingerprint me-2"></i><span data-translate="uuid.generate">Générer UUID</span>
+                            </button>
+                            <button class="tool-button secondary" onclick="copyUUIDs()">
+                                <i class="bi bi-clipboard me-2"></i><span data-translate="uuid.copy">Copier Tout</span>
+                            </button>
+                            <div id="uuid-output" class="tool-output" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unit Converter -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-arrows-expand tool-icon"></i>
+                            <h3 class="tool-title" data-translate="units.title">Convertisseur d'Unités</h3>
+                        </div>
+                        <p class="tool-description" data-translate="units.description">
+                            Convertissez entre différentes unités : longueur, poids, température, taille de fichiers.
+                        </p>
+                        <div class="tool-content">
+                            <div class="unit-controls">
+                                <div class="lorem-control">
+                                    <label data-translate="units.category">Catégorie:</label>
+                                    <select id="unit-category" onchange="updateUnitOptions()">
+                                        <option value="length" data-translate="units.length">Longueur</option>
+                                        <option value="weight" data-translate="units.weight">Poids</option>
+                                        <option value="temperature" data-translate="units.temperature">Température</option>
+                                        <option value="filesize" data-translate="units.filesize">Taille de fichier</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="conversion-row">
+                                <input type="number" id="unit-input" class="tool-input" placeholder="0" step="any">
+                                <select id="unit-from" class="tool-input"></select>
+                                <span class="conversion-arrow">→</span>
+                                <select id="unit-to" class="tool-input"></select>
+                                <input type="number" id="unit-output" class="tool-input" readonly>
+                            </div>
+                            <button class="tool-button" onclick="convertUnits()">
+                                <i class="bi bi-arrows-expand me-2"></i><span data-translate="units.convert">Convertir</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- URL Shortener -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-link-45deg tool-icon"></i>
+                            <h3 class="tool-title" data-translate="url.title">Raccourcisseur d'URL</h3>
+                        </div>
+                        <p class="tool-description" data-translate="url.description">
+                            Créez des liens courts avec QR code automatique. Parfait pour les réseaux sociaux.
+                        </p>
+                        <div class="tool-content">
+                            <input type="url" id="url-input" class="tool-input" data-translate-placeholder="url.placeholder" placeholder="https://example.com">
+                            <input type="text" id="url-custom" class="tool-input" data-translate-placeholder="url.custom" placeholder="Nom personnalisé (optionnel)">
+                            <button class="tool-button" onclick="shortenURL()">
+                                <i class="bi bi-link me-2"></i><span data-translate="url.shorten">Raccourcir</span>
+                            </button>
+                            <div id="url-result" class="url-result" style="display: none;">
+                                <div class="shortened-url">
+                                    <input type="text" id="shortened-url" class="tool-input" readonly>
+                                    <button class="tool-button secondary" onclick="copyShortURL()">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </div>
+                                <canvas id="url-qr" class="qr-code-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -665,7 +1057,49 @@
                 'heic.title': 'Convertisseur HEIC',
                 'heic.description': 'Convertissez vos photos iPhone/iPad HEIC vers PNG ou JPG. Idéal pour partager vos photos sur tous les appareils.',
                 'heic.select': 'Sélectionner fichier HEIC',
-                'heic.convert': 'Convertir'
+                'heic.convert': 'Convertir',
+                'color.title': 'Générateur de Couleurs',
+                'color.description': 'Générez des palettes de couleurs, convertissez entre formats et créez des harmonies colorées.',
+                'color.generate': 'Générer Palette',
+                'color.random': 'Couleur Aléatoire',
+                'hash.title': 'Calculateur de Hash',
+                'hash.description': 'Calculez les hash MD5, SHA-1, SHA-256 et SHA-512 de vos textes ou fichiers.',
+                'hash.placeholder': 'Entrez votre texte...',
+                'hash.calculate': 'Calculer Hash',
+                'password.title': 'Générateur de Mots de Passe',
+                'password.description': 'Générez des mots de passe sécurisés avec des options personnalisables.',
+                'password.length': 'Longueur:',
+                'password.uppercase': 'Majuscules (A-Z)',
+                'password.lowercase': 'Minuscules (a-z)',
+                'password.numbers': 'Chiffres (0-9)',
+                'password.symbols': 'Symboles (!@#$%)',
+                'password.generate': 'Générer',
+                'password.copy': 'Copier',
+                'json.title': 'Formatter JSON',
+                'json.description': 'Formatez, minifiez et validez vos données JSON facilement.',
+                'json.placeholder': '{"key": "value"}',
+                'json.format': 'Formatter',
+                'json.minify': 'Minifier',
+                'json.validate': 'Valider',
+                'uuid.title': 'Générateur UUID',
+                'uuid.description': 'Générez des UUID/GUID uniques pour vos applications et bases de données.',
+                'uuid.count': 'Nombre:',
+                'uuid.format': 'Format:',
+                'uuid.generate': 'Générer UUID',
+                'uuid.copy': 'Copier Tout',
+                'units.title': 'Convertisseur d\'Unités',
+                'units.description': 'Convertissez entre différentes unités : longueur, poids, température, taille de fichiers.',
+                'units.category': 'Catégorie:',
+                'units.length': 'Longueur',
+                'units.weight': 'Poids',
+                'units.temperature': 'Température',
+                'units.filesize': 'Taille de fichier',
+                'units.convert': 'Convertir',
+                'url.title': 'Raccourcisseur d\'URL',
+                'url.description': 'Créez des liens courts avec QR code automatique. Parfait pour les réseaux sociaux.',
+                'url.placeholder': 'https://example.com',
+                'url.custom': 'Nom personnalisé (optionnel)',
+                'url.shorten': 'Raccourcir'
             },
             en: {
                 'header.back': 'Back to Portfolio',
@@ -701,7 +1135,49 @@
                 'heic.title': 'HEIC Converter',
                 'heic.description': 'Convert your iPhone/iPad HEIC photos to PNG or JPG. Perfect for sharing your photos on all devices.',
                 'heic.select': 'Select HEIC file',
-                'heic.convert': 'Convert'
+                'heic.convert': 'Convert',
+                'color.title': 'Color Generator',
+                'color.description': 'Generate color palettes, convert between formats and create color harmonies.',
+                'color.generate': 'Generate Palette',
+                'color.random': 'Random Color',
+                'hash.title': 'Hash Calculator',
+                'hash.description': 'Calculate MD5, SHA-1, SHA-256 and SHA-512 hashes for your texts or files.',
+                'hash.placeholder': 'Enter your text...',
+                'hash.calculate': 'Calculate Hash',
+                'password.title': 'Password Generator',
+                'password.description': 'Generate secure passwords with customizable options.',
+                'password.length': 'Length:',
+                'password.uppercase': 'Uppercase (A-Z)',
+                'password.lowercase': 'Lowercase (a-z)',
+                'password.numbers': 'Numbers (0-9)',
+                'password.symbols': 'Symbols (!@#$%)',
+                'password.generate': 'Generate',
+                'password.copy': 'Copy',
+                'json.title': 'JSON Formatter',
+                'json.description': 'Format, minify and validate your JSON data easily.',
+                'json.placeholder': '{"key": "value"}',
+                'json.format': 'Format',
+                'json.minify': 'Minify',
+                'json.validate': 'Validate',
+                'uuid.title': 'UUID Generator',
+                'uuid.description': 'Generate unique UUIDs/GUIDs for your applications and databases.',
+                'uuid.count': 'Count:',
+                'uuid.format': 'Format:',
+                'uuid.generate': 'Generate UUID',
+                'uuid.copy': 'Copy All',
+                'units.title': 'Unit Converter',
+                'units.description': 'Convert between different units: length, weight, temperature, file sizes.',
+                'units.category': 'Category:',
+                'units.length': 'Length',
+                'units.weight': 'Weight',
+                'units.temperature': 'Temperature',
+                'units.filesize': 'File size',
+                'units.convert': 'Convert',
+                'url.title': 'URL Shortener',
+                'url.description': 'Create short links with automatic QR code. Perfect for social media.',
+                'url.placeholder': 'https://example.com',
+                'url.custom': 'Custom name (optional)',
+                'url.shorten': 'Shorten'
             },
             pt: {
                 'header.back': 'Voltar ao Portfólio',
@@ -737,7 +1213,49 @@
                 'heic.title': 'Conversor HEIC',
                 'heic.description': 'Converta suas fotos iPhone/iPad HEIC para PNG ou JPG. Perfeito para compartilhar suas fotos em todos os dispositivos.',
                 'heic.select': 'Selecionar arquivo HEIC',
-                'heic.convert': 'Converter'
+                'heic.convert': 'Converter',
+                'color.title': 'Gerador de Cores',
+                'color.description': 'Gere paletas de cores, converta entre formatos e crie harmonias coloridas.',
+                'color.generate': 'Gerar Paleta',
+                'color.random': 'Cor Aleatória',
+                'hash.title': 'Calculadora de Hash',
+                'hash.description': 'Calcule hashes MD5, SHA-1, SHA-256 e SHA-512 de seus textos ou arquivos.',
+                'hash.placeholder': 'Digite seu texto...',
+                'hash.calculate': 'Calcular Hash',
+                'password.title': 'Gerador de Senhas',
+                'password.description': 'Gere senhas seguras com opções personalizáveis.',
+                'password.length': 'Comprimento:',
+                'password.uppercase': 'Maiúsculas (A-Z)',
+                'password.lowercase': 'Minúsculas (a-z)',
+                'password.numbers': 'Números (0-9)',
+                'password.symbols': 'Símbolos (!@#$%)',
+                'password.generate': 'Gerar',
+                'password.copy': 'Copiar',
+                'json.title': 'Formatador JSON',
+                'json.description': 'Formate, minifique e valide seus dados JSON facilmente.',
+                'json.placeholder': '{"key": "value"}',
+                'json.format': 'Formatar',
+                'json.minify': 'Minificar',
+                'json.validate': 'Validar',
+                'uuid.title': 'Gerador UUID',
+                'uuid.description': 'Gere UUIDs/GUIDs únicos para suas aplicações e bancos de dados.',
+                'uuid.count': 'Quantidade:',
+                'uuid.format': 'Formato:',
+                'uuid.generate': 'Gerar UUID',
+                'uuid.copy': 'Copiar Tudo',
+                'units.title': 'Conversor de Unidades',
+                'units.description': 'Converta entre diferentes unidades: comprimento, peso, temperatura, tamanhos de arquivo.',
+                'units.category': 'Categoria:',
+                'units.length': 'Comprimento',
+                'units.weight': 'Peso',
+                'units.temperature': 'Temperatura',
+                'units.filesize': 'Tamanho de arquivo',
+                'units.convert': 'Converter',
+                'url.title': 'Encurtador de URL',
+                'url.description': 'Crie links curtos com QR code automático. Perfeito para redes sociais.',
+                'url.placeholder': 'https://example.com',
+                'url.custom': 'Nome personalizado (opcional)',
+                'url.shorten': 'Encurtar'
             }
         };
 
@@ -946,5 +1464,12 @@
     <script src="tools/base64-encoder.js"></script>
     <script src="tools/lorem-generator.js"></script>
     <script src="tools/image-converter.js"></script>
+    <script src="tools/color-generator.js"></script>
+    <script src="tools/hash-calculator.js"></script>
+    <script src="tools/password-generator.js"></script>
+    <script src="tools/json-formatter.js"></script>
+    <script src="tools/uuid-generator.js"></script>
+    <script src="tools/unit-converter.js"></script>
+    <script src="tools/url-shortener.js"></script>
 </body>
 </html>
