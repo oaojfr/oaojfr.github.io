@@ -118,6 +118,7 @@
             --bg-secondary: #f8f9fa;
             --card-bg: #fff;
             --navbar-bg: rgba(102, 126, 234, 0.1);
+            --navbar-bg-scroll: rgba(102, 126, 234, 0.2);
             --footer-bg: #2c3e50;
         }
 
@@ -127,6 +128,7 @@
             --bg-secondary: #1e1e1e;
             --card-bg: #2d2d2d;
             --navbar-bg: rgba(45, 45, 45, 0.9);
+            --navbar-bg-scroll: rgba(45, 45, 45, 0.95);
             --footer-bg: #1a1a1a;
         }
 
@@ -403,6 +405,18 @@
         
         .lang-btn:hover {
             background: rgba(255,255,255,0.1);
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            backdrop-filter: blur(15px) !important;
+            -webkit-backdrop-filter: blur(15px) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .navbar.scrolled {
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
         }
         
         /* Matrix Effect */
@@ -920,7 +934,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: var(--navbar-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid rgba(102, 126, 234, 0.2);">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: var(--navbar-bg); border-bottom: 1px solid rgba(102, 126, 234, 0.2);">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#home" data-translate="nav.brand">João</a>
             <div class="d-flex align-items-center order-lg-2">
@@ -1941,13 +1955,11 @@
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
-                navbar.style.background = 'rgba(102, 126, 234, 0.2)';
-                navbar.style.backdropFilter = 'blur(20px)';
-                navbar.style.webkitBackdropFilter = 'blur(20px)';
+                navbar.classList.add('scrolled');
+                navbar.style.background = 'var(--navbar-bg-scroll)';
             } else {
+                navbar.classList.remove('scrolled');
                 navbar.style.background = 'var(--navbar-bg)';
-                navbar.style.backdropFilter = 'blur(15px)';
-                navbar.style.webkitBackdropFilter = 'blur(15px)';
             }
         });
 
