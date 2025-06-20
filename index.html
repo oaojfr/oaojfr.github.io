@@ -1696,8 +1696,34 @@
         let keySequence = '';
         let sequenceTimeout;
         let lastKeyTime = 0;
+        let isNavigating = false;
+
+        // Track navigation events to disable easter eggs during navigation
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' || e.target.closest('a')) {
+                isNavigating = true;
+                keySequence = '';
+                setTimeout(() => {
+                    isNavigating = false;
+                }, 1000);
+            }
+        });
+
+        // Track page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            keySequence = '';
+            isNavigating = true;
+            setTimeout(() => {
+                isNavigating = false;
+            }, 2000);
+        });
 
         document.addEventListener('keypress', function(e) {
+            // Don't trigger during navigation or page loading
+            if (isNavigating) {
+                return;
+            }
+
             // Only trigger if keys are pressed rapidly (intentional typing)
             const currentTime = Date.now();
             const timeSinceLastKey = currentTime - lastKeyTime;
@@ -1713,6 +1739,11 @@
                 return;
             }
             
+            // Ignore if user is likely typing in an input field
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+                return;
+            }
+            
             keySequence += e.key.toLowerCase();
             lastKeyTime = currentTime;
             
@@ -1721,28 +1752,31 @@
                 keySequence = '';
             }, 2000);
 
-            // Existing easter eggs
-            if (keySequence.includes('pong')) {
-                keySequence = '';
-                showPongGame();
-            } else if (keySequence.includes('snake')) {
-                keySequence = '';
-                showSnakeGame();
-            } else if (keySequence.includes('mario')) {
-                keySequence = '';
-                showMarioGame();
-            } else if (keySequence.includes('break')) {
-                keySequence = '';
-                showBreakoutGame();
-            } else if (keySequence.includes('matrix')) {
-                keySequence = '';
-                startMatrixEffect();
-            } else if (keySequence.includes('ouzbek')) {
-                keySequence = '';
-                startOuzbekSpecial();
-            } else if (keySequence.includes('nul') || keySequence.includes('nullos') || keySequence.includes('naze') || keySequence.includes('pourri')) {
-                keySequence = '';
-                startRickRoll();
+            // Only check for easter eggs if sequence is intentional (rapid typing)
+            if (keySequence.length >= 3 && timeSinceLastKey < 500) {
+                // Existing easter eggs
+                if (keySequence.includes('pong')) {
+                    keySequence = '';
+                    showPongGame();
+                } else if (keySequence.includes('snake')) {
+                    keySequence = '';
+                    showSnakeGame();
+                } else if (keySequence.includes('mario')) {
+                    keySequence = '';
+                    showMarioGame();
+                } else if (keySequence.includes('break')) {
+                    keySequence = '';
+                    showBreakoutGame();
+                } else if (keySequence.includes('matrix')) {
+                    keySequence = '';
+                    startMatrixEffect();
+                } else if (keySequence.includes('ouzbek')) {
+                    keySequence = '';
+                    startOuzbekSpecial();
+                } else if (keySequence.includes('nul') || keySequence.includes('nullos') || keySequence.includes('naze') || keySequence.includes('pourri')) {
+                    keySequence = '';
+                    startRickRoll();
+                }
             }
             
             // Prevent sequence from getting too long
@@ -1752,12 +1786,22 @@
         });
 
         // Reset sequence on page focus/blur to prevent accidental triggers
-        document.addEventListener('visibilitychange', function() {
+        window.addEventListener('focus', function() {
             keySequence = '';
+            isNavigating = false;
         });
 
         window.addEventListener('blur', function() {
             keySequence = '';
+            isNavigating = true;
+        });
+
+        // Reset on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                keySequence = '';
+                isNavigating = false;
+            }, 1000);
         });
     </script>
     
