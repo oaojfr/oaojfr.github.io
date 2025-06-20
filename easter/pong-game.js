@@ -136,10 +136,21 @@ function startPongGame() {
         
         // Check win condition
         if (pongPaddle1.score >= 5 || pongPaddle2.score >= 5) {
-            const winner = pongPaddle1.score >= 5 ? 'Joueur 1' : 'Joueur 2';
+            const winnerNumber = pongPaddle1.score >= 5 ? '1' : '2';
             const winnerDiv = document.getElementById('pong-winner');
             const winnerText = document.getElementById('winner-text');
-            winnerText.textContent = `🎉 ${winner} gagne!`;
+            
+            // Get translations from parent window
+            const currentLang = window.currentLanguage || 'fr';
+            const translations = window.translations || {};
+            
+            let winText = `🎉 Joueur ${winnerNumber} gagne!`; // Default French
+            
+            if (translations[currentLang] && translations[currentLang][`games.pong.winner${winnerNumber}`]) {
+                winText = translations[currentLang][`games.pong.winner${winnerNumber}`];
+            }
+            
+            winnerText.textContent = winText;
             winnerDiv.style.display = 'block';
             pongGameRunning = false;
         }

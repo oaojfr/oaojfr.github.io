@@ -1119,15 +1119,15 @@
     <div id="pong-overlay">
         <div id="pong-close">&times;</div>
         <div id="pong-instructions">
-            <h3>🎮 Easter Egg: Pong Game!</h3>
-            <p>Utilisez W/S pour le joueur gauche, ↑/↓ pour le joueur droit</p>
-            <p>Premier à 5 points gagne!</p>
+            <h3 data-translate="games.pong.title">🎮 Easter Egg: Pong Game!</h3>
+            <p data-translate="games.pong.controls">Utilisez W/S pour le joueur gauche, ↑/↓ pour le joueur droit</p>
+            <p data-translate="games.pong.goal">Premier à 5 points gagne!</p>
         </div>
         <canvas id="pong-canvas" width="800" height="400"></canvas>
-        <div id="pong-score">Joueur 1: <span id="score1">0</span> | Joueur 2: <span id="score2">0</span></div>
+        <div id="pong-score"><span data-translate="games.pong.player1">Joueur 1</span>: <span id="score1">0</span> | <span data-translate="games.pong.player2">Joueur 2</span>: <span id="score2">0</span></div>
         <div id="pong-winner">
-            <div id="winner-text">🎉 Joueur 1 gagne!</div>
-            <button onclick="closePongGame()">Nouvelle partie</button>
+            <div id="winner-text" data-translate="games.pong.winner">🎉 Joueur 1 gagne!</div>
+            <button onclick="closePongGame()" data-translate="games.pong.newgame">Nouvelle partie</button>
         </div>
     </div>
 
@@ -1135,18 +1135,18 @@
     <div id="mario-overlay">
         <div id="mario-close">&times;</div>
         <div id="mario-instructions">
-            <h3>🍄 Easter Egg: Super Mario Platformer!</h3>
-            <p>←/→ ou A/D pour bouger, ESPACE pour sauter</p>
-            <p>Évitez les ennemis, collectez les pièces, terminez les niveaux!</p>
-            <p>Chaque niveau est généré aléatoirement</p>
+            <h3 data-translate="games.mario.title">🍄 Easter Egg: Super Mario Platformer!</h3>
+            <p data-translate="games.mario.controls">←/→ ou A/D pour bouger, ESPACE pour sauter</p>
+            <p data-translate="games.mario.goal">Évitez les ennemis, collectez les pièces, terminez les niveaux!</p>
+            <p data-translate="games.mario.random">Chaque niveau est généré aléatoirement</p>
         </div>
         <canvas id="mario-canvas" width="800" height="400"></canvas>
-        <div id="mario-score">Score: <span id="mario-score-value">0</span> | Pièces: <span id="mario-coins">0</span></div>
+        <div id="mario-score"><span data-translate="games.mario.score">Score</span>: <span id="mario-score-value">0</span> | <span data-translate="games.mario.coins">Pièces</span>: <span id="mario-coins">0</span></div>
         <div id="mario-game-over">
-            <div>Game Over!</div>
-            <div style="margin: 10px 0; font-size: 1.2rem;">Score final: <span id="final-score">0</span></div>
-            <button onclick="restartMarioGame()">Rejouer</button>
-            <button onclick="closeMarioGame()">Fermer</button>
+            <div data-translate="games.mario.gameover">Game Over!</div>
+            <div style="margin: 10px 0; font-size: 1.2rem;"><span data-translate="games.mario.finalscore">Score final</span>: <span id="final-score">0</span></div>
+            <button onclick="restartMarioGame()" data-translate="games.mario.restart">Rejouer</button>
+            <button onclick="closeMarioGame()" data-translate="games.mario.close">Fermer</button>
         </div>
     </div>
 
@@ -1154,17 +1154,17 @@
     <div id="snake-overlay">
         <div id="snake-close">&times;</div>
         <div id="snake-instructions">
-            <h3>🐍 Easter Egg: Snake Game!</h3>
-            <p>Utilisez les flèches directionnelles pour diriger le serpent</p>
-            <p>Mangez les pommes pour grandir, évitez les murs et votre queue!</p>
+            <h3 data-translate="games.snake.title">🐍 Easter Egg: Snake Game!</h3>
+            <p data-translate="games.snake.controls">Utilisez les flèches directionnelles pour diriger le serpent</p>
+            <p data-translate="games.snake.goal">Mangez les pommes pour grandir, évitez les murs et votre queue!</p>
         </div>
         <canvas id="snake-canvas" width="800" height="400"></canvas>
-        <div id="snake-score">Score: <span id="snake-score-value">0</span></div>
+        <div id="snake-score"><span data-translate="games.snake.score">Score</span>: <span id="snake-score-value">0</span></div>
         <div id="snake-game-over">
-            <div>Game Over!</div>
-            <div style="margin: 10px 0; font-size: 1.2rem;">Score final: <span id="snake-final-score">0</span></div>
-            <button onclick="restartSnakeGame()">Rejouer</button>
-            <button onclick="closeSnakeGame()">Fermer</button>
+            <div data-translate="games.snake.gameover">Game Over!</div>
+            <div style="margin: 10px 0; font-size: 1.2rem;"><span data-translate="games.snake.finalscore">Score final</span>: <span id="snake-final-score">0</span></div>
+            <button onclick="restartSnakeGame()" data-translate="games.snake.restart">Rejouer</button>
+            <button onclick="closeSnakeGame()" data-translate="games.snake.close">Fermer</button>
         </div>
     </div>
 
@@ -1172,17 +1172,17 @@
     <div id="breakout-overlay">
         <div id="breakout-close">&times;</div>
         <div id="breakout-instructions">
-            <h3>🧱 Easter Egg: Breakout Game!</h3>
-            <p>Souris pour contrôler la palette, ou ←/→ ou A/D</p>
-            <p>Cassez toutes les briques pour gagner!</p>
+            <h3 data-translate="games.breakout.title">🧱 Easter Egg: Breakout Game!</h3>
+            <p data-translate="games.breakout.controls">Souris pour contrôler la palette, ou ←/→ ou A/D</p>
+            <p data-translate="games.breakout.goal">Cassez toutes les briques pour gagner!</p>
         </div>
         <canvas id="breakout-canvas" width="800" height="400"></canvas>
-        <div id="breakout-score">Score: <span id="breakout-score-value">0</span></div>
+        <div id="breakout-score"><span data-translate="games.breakout.score">Score</span>: <span id="breakout-score-value">0</span></div>
         <div id="breakout-game-over">
-            <div>Game Over!</div>
-            <div style="margin: 10px 0; font-size: 1.2rem;">Score final: <span id="breakout-final-score">0</span></div>
-            <button onclick="restartBreakoutGame()">Rejouer</button>
-            <button onclick="closeBreakoutGame()">Fermer</button>
+            <div data-translate="games.breakout.gameover">Game Over!</div>
+            <div style="margin: 10px 0; font-size: 1.2rem;"><span data-translate="games.breakout.finalscore">Score final</span>: <span id="breakout-final-score">0</span></div>
+            <button onclick="restartBreakoutGame()" data-translate="games.breakout.restart">Rejouer</button>
+            <button onclick="closeBreakoutGame()" data-translate="games.breakout.close">Fermer</button>
         </div>
     </div>
 
@@ -1232,6 +1232,42 @@
                 'projects.view.code': 'Voir le code',
                 'projects.future.title': 'Autres projets à venir...',
                 'projects.future.description': 'D\'autres projets passionnants sont en cours de développement !',
+                // Game overlays translations
+                'games.pong.title': '🎮 Easter Egg: Pong Game!',
+                'games.pong.controls': 'Utilisez W/S pour le joueur gauche, ↑/↓ pour le joueur droit',
+                'games.pong.goal': 'Premier à 5 points gagne!',
+                'games.pong.player1': 'Joueur 1',
+                'games.pong.player2': 'Joueur 2',
+                'games.pong.winner': '🎉 Joueur 1 gagne!',
+                'games.pong.winner1': '🎉 Joueur 1 gagne!',
+                'games.pong.winner2': '🎉 Joueur 2 gagne!',
+                'games.pong.newgame': 'Nouvelle partie',
+                'games.mario.title': '🍄 Easter Egg: Super Mario Platformer!',
+                'games.mario.controls': '←/→ ou A/D pour bouger, ESPACE pour sauter',
+                'games.mario.goal': 'Évitez les ennemis, collectez les pièces, terminez les niveaux!',
+                'games.mario.random': 'Chaque niveau est généré aléatoirement',
+                'games.mario.score': 'Score',
+                'games.mario.coins': 'Pièces',
+                'games.mario.gameover': 'Game Over!',
+                'games.mario.finalscore': 'Score final',
+                'games.mario.restart': 'Rejouer',
+                'games.mario.close': 'Fermer',
+                'games.snake.title': '🐍 Easter Egg: Snake Game!',
+                'games.snake.controls': 'Utilisez les flèches directionnelles pour diriger le serpent',
+                'games.snake.goal': 'Mangez les pommes pour grandir, évitez les murs et votre queue!',
+                'games.snake.score': 'Score',
+                'games.snake.gameover': 'Game Over!',
+                'games.snake.finalscore': 'Score final',
+                'games.snake.restart': 'Rejouer',
+                'games.snake.close': 'Fermer',
+                'games.breakout.title': '🧱 Easter Egg: Breakout Game!',
+                'games.breakout.controls': 'Souris pour contrôler la palette, ou ←/→ ou A/D',
+                'games.breakout.goal': 'Cassez toutes les briques pour gagner!',
+                'games.breakout.score': 'Score',
+                'games.breakout.gameover': 'Game Over!',
+                'games.breakout.finalscore': 'Score final',
+                'games.breakout.restart': 'Rejouer',
+                'games.breakout.close': 'Fermer',
                 'tools.redirect.title': 'Outils Utiles',
                 'tools.redirect.description': 'Découvrez ma collection d\'outils pratiques : générateur QR code, encodeur Base64, générateur Lorem Ipsum, convertisseurs d\'images et bien plus !',
                 'tools.redirect.button': 'Accéder aux Outils',
@@ -1282,6 +1318,42 @@
                 'projects.view.code': 'View code',
                 'projects.future.title': 'More projects coming...',
                 'projects.future.description': 'Other exciting projects are under development!',
+                // Game overlays translations
+                'games.pong.title': '🎮 Easter Egg: Pong Game!',
+                'games.pong.controls': 'Use W/S for left player, ↑/↓ for right player',
+                'games.pong.goal': 'First to 5 points wins!',
+                'games.pong.player1': 'Player 1',
+                'games.pong.player2': 'Player 2',
+                'games.pong.winner': '🎉 Player 1 wins!',
+                'games.pong.winner1': '🎉 Player 1 wins!',
+                'games.pong.winner2': '🎉 Player 2 wins!',
+                'games.pong.newgame': 'New game',
+                'games.mario.title': '🍄 Easter Egg: Super Mario Platformer!',
+                'games.mario.controls': '←/→ or A/D to move, SPACE to jump',
+                'games.mario.goal': 'Avoid enemies, collect coins, complete levels!',
+                'games.mario.random': 'Each level is randomly generated',
+                'games.mario.score': 'Score',
+                'games.mario.coins': 'Coins',
+                'games.mario.gameover': 'Game Over!',
+                'games.mario.finalscore': 'Final score',
+                'games.mario.restart': 'Play again',
+                'games.mario.close': 'Close',
+                'games.snake.title': '🐍 Easter Egg: Snake Game!',
+                'games.snake.controls': 'Use arrow keys to control the snake',
+                'games.snake.goal': 'Eat apples to grow, avoid walls and your tail!',
+                'games.snake.score': 'Score',
+                'games.snake.gameover': 'Game Over!',
+                'games.snake.finalscore': 'Final score',
+                'games.snake.restart': 'Play again',
+                'games.snake.close': 'Close',
+                'games.breakout.title': '🧱 Easter Egg: Breakout Game!',
+                'games.breakout.controls': 'Mouse to control paddle, or ←/→ or A/D',
+                'games.breakout.goal': 'Break all bricks to win!',
+                'games.breakout.score': 'Score',
+                'games.breakout.gameover': 'Game Over!',
+                'games.breakout.finalscore': 'Final score',
+                'games.breakout.restart': 'Play again',
+                'games.breakout.close': 'Close',
                 'tools.redirect.title': 'Useful Tools',
                 'tools.redirect.description': 'Discover my collection of practical tools: QR code generator, Base64 encoder, Lorem Ipsum generator, image converters and much more!',
                 'tools.redirect.button': 'Access Tools',
@@ -1332,6 +1404,42 @@
                 'projects.view.code': 'Ver código',
                 'projects.future.title': 'Mais projetos em breve...',
                 'projects.future.description': 'Outros projetos emocionantes estão em desenvolvimento!',
+                // Game overlays translations
+                'games.pong.title': '🎮 Easter Egg: Pong Game!',
+                'games.pong.controls': 'Use W/S para jogador esquerdo, ↑/↓ para jogador direito',
+                'games.pong.goal': 'Primeiro a 5 pontos ganha!',
+                'games.pong.player1': 'Jogador 1',
+                'games.pong.player2': 'Jogador 2',
+                'games.pong.winner': '🎉 Jogador 1 ganha!',
+                'games.pong.winner1': '🎉 Jogador 1 ganha!',
+                'games.pong.winner2': '🎉 Jogador 2 ganha!',
+                'games.pong.newgame': 'Novo jogo',
+                'games.mario.title': '🍄 Easter Egg: Super Mario Platformer!',
+                'games.mario.controls': '←/→ ou A/D para mover, ESPAÇO para pular',
+                'games.mario.goal': 'Evite inimigos, colete moedas, complete níveis!',
+                'games.mario.random': 'Cada nível é gerado aleatoriamente',
+                'games.mario.score': 'Pontuação',
+                'games.mario.coins': 'Moedas',
+                'games.mario.gameover': 'Game Over!',
+                'games.mario.finalscore': 'Pontuação final',
+                'games.mario.restart': 'Jogar novamente',
+                'games.mario.close': 'Fechar',
+                'games.snake.title': '🐍 Easter Egg: Snake Game!',
+                'games.snake.controls': 'Use as setas direcionais para controlar a cobra',
+                'games.snake.goal': 'Coma maçãs para crescer, evite paredes e sua cauda!',
+                'games.snake.score': 'Pontuação',
+                'games.snake.gameover': 'Game Over!',
+                'games.snake.finalscore': 'Pontuação final',
+                'games.snake.restart': 'Jogar novamente',
+                'games.snake.close': 'Fechar',
+                'games.breakout.title': '🧱 Easter Egg: Breakout Game!',
+                'games.breakout.controls': 'Mouse para controlar a raquete, ou ←/→ ou A/D',
+                'games.breakout.goal': 'Quebre todos os tijolos para ganhar!',
+                'games.breakout.score': 'Pontuação',
+                'games.breakout.gameover': 'Game Over!',
+                'games.breakout.finalscore': 'Pontuação final',
+                'games.breakout.restart': 'Jogar novamente',
+                'games.breakout.close': 'Fechar',
                 'tools.redirect.title': 'Ferramentas Úteis',
                 'tools.redirect.description': 'Descubra minha coleção de ferramentas práticas: gerador de QR code, codificador Base64, gerador Lorem Ipsum, conversores de imagem e muito mais!',
                 'tools.redirect.button': 'Acessar Ferramentas',
