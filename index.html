@@ -242,6 +242,39 @@
             color: #ff6b6b;
         }
         
+        #pong-winner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(102, 126, 234, 0.95);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        #pong-winner button {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        #pong-winner button:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -456,6 +489,10 @@
         </div>
         <canvas id="pong-canvas" width="800" height="400"></canvas>
         <div id="pong-score">Joueur 1: <span id="score1">0</span> | Joueur 2: <span id="score2">0</span></div>
+        <div id="pong-winner">
+            <div id="winner-text">🎉 Joueur 1 gagne!</div>
+            <button onclick="closePongGame()">Nouvelle partie</button>
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -550,8 +587,8 @@
                 x: canvas.width / 2,
                 y: canvas.height / 2,
                 radius: 10,
-                velocityX: 5,
-                velocityY: 3,
+                velocityX: 3,
+                velocityY: 2,
                 color: '#667eea'
             };
             
@@ -644,18 +681,19 @@
                 // Check win condition
                 if (paddle1.score >= 5 || paddle2.score >= 5) {
                     const winner = paddle1.score >= 5 ? 'Joueur 1' : 'Joueur 2';
-                    setTimeout(() => {
-                        alert(`🎉 ${winner} gagne!`);
-                        closePongGame();
-                    }, 100);
+                    const winnerDiv = document.getElementById('pong-winner');
+                    const winnerText = document.getElementById('winner-text');
+                    winnerText.textContent = `🎉 ${winner} gagne!`;
+                    winnerDiv.style.display = 'block';
+                    gameRunning = false;
                 }
             }
             
             function resetBall() {
                 ball.x = canvas.width / 2;
                 ball.y = canvas.height / 2;
-                ball.velocityX = (Math.random() > 0.5 ? 1 : -1) * 5;
-                ball.velocityY = (Math.random() - 0.5) * 6;
+                ball.velocityX = (Math.random() > 0.5 ? 1 : -1) * 3;
+                ball.velocityY = (Math.random() - 0.5) * 4;
             }
             
             function draw() {
@@ -700,6 +738,7 @@
             function closePongGame() {
                 gameRunning = false;
                 overlay.style.display = 'none';
+                document.getElementById('pong-winner').style.display = 'none';
                 paddle1.score = 0;
                 paddle2.score = 0;
                 score1.textContent = '0';
@@ -723,6 +762,22 @@
             // Start the game loop
             gameLoop();
         }
+        
+        // Make closePongGame available globally for the button
+        window.closePongGame = function() {
+            const overlay = document.getElementById('pong-overlay');
+            const winnerDiv = document.getElementById('pong-winner');
+            
+            gameRunning = false;
+            overlay.style.display = 'none';
+            winnerDiv.style.display = 'none';
+            
+            // Reset scores
+            const score1 = document.getElementById('score1');
+            const score2 = document.getElementById('score2');
+            score1.textContent = '0';
+            score2.textContent = '0';
+        };
     </script>
 </body>
 </html>
