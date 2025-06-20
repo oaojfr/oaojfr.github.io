@@ -275,6 +275,252 @@
             transform: translateY(-2px);
         }
         
+        /* Easter Egg Mario Game Styles */
+        #mario-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #mario-canvas {
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            border-radius: 10px;
+        }
+        
+        #mario-instructions {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #mario-score {
+            color: white;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #mario-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        #mario-close:hover {
+            color: #ff6b6b;
+        }
+        
+        #mario-game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 107, 107, 0.95);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        #mario-game-over button {
+            background: #4ecdc4;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        #mario-game-over button:hover {
+            background: #45b7b8;
+            transform: translateY(-2px);
+        }
+        
+        /* Easter Egg Snake Game Styles */
+        #snake-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #snake-canvas {
+            border: 2px solid #4ecdc4;
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+            border-radius: 10px;
+        }
+        
+        #snake-instructions {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #snake-score {
+            color: white;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #snake-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        #snake-close:hover {
+            color: #4ecdc4;
+        }
+        
+        #snake-game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(78, 205, 196, 0.95);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        #snake-game-over button {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        #snake-game-over button:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+        
+        /* Easter Egg Breakout Game Styles */
+        #breakout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #breakout-canvas {
+            border: 2px solid #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+        }
+        
+        #breakout-instructions {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #breakout-score {
+            color: white;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #breakout-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        #breakout-close:hover {
+            color: #667eea;
+        }
+        
+        #breakout-game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(102, 126, 234, 0.95);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        #breakout-game-over button {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 10px 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        #breakout-game-over button:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -495,6 +741,61 @@
         </div>
     </div>
 
+    <!-- Easter Egg: Mario Game -->
+    <div id="mario-overlay">
+        <div id="mario-close">&times;</div>
+        <div id="mario-instructions">
+            <h3>🍄 Easter Egg: Super Mario Platformer!</h3>
+            <p>←/→ ou A/D pour bouger, ESPACE pour sauter</p>
+            <p>Évitez les ennemis, collectez les pièces, terminez les niveaux!</p>
+            <p>Chaque niveau est généré aléatoirement</p>
+        </div>
+        <canvas id="mario-canvas" width="800" height="400"></canvas>
+        <div id="mario-score">Score: <span id="mario-score-value">0</span> | Pièces: <span id="mario-coins">0</span></div>
+        <div id="mario-game-over">
+            <div>Game Over!</div>
+            <div style="margin: 10px 0; font-size: 1.2rem;">Score final: <span id="final-score">0</span></div>
+            <button onclick="restartMarioGame()">Rejouer</button>
+            <button onclick="closeMarioGame()">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Easter Egg: Snake Game -->
+    <div id="snake-overlay">
+        <div id="snake-close">&times;</div>
+        <div id="snake-instructions">
+            <h3>🐍 Easter Egg: Snake Game!</h3>
+            <p>Utilisez les flèches directionnelles pour diriger le serpent</p>
+            <p>Mangez les pommes pour grandir, évitez les murs et votre queue!</p>
+        </div>
+        <canvas id="snake-canvas" width="800" height="400"></canvas>
+        <div id="snake-score">Score: <span id="snake-score-value">0</span></div>
+        <div id="snake-game-over">
+            <div>Game Over!</div>
+            <div style="margin: 10px 0; font-size: 1.2rem;">Score final: <span id="snake-final-score">0</span></div>
+            <button onclick="restartSnakeGame()">Rejouer</button>
+            <button onclick="closeSnakeGame()">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Easter Egg: Breakout Game -->
+    <div id="breakout-overlay">
+        <div id="breakout-close">&times;</div>
+        <div id="breakout-instructions">
+            <h3>🧱 Easter Egg: Breakout Game!</h3>
+            <p>Souris pour contrôler la palette, ou ←/→ ou A/D</p>
+            <p>Cassez toutes les briques pour gagner!</p>
+        </div>
+        <canvas id="breakout-canvas" width="800" height="400"></canvas>
+        <div id="breakout-score">Score: <span id="breakout-score-value">0</span></div>
+        <div id="breakout-game-over">
+            <div>Game Over!</div>
+            <div style="margin: 10px 0; font-size: 1.2rem;">Score final: <span id="breakout-final-score">0</span></div>
+            <button onclick="restartBreakoutGame()">Rejouer</button>
+            <button onclick="closeBreakoutGame()">Fermer</button>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -550,238 +851,12 @@
             card.style.transition = 'all 0.6s ease';
             observer.observe(card);
         });
-
-        // Easter Egg: Pong Game
-        let easterEggSequence = [];
-        const secretCode = ['p', 'o', 'n', 'g'];
-        let gameRunning = false;
-
-        // Listen for secret key sequence
-        document.addEventListener('keydown', function(e) {
-            if (gameRunning) return;
-            
-            easterEggSequence.push(e.key.toLowerCase());
-            
-            // Keep only the last 4 keys
-            if (easterEggSequence.length > secretCode.length) {
-                easterEggSequence.shift();
-            }
-            
-            // Check if sequence matches
-            if (easterEggSequence.length === secretCode.length && 
-                easterEggSequence.every((key, index) => key === secretCode[index])) {
-                startPongGame();
-                easterEggSequence = [];
-            }
-        });
-
-        function startPongGame() {
-            const overlay = document.getElementById('pong-overlay');
-            const canvas = document.getElementById('pong-canvas');
-            const ctx = canvas.getContext('2d');
-            const score1 = document.getElementById('score1');
-            const score2 = document.getElementById('score2');
-            const closeBtn = document.getElementById('pong-close');
-            
-            overlay.style.display = 'flex';
-            gameRunning = true;
-            
-            // Game objects
-            const ball = {
-                x: canvas.width / 2,
-                y: canvas.height / 2,
-                radius: 10,
-                velocityX: 3,
-                velocityY: 2,
-                color: '#667eea'
-            };
-            
-            const paddle1 = {
-                x: 10,
-                y: canvas.height / 2 - 50,
-                width: 10,
-                height: 100,
-                color: '#ff6b6b',
-                score: 0
-            };
-            
-            const paddle2 = {
-                x: canvas.width - 20,
-                y: canvas.height / 2 - 50,
-                width: 10,
-                height: 100,
-                color: '#4ecdc4',
-                score: 0
-            };
-            
-            // Controls
-            const keys = {};
-            
-            function handleKeyDown(e) {
-                keys[e.key] = true;
-            }
-            
-            function handleKeyUp(e) {
-                keys[e.key] = false;
-            }
-            
-            document.addEventListener('keydown', handleKeyDown);
-            document.addEventListener('keyup', handleKeyUp);
-            
-            function updatePaddles() {
-                // Player 1 (W/S)
-                if (keys['w'] || keys['W']) {
-                    paddle1.y = Math.max(0, paddle1.y - 7);
-                }
-                if (keys['s'] || keys['S']) {
-                    paddle1.y = Math.min(canvas.height - paddle1.height, paddle1.y + 7);
-                }
-                
-                // Player 2 (Arrow keys)
-                if (keys['ArrowUp']) {
-                    paddle2.y = Math.max(0, paddle2.y - 7);
-                }
-                if (keys['ArrowDown']) {
-                    paddle2.y = Math.min(canvas.height - paddle2.height, paddle2.y + 7);
-                }
-            }
-            
-            function updateBall() {
-                ball.x += ball.velocityX;
-                ball.y += ball.velocityY;
-                
-                // Top and bottom walls
-                if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
-                    ball.velocityY = -ball.velocityY;
-                }
-                
-                // Paddle collisions
-                if (ball.x - ball.radius < paddle1.x + paddle1.width &&
-                    ball.y > paddle1.y && ball.y < paddle1.y + paddle1.height) {
-                    ball.velocityX = Math.abs(ball.velocityX);
-                    ball.velocityY += (Math.random() - 0.5) * 2;
-                }
-                
-                if (ball.x + ball.radius > paddle2.x &&
-                    ball.y > paddle2.y && ball.y < paddle2.y + paddle2.height) {
-                    ball.velocityX = -Math.abs(ball.velocityX);
-                    ball.velocityY += (Math.random() - 0.5) * 2;
-                }
-                
-                // Scoring
-                if (ball.x < 0) {
-                    paddle2.score++;
-                    resetBall();
-                }
-                if (ball.x > canvas.width) {
-                    paddle1.score++;
-                    resetBall();
-                }
-                
-                // Update score display
-                score1.textContent = paddle1.score;
-                score2.textContent = paddle2.score;
-                
-                // Check win condition
-                if (paddle1.score >= 5 || paddle2.score >= 5) {
-                    const winner = paddle1.score >= 5 ? 'Joueur 1' : 'Joueur 2';
-                    const winnerDiv = document.getElementById('pong-winner');
-                    const winnerText = document.getElementById('winner-text');
-                    winnerText.textContent = `🎉 ${winner} gagne!`;
-                    winnerDiv.style.display = 'block';
-                    gameRunning = false;
-                }
-            }
-            
-            function resetBall() {
-                ball.x = canvas.width / 2;
-                ball.y = canvas.height / 2;
-                ball.velocityX = (Math.random() > 0.5 ? 1 : -1) * 3;
-                ball.velocityY = (Math.random() - 0.5) * 4;
-            }
-            
-            function draw() {
-                // Clear canvas
-                ctx.fillStyle = '#1a1a2e';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw center line
-                ctx.setLineDash([5, 15]);
-                ctx.beginPath();
-                ctx.moveTo(canvas.width / 2, 0);
-                ctx.lineTo(canvas.width / 2, canvas.height);
-                ctx.strokeStyle = '#667eea';
-                ctx.stroke();
-                ctx.setLineDash([]);
-                
-                // Draw paddles
-                ctx.fillStyle = paddle1.color;
-                ctx.fillRect(paddle1.x, paddle1.y, paddle1.width, paddle1.height);
-                
-                ctx.fillStyle = paddle2.color;
-                ctx.fillRect(paddle2.x, paddle2.y, paddle2.width, paddle2.height);
-                
-                // Draw ball
-                ctx.beginPath();
-                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-                ctx.fillStyle = ball.color;
-                ctx.fill();
-                ctx.closePath();
-            }
-            
-            function gameLoop() {
-                if (!gameRunning) return;
-                
-                updatePaddles();
-                updateBall();
-                draw();
-                
-                requestAnimationFrame(gameLoop);
-            }
-            
-            function closePongGame() {
-                gameRunning = false;
-                overlay.style.display = 'none';
-                document.getElementById('pong-winner').style.display = 'none';
-                paddle1.score = 0;
-                paddle2.score = 0;
-                score1.textContent = '0';
-                score2.textContent = '0';
-                document.removeEventListener('keydown', handleKeyDown);
-                document.removeEventListener('keyup', handleKeyUp);
-            }
-            
-            // Close button event
-            closeBtn.onclick = closePongGame;
-            
-            // ESC key to close
-            function handleEscape(e) {
-                if (e.key === 'Escape') {
-                    closePongGame();
-                    document.removeEventListener('keydown', handleEscape);
-                }
-            }
-            document.addEventListener('keydown', handleEscape);
-            
-            // Start the game loop
-            gameLoop();
-        }
-        
-        // Make closePongGame available globally for the button
-        window.closePongGame = function() {
-            const overlay = document.getElementById('pong-overlay');
-            const winnerDiv = document.getElementById('pong-winner');
-            
-            gameRunning = false;
-            overlay.style.display = 'none';
-            winnerDiv.style.display = 'none';
-            
-            // Reset scores
-            const score1 = document.getElementById('score1');
-            const score2 = document.getElementById('score2');
-            score1.textContent = '0';
-            score2.textContent = '0';
-        };
     </script>
+    
+    <!-- Game Scripts -->
+    <script src="pong-game.js"></script>
+    <script src="snake-game.js"></script>
+    <script src="breakout-game.js"></script>
+    <script src="mario-game.js"></script>
 </body>
 </html>
