@@ -672,6 +672,92 @@
             flex-direction: column;
         }
         
+        /* Tools Section */
+        .tools-section {
+            padding: 100px 0;
+            background: var(--bg-color);
+            position: relative;
+        }
+        
+        /* Tools Redirect Section */
+        .tools-redirect-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tools-redirect-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .tools-redirect-section .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .tools-redirect-title {
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .tools-redirect-description {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .tools-redirect-button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .tools-redirect-button:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .tools-redirect-icon {
+            font-size: 8rem;
+            color: rgba(255,255,255,0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
         #breakout-canvas {
             border: 2px solid #667eea;
             box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
@@ -795,6 +881,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#projects" data-translate="nav.projects">Projets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tools.html" data-translate="nav.tools">Outils</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#contact" data-translate="nav.contact">Contact</a>
@@ -999,6 +1088,31 @@
         </div>
     </section>
 
+    <!-- Tools Redirect Section -->
+    <section id="tools" class="tools-redirect-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="tools-redirect-title">
+                        <i class="bi bi-tools me-3"></i><span data-translate="tools.redirect.title">Outils Utiles</span>
+                    </h2>
+                    <p class="tools-redirect-description" data-translate="tools.redirect.description">
+                        Découvrez ma collection d'outils pratiques : générateur QR code, encodeur Base64, 
+                        générateur Lorem Ipsum, convertisseurs d'images et bien plus !
+                    </p>
+                    <a href="tools.html" class="tools-redirect-button">
+                        <i class="bi bi-arrow-right-circle me-2"></i><span data-translate="tools.redirect.button">Accéder aux Outils</span>
+                    </a>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="tools-redirect-icon">
+                        <i class="bi bi-gear-wide-connected"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section id="contact" class="contact-section">
         <div class="container">
@@ -1077,6 +1191,12 @@
             </p>
         </div>
     </footer>
+
+    <!-- Matrix Effect Overlay -->
+    <div id="matrix-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none;">
+        <canvas id="matrix-canvas"></canvas>
+        <div id="matrix-close" style="position: absolute; top: 20px; right: 30px; color: #0f0; font-size: 2rem; cursor: pointer; z-index: 10001;">&times;</div>
+    </div>
 
     <!-- Ouzbek Special Overlay -->
     <div id="ouzbek-overlay">
@@ -1220,6 +1340,10 @@
                 'projects.view.code': 'Voir le code',
                 'projects.future.title': 'Autres projets à venir...',
                 'projects.future.description': 'D\'autres projets passionnants sont en cours de développement !',
+                'tools.redirect.title': 'Outils Utiles',
+                'tools.redirect.description': 'Découvrez ma collection d\'outils pratiques : générateur QR code, encodeur Base64, générateur Lorem Ipsum, convertisseurs d\'images et bien plus !',
+                'tools.redirect.button': 'Accéder aux Outils',
+                'nav.tools': 'Outils',
                 'contact.title': 'Contactez-moi',
                 'contact.intro': 'Vous voulez échanger ? Retrouvez-moi sur mes réseaux sociaux !',
                 'contact.message': 'N\'hésitez pas à me contacter pour discuter de projets, d\'idées ou tout simplement pour échanger !',
@@ -1264,6 +1388,10 @@
                 'projects.view.code': 'View code',
                 'projects.future.title': 'More projects coming...',
                 'projects.future.description': 'Other exciting projects are under development!',
+                'tools.redirect.title': 'Useful Tools',
+                'tools.redirect.description': 'Discover my collection of practical tools: QR code generator, Base64 encoder, Lorem Ipsum generator, image converters and much more!',
+                'tools.redirect.button': 'Access Tools',
+                'nav.tools': 'Tools',
                 'contact.title': 'Contact me',
                 'contact.intro': 'Want to chat? Find me on my social networks!',
                 'contact.message': 'Feel free to contact me to discuss projects, ideas or just to chat!',
@@ -1308,6 +1436,10 @@
                 'projects.view.code': 'Ver código',
                 'projects.future.title': 'Mais projetos em breve...',
                 'projects.future.description': 'Outros projetos emocionantes estão em desenvolvimento!',
+                'tools.redirect.title': 'Ferramentas Úteis',
+                'tools.redirect.description': 'Descubra minha coleção de ferramentas práticas: gerador de QR code, codificador Base64, gerador Lorem Ipsum, conversores de imagem e muito mais!',
+                'tools.redirect.button': 'Acessar Ferramentas',
+                'nav.tools': 'Ferramentas',
                 'contact.title': 'Entre em contato',
                 'contact.intro': 'Quer conversar? Me encontre nas minhas redes sociais!',
                 'contact.message': 'Não hesite em me contatar para discutir projetos, ideias ou apenas para conversar!',
@@ -1430,6 +1562,12 @@
             setTimeout(() => {
                 closeMatrixEffect();
             }, 10000);
+        }
+        
+        function closeMatrixEffect() {
+            const overlay = document.getElementById('matrix-overlay');
+            overlay.style.display = 'none';
+            clearInterval(matrixAnimation);
         }
         
         // Ouzbek special effect
@@ -1593,9 +1731,9 @@
     </script>
     
     <!-- Game Scripts -->
-    <script src="pong-game.js"></script>
-    <script src="snake-game.js"></script>
-    <script src="breakout-game.js"></script>
-    <script src="mario-game.js"></script>
+    <script src="easter/pong-game.js"></script>
+    <script src="easter/snake-game.js"></script>
+    <script src="easter/breakout-game.js"></script>
+    <script src="easter/mario-game.js"></script>
 </body>
 </html>

@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outils Utiles - João</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --navbar-bg: rgba(102, 126, 234, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --text-color: #e0e0e0;
+            --bg-color: #1a1a1a;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --navbar-bg: rgba(26, 26, 26, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .tools-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 100px 0 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tools-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .tools-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tools-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 80px;
+            display: flex;
+            gap: 5px;
+            z-index: 3;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Tools Section */
+        .tools-section {
+            padding: 80px 0;
+            background: var(--bg-color);
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            height: 100%;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        [data-theme="dark"] .tool-card {
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-right: 20px;
+            color: var(--primary-color);
+            background: linear-gradient(45deg, var(--primary-color), #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tool-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .tool-description {
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .tool-content {
+            margin-top: 20px;
+        }
+
+        .tool-input, .tool-textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text-color);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tool-textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .tool-input:focus, .tool-textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+            transform: translateY(-2px);
+        }
+
+        [data-theme="dark"] .tool-input, [data-theme="dark"] .tool-textarea {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .tool-button {
+            background: linear-gradient(45deg, var(--primary-color), #ff6b6b);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .tool-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .tool-button.secondary {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tool-button.secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tool-output {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 0.95rem;
+        }
+
+        .tool-file-input {
+            display: none;
+        }
+
+        .tool-file-label {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .tool-file-label:hover {
+            background: #ff6b6b;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .qr-code-canvas {
+            margin-top: 20px;
+            border: 3px solid var(--primary-color);
+            border-radius: 12px;
+            max-width: 100%;
+        }
+
+        .lorem-controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .lorem-control {
+            display: flex;
+            flex-direction: column;
+            min-width: 140px;
+        }
+
+        .lorem-control label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .lorem-control input, .lorem-control select {
+            padding: 12px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .conversion-status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .conversion-status.success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            color: #4CAF50;
+        }
+
+        .conversion-status.error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 2px solid rgba(244, 67, 54, 0.3);
+            color: #F44336;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .tool-card:nth-child(1) { animation-delay: 0.1s; }
+        .tool-card:nth-child(2) { animation-delay: 0.2s; }
+        .tool-card:nth-child(3) { animation-delay: 0.3s; }
+        .tool-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @media (max-width: 768px) {
+            .tools-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .tool-card {
+                padding: 30px;
+            }
+
+            .lorem-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="tools-header">
+        <a href="index.html" class="back-button">
+            <i class="bi bi-arrow-left me-2"></i><span data-translate="header.back">Retour au Portfolio</span>
+        </a>
+        
+        <!-- Language Switcher -->
+        <div class="language-switcher">
+            <button class="lang-btn active" onclick="switchLanguage('fr')" data-lang="fr">FR</button>
+            <button class="lang-btn" onclick="switchLanguage('en')" data-lang="en">EN</button>
+            <button class="lang-btn" onclick="switchLanguage('pt')" data-lang="pt">PT</button>
+        </div>
+        
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <i class="bi bi-moon-fill" id="theme-icon"></i>
+        </button>
+        <div class="container">
+            <h1><i class="bi bi-tools me-3"></i><span data-translate="header.title">Outils Utiles</span></h1>
+            <p data-translate="header.description">Une collection d'outils pratiques pour faciliter votre travail quotidien</p>
+        </div>
+    </header>
+
+    <!-- Tools Section -->
+    <section class="tools-section">
+        <div class="container">
+            <div class="row">
+                <!-- QR Code Generator -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-qr-code tool-icon"></i>
+                            <h3 class="tool-title" data-translate="qr.title">Générateur QR Code</h3>
+                        </div>
+                        <p class="tool-description" data-translate="qr.description">
+                            Générez instantanément des QR codes pour vos URLs, textes ou données. 
+                            Parfait pour partager des liens ou des informations rapidement.
+                        </p>
+                        <div class="tool-content">
+                            <input type="text" id="qr-input" class="tool-input" data-translate-placeholder="qr.placeholder" placeholder="Entrez votre texte ou URL...">
+                            <button class="tool-button" onclick="generateQRCode()">
+                                <i class="bi bi-qr-code me-2"></i><span data-translate="qr.generate">Générer QR Code</span>
+                            </button>
+                            <button class="tool-button secondary" onclick="downloadQRCode()">
+                                <i class="bi bi-download me-2"></i><span data-translate="qr.download">Télécharger</span>
+                            </button>
+                            <div id="qr-code-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Base64 Encoder/Decoder -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-shield-lock tool-icon"></i>
+                            <h3 class="tool-title" data-translate="base64.title">Encodeur/Décodeur Base64</h3>
+                        </div>
+                        <p class="tool-description" data-translate="base64.description">
+                            Encodez et décodez facilement vos données en Base64. 
+                            Idéal pour l'intégration de données dans le code ou les API.
+                        </p>
+                        <div class="tool-content">
+                            <textarea id="base64-input" class="tool-textarea" data-translate-placeholder="base64.placeholder" placeholder="Entrez votre texte à encoder/décoder..."></textarea>
+                            <button class="tool-button" onclick="encodeBase64()">
+                                <i class="bi bi-lock me-2"></i><span data-translate="base64.encode">Encoder</span>
+                            </button>
+                            <button class="tool-button" onclick="decodeBase64()">
+                                <i class="bi bi-unlock me-2"></i><span data-translate="base64.decode">Décoder</span>
+                            </button>
+                            <button class="tool-button secondary" onclick="clearBase64()">
+                                <i class="bi bi-trash me-2"></i><span data-translate="base64.clear">Effacer</span>
+                            </button>
+                            <div id="base64-output" class="tool-output" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lorem Ipsum Generator -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-journal-text tool-icon"></i>
+                            <h3 class="tool-title" data-translate="lorem.title">Générateur Lorem Ipsum</h3>
+                        </div>
+                        <p class="tool-description" data-translate="lorem.description">
+                            Générez du texte de remplissage personnalisable pour vos maquettes, 
+                            prototypes et projets de design.
+                        </p>
+                        <div class="tool-content">
+                            <div class="lorem-controls">
+                                <div class="lorem-control">
+                                    <label data-translate="lorem.type">Type:</label>
+                                    <select id="lorem-type">
+                                        <option value="paragraphs" data-translate="lorem.paragraphs">Paragraphes</option>
+                                        <option value="words" data-translate="lorem.words">Mots</option>
+                                        <option value="sentences" data-translate="lorem.sentences">Phrases</option>
+                                    </select>
+                                </div>
+                                <div class="lorem-control">
+                                    <label data-translate="lorem.count">Nombre:</label>
+                                    <input type="number" id="lorem-count" value="3" min="1" max="50">
+                                </div>
+                                <div class="lorem-control">
+                                    <label data-translate="lorem.start">Commencer par:</label>
+                                    <select id="lorem-start">
+                                        <option value="yes" data-translate="lorem.yes">Lorem ipsum...</option>
+                                        <option value="no" data-translate="lorem.no">Texte aléatoire</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="tool-button" onclick="generateLorem()">
+                                <i class="bi bi-file-text me-2"></i><span data-translate="lorem.generate">Générer Texte</span>
+                            </button>
+                            <button class="tool-button secondary" onclick="copyLorem()">
+                                <i class="bi bi-clipboard me-2"></i><span data-translate="lorem.copy">Copier</span>
+                            </button>
+                            <textarea id="lorem-output" class="tool-textarea" readonly style="display: none;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WebP Converter -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-image tool-icon"></i>
+                            <h3 class="tool-title" data-translate="webp.title">Convertisseur WebP</h3>
+                        </div>
+                        <p class="tool-description" data-translate="webp.description">
+                            Convertissez vos images WebP vers PNG, JPG ou d'autres formats populaires. 
+                            Traitement local, vos images restent privées.
+                        </p>
+                        <div class="tool-content">
+                            <input type="file" id="webp-input" class="tool-file-input" accept=".webp" onchange="handleWebPFile(this)">
+                            <label for="webp-input" class="tool-file-label">
+                                <i class="bi bi-upload me-2"></i><span data-translate="webp.select">Sélectionner fichier WebP</span>
+                            </label>
+                            <div id="webp-controls" style="display: none;">
+                                <select id="webp-format" class="tool-input">
+                                    <option value="png">PNG</option>
+                                    <option value="jpeg">JPEG</option>
+                                    <option value="bmp">BMP</option>
+                                </select>
+                                <button class="tool-button" onclick="convertWebP()">
+                                    <i class="bi bi-arrow-repeat me-2"></i><span data-translate="webp.convert">Convertir</span>
+                                </button>
+                            </div>
+                            <div id="webp-status" class="conversion-status" style="display: none;"></div>
+                            <canvas id="webp-canvas" style="display: none;"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HEIC Converter -->
+                <div class="col-lg-6 mb-4">
+                    <div class="tool-card">
+                        <div class="tool-header">
+                            <i class="bi bi-phone tool-icon"></i>
+                            <h3 class="tool-title" data-translate="heic.title">Convertisseur HEIC</h3>
+                        </div>
+                        <p class="tool-description" data-translate="heic.description">
+                            Convertissez vos photos iPhone/iPad HEIC vers PNG ou JPG. 
+                            Idéal pour partager vos photos sur tous les appareils.
+                        </p>
+                        <div class="tool-content">
+                            <input type="file" id="heic-input" class="tool-file-input" accept=".heic,.heif" onchange="handleHEICFile(this)">
+                            <label for="heic-input" class="tool-file-label">
+                                <i class="bi bi-upload me-2"></i><span data-translate="heic.select">Sélectionner fichier HEIC</span>
+                            </label>
+                            <div id="heic-controls" style="display: none;">
+                                <select id="heic-format" class="tool-input">
+                                    <option value="png">PNG</option>
+                                    <option value="jpeg">JPEG</option>
+                                </select>
+                                <button class="tool-button" onclick="convertHEIC()">
+                                    <i class="bi bi-arrow-repeat me-2"></i><span data-translate="heic.convert">Convertir</span>
+                                </button>
+                            </div>
+                            <div id="heic-status" class="conversion-status" style="display: none;"></div>
+                            <canvas id="heic-canvas" style="display: none;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Theme Toggle & Translations -->
+    <script>
+        // Translations
+        const translations = {
+            fr: {
+                'header.back': 'Retour au Portfolio',
+                'header.title': 'Outils Utiles',
+                'header.description': 'Une collection d\'outils pratiques pour faciliter votre travail quotidien',
+                'qr.title': 'Générateur QR Code',
+                'qr.description': 'Générez instantanément des QR codes pour vos URLs, textes ou données. Parfait pour partager des liens ou des informations rapidement.',
+                'qr.placeholder': 'Entrez votre texte ou URL...',
+                'qr.generate': 'Générer QR Code',
+                'qr.download': 'Télécharger',
+                'base64.title': 'Encodeur/Décodeur Base64',
+                'base64.description': 'Encodez et décodez facilement vos données en Base64. Idéal pour l\'intégration de données dans le code ou les API.',
+                'base64.placeholder': 'Entrez votre texte à encoder/décoder...',
+                'base64.encode': 'Encoder',
+                'base64.decode': 'Décoder',
+                'base64.clear': 'Effacer',
+                'lorem.title': 'Générateur Lorem Ipsum',
+                'lorem.description': 'Générez du texte de remplissage personnalisable pour vos maquettes, prototypes et projets de design.',
+                'lorem.type': 'Type:',
+                'lorem.paragraphs': 'Paragraphes',
+                'lorem.words': 'Mots',
+                'lorem.sentences': 'Phrases',
+                'lorem.count': 'Nombre:',
+                'lorem.start': 'Commencer par:',
+                'lorem.yes': 'Lorem ipsum...',
+                'lorem.no': 'Texte aléatoire',
+                'lorem.generate': 'Générer Texte',
+                'lorem.copy': 'Copier',
+                'webp.title': 'Convertisseur WebP',
+                'webp.description': 'Convertissez vos images WebP vers PNG, JPG ou d\'autres formats populaires. Traitement local, vos images restent privées.',
+                'webp.select': 'Sélectionner fichier WebP',
+                'webp.convert': 'Convertir',
+                'heic.title': 'Convertisseur HEIC',
+                'heic.description': 'Convertissez vos photos iPhone/iPad HEIC vers PNG ou JPG. Idéal pour partager vos photos sur tous les appareils.',
+                'heic.select': 'Sélectionner fichier HEIC',
+                'heic.convert': 'Convertir'
+            },
+            en: {
+                'header.back': 'Back to Portfolio',
+                'header.title': 'Useful Tools',
+                'header.description': 'A collection of practical tools to make your daily work easier',
+                'qr.title': 'QR Code Generator',
+                'qr.description': 'Instantly generate QR codes for your URLs, texts or data. Perfect for sharing links or information quickly.',
+                'qr.placeholder': 'Enter your text or URL...',
+                'qr.generate': 'Generate QR Code',
+                'qr.download': 'Download',
+                'base64.title': 'Base64 Encoder/Decoder',
+                'base64.description': 'Easily encode and decode your data in Base64. Ideal for integrating data into code or APIs.',
+                'base64.placeholder': 'Enter your text to encode/decode...',
+                'base64.encode': 'Encode',
+                'base64.decode': 'Decode',
+                'base64.clear': 'Clear',
+                'lorem.title': 'Lorem Ipsum Generator',
+                'lorem.description': 'Generate customizable placeholder text for your mockups, prototypes and design projects.',
+                'lorem.type': 'Type:',
+                'lorem.paragraphs': 'Paragraphs',
+                'lorem.words': 'Words',
+                'lorem.sentences': 'Sentences',
+                'lorem.count': 'Count:',
+                'lorem.start': 'Start with:',
+                'lorem.yes': 'Lorem ipsum...',
+                'lorem.no': 'Random text',
+                'lorem.generate': 'Generate Text',
+                'lorem.copy': 'Copy',
+                'webp.title': 'WebP Converter',
+                'webp.description': 'Convert your WebP images to PNG, JPG or other popular formats. Local processing, your images stay private.',
+                'webp.select': 'Select WebP file',
+                'webp.convert': 'Convert',
+                'heic.title': 'HEIC Converter',
+                'heic.description': 'Convert your iPhone/iPad HEIC photos to PNG or JPG. Perfect for sharing your photos on all devices.',
+                'heic.select': 'Select HEIC file',
+                'heic.convert': 'Convert'
+            },
+            pt: {
+                'header.back': 'Voltar ao Portfólio',
+                'header.title': 'Ferramentas Úteis',
+                'header.description': 'Uma coleção de ferramentas práticas para facilitar seu trabalho diário',
+                'qr.title': 'Gerador QR Code',
+                'qr.description': 'Gere instantaneamente códigos QR para suas URLs, textos ou dados. Perfeito para compartilhar links ou informações rapidamente.',
+                'qr.placeholder': 'Digite seu texto ou URL...',
+                'qr.generate': 'Gerar QR Code',
+                'qr.download': 'Baixar',
+                'base64.title': 'Codificador/Decodificador Base64',
+                'base64.description': 'Codifique e decodifique facilmente seus dados em Base64. Ideal para integrar dados no código ou APIs.',
+                'base64.placeholder': 'Digite seu texto para codificar/decodificar...',
+                'base64.encode': 'Codificar',
+                'base64.decode': 'Decodificar',
+                'base64.clear': 'Limpar',
+                'lorem.title': 'Gerador Lorem Ipsum',
+                'lorem.description': 'Gere texto de preenchimento personalizável para suas maquetes, protótipos e projetos de design.',
+                'lorem.type': 'Tipo:',
+                'lorem.paragraphs': 'Parágrafos',
+                'lorem.words': 'Palavras',
+                'lorem.sentences': 'Frases',
+                'lorem.count': 'Quantidade:',
+                'lorem.start': 'Começar com:',
+                'lorem.yes': 'Lorem ipsum...',
+                'lorem.no': 'Texto aleatório',
+                'lorem.generate': 'Gerar Texto',
+                'lorem.copy': 'Copiar',
+                'webp.title': 'Conversor WebP',
+                'webp.description': 'Converta suas imagens WebP para PNG, JPG ou outros formatos populares. Processamento local, suas imagens permanecem privadas.',
+                'webp.select': 'Selecionar arquivo WebP',
+                'webp.convert': 'Converter',
+                'heic.title': 'Conversor HEIC',
+                'heic.description': 'Converta suas fotos iPhone/iPad HEIC para PNG ou JPG. Perfeito para compartilhar suas fotos em todos os dispositivos.',
+                'heic.select': 'Selecionar arquivo HEIC',
+                'heic.convert': 'Converter'
+            }
+        };
+
+        let currentLanguage = 'fr';
+        let currentTheme = 'light';
+
+        // Language switching
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Apply translations
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.dataset.translate;
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+
+            // Update placeholders
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.dataset.translatePlaceholder;
+                if (translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+
+            // Update document title
+            const titleMapping = {
+                'fr': 'Outils Utiles - João',
+                'en': 'Useful Tools - João',
+                'pt': 'Ferramentas Úteis - João'
+            };
+            document.title = titleMapping[lang];
+
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'bi bi-sun-fill';
+                currentTheme = 'dark';
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'bi bi-moon-fill';
+                currentTheme = 'light';
+            }
+            
+            localStorage.setItem('preferred-theme', currentTheme);
+        }
+
+        // Load saved preferences
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('preferred-theme') || 'light';
+            const savedLanguage = localStorage.getItem('preferred-language') || 'fr';
+            
+            if (savedTheme === 'dark') {
+                toggleTheme();
+            }
+            
+            if (savedLanguage !== 'fr') {
+                switchLanguage(savedLanguage);
+            }
+        });
+    </script>
+    
+    <!-- Tool Scripts -->
+    <script src="tools/qr-generator.js"></script>
+    <script src="tools/base64-encoder.js"></script>
+    <script src="tools/lorem-generator.js"></script>
+    <script src="tools/image-converter.js"></script>
+</body>
+</html>
