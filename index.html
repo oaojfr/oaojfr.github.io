@@ -1697,15 +1697,22 @@
         let sequenceTimeout;
         let lastKeyTime = 0;
         let isNavigating = false;
+        let pageJustLoaded = true;
+
+        // Disable easter eggs for the first 3 seconds after page load
+        setTimeout(() => {
+            pageJustLoaded = false;
+        }, 3000);
 
         // Track navigation events to disable easter eggs during navigation
         document.addEventListener('click', function(e) {
             if (e.target.tagName === 'A' || e.target.closest('a')) {
                 isNavigating = true;
                 keySequence = '';
+                // Longer delay for navigation
                 setTimeout(() => {
                     isNavigating = false;
-                }, 1000);
+                }, 3000);
             }
         });
 
@@ -1715,12 +1722,26 @@
             isNavigating = true;
             setTimeout(() => {
                 isNavigating = false;
-            }, 2000);
+            }, 5000);
+        });
+
+        // Reset on any page interaction that might indicate navigation
+        window.addEventListener('beforeunload', function() {
+            isNavigating = true;
+            keySequence = '';
+        });
+
+        window.addEventListener('popstate', function() {
+            isNavigating = true;
+            keySequence = '';
+            setTimeout(() => {
+                isNavigating = false;
+            }, 3000);
         });
 
         document.addEventListener('keypress', function(e) {
-            // Don't trigger during navigation or page loading
-            if (isNavigating) {
+            // Don't trigger during navigation, page loading, or first few seconds
+            if (isNavigating || pageJustLoaded) {
                 return;
             }
 
@@ -1729,7 +1750,7 @@
             const timeSinceLastKey = currentTime - lastKeyTime;
             
             // Reset sequence if too much time has passed or if it's a navigation key
-            if (timeSinceLastKey > 3000 || e.key === 'Enter' || e.key === ' ') {
+            if (timeSinceLastKey > 2000 || e.key === 'Enter' || e.key === ' ') {
                 keySequence = '';
                 return;
             }
@@ -1750,11 +1771,11 @@
             clearTimeout(sequenceTimeout);
             sequenceTimeout = setTimeout(() => {
                 keySequence = '';
-            }, 2000);
+            }, 1500);
 
-            // Only check for easter eggs if sequence is intentional (rapid typing)
-            if (keySequence.length >= 3 && timeSinceLastKey < 500) {
-                // Existing easter eggs
+            // Only check for easter eggs if sequence is intentional (very rapid typing)
+            if (keySequence.length >= 4 && timeSinceLastKey < 300) {
+                // Game easter eggs only (removed Rick Roll and Ouzbek triggers)
                 if (keySequence.includes('pong')) {
                     keySequence = '';
                     showPongGame();
@@ -1770,18 +1791,20 @@
                 } else if (keySequence.includes('matrix')) {
                     keySequence = '';
                     startMatrixEffect();
-                } else if (keySequence.includes('ouzbek')) {
-                    keySequence = '';
-                    startOuzbekSpecial();
-                } else if (keySequence.includes('nul') || keySequence.includes('nullos') || keySequence.includes('naze') || keySequence.includes('pourri')) {
-                    keySequence = '';
-                    startRickRoll();
                 }
+                // Temporarily disabled to prevent accidental triggers:
+                // } else if (keySequence.includes('ouzbek')) {
+                //     keySequence = '';
+                //     startOuzbekSpecial();
+                // } else if (keySequence.includes('nul') || keySequence.includes('nullos') || keySequence.includes('naze') || keySequence.includes('pourri')) {
+                //     keySequence = '';
+                //     startRickRoll();
+                // }
             }
             
             // Prevent sequence from getting too long
-            if (keySequence.length > 15) {
-                keySequence = keySequence.slice(-10);
+            if (keySequence.length > 12) {
+                keySequence = keySequence.slice(-8);
             }
         });
 
@@ -1801,7 +1824,7 @@
             setTimeout(() => {
                 keySequence = '';
                 isNavigating = false;
-            }, 1000);
+            }, 2000);
         });
     </script>
     
