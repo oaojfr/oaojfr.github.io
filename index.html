@@ -1653,25 +1653,7 @@
                 return;
             }
 
-            // For Matrix effect, allow activation even during navigation or page load
-            // For games, block during navigation/loading
-            if ((isNavigating || pageJustLoaded) && !e.key.toLowerCase().match(/[mnatoeix]/)) {
-                return;
-            }
-
-            // Only trigger if keys are pressed (intentional typing)
-            const currentTime = Date.now();
-            const timeSinceLastKey = currentTime - lastKeyTime;
-            
-            // Reset sequence if too much time has passed (but more lenient for Matrix)
-            if (timeSinceLastKey > 5000 || e.key === 'Enter' || e.key === ' ') {
-                keySequence = '';
-                return;
-            }
-            
             keySequence += e.key.toLowerCase();
-            lastKeyTime = currentTime;
-            
             console.log('Current key sequence:', keySequence); // Debug log
             
             clearTimeout(sequenceTimeout);
@@ -1679,7 +1661,7 @@
                 keySequence = '';
             }, 3000);
 
-            // Check for Matrix effect first (always available)
+            // Check for Matrix effect first (always available - no navigation blocking)
             if (keySequence.includes('matrix')) {
                 console.log('Matrix triggered with "matrix" sequence:', keySequence); // Debug
                 keySequence = '';
@@ -1693,25 +1675,37 @@
             }
             
             // Then check for games (only if not navigating/loading)
-            if (!isNavigating && !pageJustLoaded && keySequence.length >= 4 && timeSinceLastKey < 500) {
-                if (keySequence.includes('pong')) {
-                    keySequence = '';
-                    showPongGame();
-                } else if (keySequence.includes('snake')) {
-                    keySequence = '';
-                    showSnakeGame();
-                } else if (keySequence.includes('mario')) {
-                    keySequence = '';
-                    showMarioGame();
-                } else if (keySequence.includes('break')) {
-                    keySequence = '';
-                    showBreakoutGame();
+            if (!isNavigating && !pageJustLoaded) {
+                const currentTime = Date.now();
+                const timeSinceLastKey = currentTime - lastKeyTime;
+                
+                // Only trigger games if keys are pressed intentionally (fast typing)
+                if (keySequence.length >= 4 && timeSinceLastKey < 500) {
+                    if (keySequence.includes('pong')) {
+                        keySequence = '';
+                        showPongGame();
+                        return;
+                    } else if (keySequence.includes('snake')) {
+                        keySequence = '';
+                        showSnakeGame();
+                        return;
+                    } else if (keySequence.includes('mario')) {
+                        keySequence = '';
+                        showMarioGame();
+                        return;
+                    } else if (keySequence.includes('break')) {
+                        keySequence = '';
+                        showBreakoutGame();
+                        return;
+                    }
                 }
             }
             
+            lastKeyTime = Date.now();
+            
             // Prevent sequence from getting too long
-            if (keySequence.length > 12) {
-                keySequence = keySequence.slice(-8);
+            if (keySequence.length > 15) {
+                keySequence = keySequence.slice(-10);
             }
         });
 
