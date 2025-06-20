@@ -968,12 +968,13 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <strong data-translate="projects.games.hidden">4 jeux cachés :</strong>
+                                    <strong data-translate="projects.games.hidden">4 jeux cachés + effet Matrix :</strong>
                                     <ul class="mt-2 mb-0" style="font-size: 0.9rem;">
                                         <li><strong>Pong</strong> - <span data-translate="projects.games.pong">Tapez "pong" pour jouer</span></li>
                                         <li><strong>Snake</strong> - <span data-translate="projects.games.snake">Tapez "snake" pour jouer</span></li>
                                         <li><strong>Mario</strong> - <span data-translate="projects.games.mario">Tapez "mario" pour jouer</span></li>
                                         <li><strong>Breakout</strong> - <span data-translate="projects.games.breakout">Tapez "break" pour jouer</span></li>
+                                        <li><strong>Matrix</strong> - <span data-translate="projects.games.matrix">Tapez "matrix" ou "neo"</span></li>
                                     </ul>
                                 </div>
                                 <div class="text-end">
@@ -1220,11 +1221,12 @@
                 'projects.morealerts.feature4': 'Gestion multi-entités et notifications personnalisables',
                 'projects.games.title': 'Portfolio Gaming Easter Eggs',
                 'projects.games.description': 'Collection de mini-jeux rétro intégrés directement dans ce portfolio ! Une approche créative pour rendre l\'expérience utilisateur plus interactive et amusante.',
-                'projects.games.hidden': '4 jeux cachés :',
+                'projects.games.hidden': '4 jeux cachés + effet Matrix :',
                 'projects.games.pong': 'Tapez "pong" pour jouer',
                 'projects.games.snake': 'Tapez "snake" pour jouer',
                 'projects.games.mario': 'Tapez "mario" pour jouer',
                 'projects.games.breakout': 'Tapez "break" pour jouer',
+                'projects.games.matrix': 'Tapez "matrix" ou "neo"',
                 'projects.games.discover': 'Découvrir',
                 'projects.games.tooltip': 'Essayez de taper \'pong\', \'snake\', \'mario\' ou \'break\' !',
                 'projects.view.code': 'Voir le code',
@@ -1269,11 +1271,12 @@
                 'projects.morealerts.feature4': 'Multi-entity management and customizable notifications',
                 'projects.games.title': 'Portfolio Gaming Easter Eggs',
                 'projects.games.description': 'Collection of retro mini-games integrated directly into this portfolio! A creative approach to make the user experience more interactive and fun.',
-                'projects.games.hidden': '4 hidden games:',
+                'projects.games.hidden': '4 hidden games + Matrix effect:',
                 'projects.games.pong': 'Type "pong" to play',
                 'projects.games.snake': 'Type "snake" to play',
                 'projects.games.mario': 'Type "mario" to play',
                 'projects.games.breakout': 'Type "break" to play',
+                'projects.games.matrix': 'Type "matrix" or "neo"',
                 'projects.games.discover': 'Discover',
                 'projects.games.tooltip': 'Try typing \'pong\', \'snake\', \'mario\' or \'break\'!',
                 'projects.view.code': 'View code',
@@ -1318,11 +1321,12 @@
                 'projects.morealerts.feature4': 'Gestão multi-entidades e notificações personalizáveis',
                 'projects.games.title': 'Portfolio Gaming Easter Eggs',
                 'projects.games.description': 'Coleção de mini-jogos retrô integrados diretamente neste portfólio! Uma abordagem criativa para tornar a experiência do usuário mais interativa e divertida.',
-                'projects.games.hidden': '4 jogos ocultos:',
+                'projects.games.hidden': '4 jogos ocultos + efeito Matrix:',
                 'projects.games.pong': 'Digite "pong" para jogar',
                 'projects.games.snake': 'Digite "snake" para jogar',
                 'projects.games.mario': 'Digite "mario" para jogar',
                 'projects.games.breakout': 'Digite "break" para jogar',
+                'projects.games.matrix': 'Digite "matrix" ou "neo"',
                 'projects.games.discover': 'Descobrir',
                 'projects.games.tooltip': 'Tente digitar \'pong\', \'snake\', \'mario\' ou \'break\'!',
                 'projects.view.code': 'Ver código',
@@ -1450,13 +1454,22 @@
         let matrixAnimation;
         
         function startMatrixEffect() {
+            console.log('Starting Matrix effect...'); // Debug log
             const overlay = document.getElementById('matrix-overlay');
             const canvas = document.getElementById('matrix-canvas');
+            
+            if (!overlay || !canvas) {
+                console.error('Matrix elements not found!');
+                return;
+            }
+            
             const ctx = canvas.getContext('2d');
             
             overlay.style.display = 'block';
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            
+            console.log(`Canvas size: ${canvas.width}x${canvas.height}`); // Debug log
             
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
             const fontSize = 14;
@@ -1479,6 +1492,11 @@
                     }
                     drops[i]++;
                 }
+            }
+            
+            // Clear any existing animation
+            if (matrixAnimation) {
+                clearInterval(matrixAnimation);
             }
             
             matrixAnimation = setInterval(draw, 33);
@@ -1658,9 +1676,19 @@
                 keySequence = '';
             }, 1500);
 
-            // Only check for easter eggs if sequence is intentional (very rapid typing)
-            if (keySequence.length >= 4 && timeSinceLastKey < 300) {
-                // Available easter eggs: games and matrix effect
+            // Only check for easter eggs if sequence is intentional
+            // Matrix effect has more lenient conditions (can be typed slower)
+            if (keySequence.includes('matrix') && keySequence.length >= 6) {
+                console.log('Matrix triggered with sequence:', keySequence); // Debug
+                keySequence = '';
+                startMatrixEffect();
+            } else if (keySequence.includes('neo') && keySequence.length >= 3) {
+                // Alternative trigger for Matrix effect
+                console.log('Matrix triggered with "neo" sequence:', keySequence); // Debug
+                keySequence = '';
+                startMatrixEffect();
+            } else if (keySequence.length >= 4 && timeSinceLastKey < 300) {
+                // Available easter eggs: games (require rapid typing)
                 if (keySequence.includes('pong')) {
                     keySequence = '';
                     showPongGame();
@@ -1673,9 +1701,6 @@
                 } else if (keySequence.includes('break')) {
                     keySequence = '';
                     showBreakoutGame();
-                } else if (keySequence.includes('matrix')) {
-                    keySequence = '';
-                    startMatrixEffect();
                 }
             }
             
