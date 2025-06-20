@@ -280,100 +280,7 @@
             z-index: 10001;
             text-shadow: 0 0 10px #0f0;
         }
-        
-        /* Ouzbek Special Overlay */
-        #ouzbek-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 10003;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        #ouzbek-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        #ouzbek-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            z-index: 10004;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        #ouzbek-overlay:hover #ouzbek-close {
-            opacity: 1;
-        }
-        
-        /* Rick Roll Overlay */
-        #rickroll-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 10001;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        #rickroll-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        #rickroll-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            z-index: 10002;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        #rickroll-overlay:hover #rickroll-close {
-            opacity: 1;
-        }
-        
-        #rickroll-message {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            animation: rickrollPulse 2s infinite;
-            z-index: 10002;
-        }
-        
-        @keyframes rickrollPulse {
-            0%, 100% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.1); }
-        }
-        
+
         [data-theme="dark"] .github-stats {
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
@@ -394,6 +301,15 @@
             font-size: 0.9rem;
             color: var(--text-color);
             opacity: 0.7;
+        }
+        
+        .api-notice {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .social-links {
@@ -1198,32 +1114,6 @@
         <div id="matrix-close" style="position: absolute; top: 20px; right: 30px; color: #0f0; font-size: 2rem; cursor: pointer; z-index: 10001;">&times;</div>
     </div>
 
-    <!-- Ouzbek Special Overlay -->
-    <div id="ouzbek-overlay">
-        <div id="ouzbek-close">&times;</div>
-        <iframe id="ouzbek-video" 
-                src="https://www.youtube.com/embed/mO7ktQwx-b8?autoplay=1&mute=0&loop=1&playlist=mO7ktQwx-b8&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&start=0" 
-                frameborder="0" 
-                allow="autoplay; encrypted-media" 
-                allowfullscreen>
-        </iframe>
-    </div>
-
-    <!-- Rick Roll Overlay -->
-    <div id="rickroll-overlay">
-        <div id="rickroll-close">&times;</div>
-        <iframe id="rickroll-video" 
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&loop=1&playlist=dQw4w9WgXcQ&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&start=0" 
-                frameborder="0" 
-                allow="autoplay; encrypted-media" 
-                allowfullscreen>
-        </iframe>
-        <div id="rickroll-message">
-            🎵 Never gonna give you up! 🎵<br>
-            <small style="font-size: 1rem; opacity: 0.8;">Tapez des mots plus sympas la prochaine fois ! 😉</small>
-        </div>
-    </div>
-
     <!-- Easter Egg: Pong Game -->
     <div id="pong-overlay">
         <div id="pong-close">&times;</div>
@@ -1348,7 +1238,8 @@
                 'contact.intro': 'Vous voulez échanger ? Retrouvez-moi sur mes réseaux sociaux !',
                 'contact.message': 'N\'hésitez pas à me contacter pour discuter de projets, d\'idées ou tout simplement pour échanger !',
                 'footer.copyright': '© 2025 João. Tous droits réservés. Fait avec',
-                'footer.made': 'et Bootstrap.'
+                'footer.made': 'et Bootstrap.',
+                'github.api.unavailable': 'Statistiques approximatives (API temporairement indisponible)'
             },
             en: {
                 'nav.brand': 'João',
@@ -1396,7 +1287,8 @@
                 'contact.intro': 'Want to chat? Find me on my social networks!',
                 'contact.message': 'Feel free to contact me to discuss projects, ideas or just to chat!',
                 'footer.copyright': '© 2025 João. All rights reserved. Made with',
-                'footer.made': 'and Bootstrap.'
+                'footer.made': 'and Bootstrap.',
+                'github.api.unavailable': 'Approximate statistics (API temporarily unavailable)'
             },
             pt: {
                 'nav.brand': 'João',
@@ -1444,7 +1336,8 @@
                 'contact.intro': 'Quer conversar? Me encontre nas minhas redes sociais!',
                 'contact.message': 'Não hesite em me contatar para discutir projetos, ideias ou apenas para conversar!',
                 'footer.copyright': '© 2025 João. Todos os direitos reservados. Feito com',
-                'footer.made': 'e Bootstrap.'
+                'footer.made': 'e Bootstrap.',
+                'github.api.unavailable': 'Estatísticas aproximadas (API temporariamente indisponível)'
             }
         };
 
@@ -1504,20 +1397,52 @@
         async function loadGitHubStats() {
             try {
                 const response = await fetch('https://api.github.com/users/oaojfr');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                
+                // Check if we got actual data and not an error message
+                if (data.message) {
+                    throw new Error(data.message);
+                }
                 
                 document.getElementById('github-repos').textContent = data.public_repos || 0;
                 document.getElementById('github-followers').textContent = data.followers || 0;
                 document.getElementById('github-following').textContent = data.following || 0;
                 
                 // Get gists count
-                const gistsResponse = await fetch('https://api.github.com/users/oaojfr/gists');
-                const gistsData = await gistsResponse.json();
-                document.getElementById('github-gists').textContent = gistsData.length || 0;
+                try {
+                    const gistsResponse = await fetch('https://api.github.com/users/oaojfr/gists');
+                    if (gistsResponse.ok) {
+                        const gistsData = await gistsResponse.json();
+                        document.getElementById('github-gists').textContent = Array.isArray(gistsData) ? gistsData.length : 0;
+                    } else {
+                        document.getElementById('github-gists').textContent = '0';
+                    }
+                } catch (gistError) {
+                    document.getElementById('github-gists').textContent = '0';
+                }
                 
             } catch (error) {
-                console.log('Could not load GitHub stats:', error);
-                // Keep default values if API fails
+                console.log('Could not load GitHub stats:', error.message);
+                
+                // Set fallback values when API is not available
+                document.getElementById('github-repos').textContent = '15+';
+                document.getElementById('github-followers').textContent = '10+';
+                document.getElementById('github-following').textContent = '20+';
+                document.getElementById('github-gists').textContent = '5+';
+                
+                // Add a subtle indication that stats are estimated
+                const statsContainer = document.getElementById('github-stats-container');
+                if (statsContainer && !statsContainer.querySelector('.api-notice')) {
+                    const notice = document.createElement('div');
+                    notice.className = 'api-notice text-center mt-2';
+                    notice.innerHTML = `<small class="text-muted opacity-75"><i class="bi bi-info-circle me-1"></i><span data-translate="github.api.unavailable">${translations[currentLanguage]['github.api.unavailable'] || 'Statistiques approximatives (API temporairement indisponible)'}</span></small>`;
+                    statsContainer.appendChild(notice);
+                }
             }
         }
 
@@ -1569,38 +1494,6 @@
             overlay.style.display = 'none';
             clearInterval(matrixAnimation);
         }
-        
-        // Ouzbek special effect
-        function startOuzbekSpecial() {
-            const overlay = document.getElementById('ouzbek-overlay');
-            overlay.style.display = 'flex';
-            
-            // Auto close after 45 seconds
-            setTimeout(() => {
-                closeOuzbekSpecial();
-            }, 45000);
-        }
-        
-        function closeOuzbekSpecial() {
-            const overlay = document.getElementById('ouzbek-overlay');
-            overlay.style.display = 'none';
-        }
-
-        // Rick Roll effect
-        function startRickRoll() {
-            const overlay = document.getElementById('rickroll-overlay');
-            overlay.style.display = 'flex';
-            
-            // Auto close after 30 seconds (mercy!)
-            setTimeout(() => {
-                closeRickRoll();
-            }, 30000);
-        }
-        
-        function closeRickRoll() {
-            const overlay = document.getElementById('rickroll-overlay');
-            overlay.style.display = 'none';
-        }
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -1622,20 +1515,12 @@
             // Matrix close button
             document.getElementById('matrix-close').addEventListener('click', closeMatrixEffect);
             
-            // Rick Roll close button
-            document.getElementById('rickroll-close').addEventListener('click', closeRickRoll);
-            
-            // Ouzbek close button
-            document.getElementById('ouzbek-close').addEventListener('click', closeOuzbekSpecial);
-            
             // Close overlays on Escape key
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
-                    if (document.getElementById('rickroll-overlay').style.display === 'flex') {
-                        closeRickRoll();
-                    }
-                    if (document.getElementById('ouzbek-overlay').style.display === 'flex') {
-                        closeOuzbekSpecial();
+                    // Only Matrix overlay can be closed with Escape now
+                    if (document.getElementById('matrix-overlay').style.display === 'block') {
+                        closeMatrixEffect();
                     }
                 }
             });
@@ -1775,7 +1660,7 @@
 
             // Only check for easter eggs if sequence is intentional (very rapid typing)
             if (keySequence.length >= 4 && timeSinceLastKey < 300) {
-                // Game easter eggs only (removed Rick Roll and Ouzbek triggers)
+                // Available easter eggs: games and matrix effect
                 if (keySequence.includes('pong')) {
                     keySequence = '';
                     showPongGame();
@@ -1792,14 +1677,6 @@
                     keySequence = '';
                     startMatrixEffect();
                 }
-                // Temporarily disabled to prevent accidental triggers:
-                // } else if (keySequence.includes('ouzbek')) {
-                //     keySequence = '';
-                //     startOuzbekSpecial();
-                // } else if (keySequence.includes('nul') || keySequence.includes('nullos') || keySequence.includes('naze') || keySequence.includes('pourri')) {
-                //     keySequence = '';
-                //     startRickRoll();
-                // }
             }
             
             // Prevent sequence from getting too long
