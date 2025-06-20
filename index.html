@@ -194,6 +194,54 @@
             transform: translateY(-3px);
         }
         
+        /* Easter Egg Pong Game Styles */
+        #pong-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #pong-canvas {
+            border: 2px solid #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        #pong-instructions {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #pong-score {
+            color: white;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #pong-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        #pong-close:hover {
+            color: #ff6b6b;
+        }
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -398,6 +446,18 @@
         </div>
     </footer>
 
+    <!-- Easter Egg: Pong Game -->
+    <div id="pong-overlay">
+        <div id="pong-close">&times;</div>
+        <div id="pong-instructions">
+            <h3>🎮 Easter Egg: Pong Game!</h3>
+            <p>Utilisez W/S pour le joueur gauche, ↑/↓ pour le joueur droit</p>
+            <p>Premier à 5 points gagne!</p>
+        </div>
+        <canvas id="pong-canvas" width="800" height="400"></canvas>
+        <div id="pong-score">Joueur 1: <span id="score1">0</span> | Joueur 2: <span id="score2">0</span></div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -449,6 +509,220 @@
             card.style.transition = 'all 0.6s ease';
             observer.observe(card);
         });
+
+        // Easter Egg: Pong Game
+        let easterEggSequence = [];
+        const secretCode = ['p', 'o', 'n', 'g'];
+        let gameRunning = false;
+
+        // Listen for secret key sequence
+        document.addEventListener('keydown', function(e) {
+            if (gameRunning) return;
+            
+            easterEggSequence.push(e.key.toLowerCase());
+            
+            // Keep only the last 4 keys
+            if (easterEggSequence.length > secretCode.length) {
+                easterEggSequence.shift();
+            }
+            
+            // Check if sequence matches
+            if (easterEggSequence.length === secretCode.length && 
+                easterEggSequence.every((key, index) => key === secretCode[index])) {
+                startPongGame();
+                easterEggSequence = [];
+            }
+        });
+
+        function startPongGame() {
+            const overlay = document.getElementById('pong-overlay');
+            const canvas = document.getElementById('pong-canvas');
+            const ctx = canvas.getContext('2d');
+            const score1 = document.getElementById('score1');
+            const score2 = document.getElementById('score2');
+            const closeBtn = document.getElementById('pong-close');
+            
+            overlay.style.display = 'flex';
+            gameRunning = true;
+            
+            // Game objects
+            const ball = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 10,
+                velocityX: 5,
+                velocityY: 3,
+                color: '#667eea'
+            };
+            
+            const paddle1 = {
+                x: 10,
+                y: canvas.height / 2 - 50,
+                width: 10,
+                height: 100,
+                color: '#ff6b6b',
+                score: 0
+            };
+            
+            const paddle2 = {
+                x: canvas.width - 20,
+                y: canvas.height / 2 - 50,
+                width: 10,
+                height: 100,
+                color: '#4ecdc4',
+                score: 0
+            };
+            
+            // Controls
+            const keys = {};
+            
+            function handleKeyDown(e) {
+                keys[e.key] = true;
+            }
+            
+            function handleKeyUp(e) {
+                keys[e.key] = false;
+            }
+            
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+            
+            function updatePaddles() {
+                // Player 1 (W/S)
+                if (keys['w'] || keys['W']) {
+                    paddle1.y = Math.max(0, paddle1.y - 7);
+                }
+                if (keys['s'] || keys['S']) {
+                    paddle1.y = Math.min(canvas.height - paddle1.height, paddle1.y + 7);
+                }
+                
+                // Player 2 (Arrow keys)
+                if (keys['ArrowUp']) {
+                    paddle2.y = Math.max(0, paddle2.y - 7);
+                }
+                if (keys['ArrowDown']) {
+                    paddle2.y = Math.min(canvas.height - paddle2.height, paddle2.y + 7);
+                }
+            }
+            
+            function updateBall() {
+                ball.x += ball.velocityX;
+                ball.y += ball.velocityY;
+                
+                // Top and bottom walls
+                if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+                    ball.velocityY = -ball.velocityY;
+                }
+                
+                // Paddle collisions
+                if (ball.x - ball.radius < paddle1.x + paddle1.width &&
+                    ball.y > paddle1.y && ball.y < paddle1.y + paddle1.height) {
+                    ball.velocityX = Math.abs(ball.velocityX);
+                    ball.velocityY += (Math.random() - 0.5) * 2;
+                }
+                
+                if (ball.x + ball.radius > paddle2.x &&
+                    ball.y > paddle2.y && ball.y < paddle2.y + paddle2.height) {
+                    ball.velocityX = -Math.abs(ball.velocityX);
+                    ball.velocityY += (Math.random() - 0.5) * 2;
+                }
+                
+                // Scoring
+                if (ball.x < 0) {
+                    paddle2.score++;
+                    resetBall();
+                }
+                if (ball.x > canvas.width) {
+                    paddle1.score++;
+                    resetBall();
+                }
+                
+                // Update score display
+                score1.textContent = paddle1.score;
+                score2.textContent = paddle2.score;
+                
+                // Check win condition
+                if (paddle1.score >= 5 || paddle2.score >= 5) {
+                    const winner = paddle1.score >= 5 ? 'Joueur 1' : 'Joueur 2';
+                    setTimeout(() => {
+                        alert(`🎉 ${winner} gagne!`);
+                        closePongGame();
+                    }, 100);
+                }
+            }
+            
+            function resetBall() {
+                ball.x = canvas.width / 2;
+                ball.y = canvas.height / 2;
+                ball.velocityX = (Math.random() > 0.5 ? 1 : -1) * 5;
+                ball.velocityY = (Math.random() - 0.5) * 6;
+            }
+            
+            function draw() {
+                // Clear canvas
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw center line
+                ctx.setLineDash([5, 15]);
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.strokeStyle = '#667eea';
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // Draw paddles
+                ctx.fillStyle = paddle1.color;
+                ctx.fillRect(paddle1.x, paddle1.y, paddle1.width, paddle1.height);
+                
+                ctx.fillStyle = paddle2.color;
+                ctx.fillRect(paddle2.x, paddle2.y, paddle2.width, paddle2.height);
+                
+                // Draw ball
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fillStyle = ball.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+            
+            function gameLoop() {
+                if (!gameRunning) return;
+                
+                updatePaddles();
+                updateBall();
+                draw();
+                
+                requestAnimationFrame(gameLoop);
+            }
+            
+            function closePongGame() {
+                gameRunning = false;
+                overlay.style.display = 'none';
+                paddle1.score = 0;
+                paddle2.score = 0;
+                score1.textContent = '0';
+                score2.textContent = '0';
+                document.removeEventListener('keydown', handleKeyDown);
+                document.removeEventListener('keyup', handleKeyUp);
+            }
+            
+            // Close button event
+            closeBtn.onclick = closePongGame;
+            
+            // ESC key to close
+            function handleEscape(e) {
+                if (e.key === 'Escape') {
+                    closePongGame();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            }
+            document.addEventListener('keydown', handleEscape);
+            
+            // Start the game loop
+            gameLoop();
+        }
     </script>
 </body>
 </html>
