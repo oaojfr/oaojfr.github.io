@@ -1437,19 +1437,6 @@
             const overlay = document.getElementById('ouzbek-overlay');
             overlay.style.display = 'flex';
             
-            // Enter fullscreen if possible
-            if (overlay.requestFullscreen) {
-                overlay.requestFullscreen().catch(err => {
-                    console.log('Fullscreen failed:', err);
-                });
-            } else if (overlay.webkitRequestFullscreen) {
-                overlay.webkitRequestFullscreen();
-            } else if (overlay.msRequestFullscreen) {
-                overlay.msRequestFullscreen();
-            } else if (overlay.mozRequestFullScreen) {
-                overlay.mozRequestFullScreen();
-            }
-            
             // Auto close after 45 seconds
             setTimeout(() => {
                 closeOuzbekSpecial();
@@ -1459,36 +1446,12 @@
         function closeOuzbekSpecial() {
             const overlay = document.getElementById('ouzbek-overlay');
             overlay.style.display = 'none';
-            
-            // Exit fullscreen
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else if (document.webkitFullscreenElement) {
-                document.webkitExitFullscreen();
-            } else if (document.msFullscreenElement) {
-                document.msExitFullscreen();
-            } else if (document.mozFullScreenElement) {
-                document.mozCancelFullScreen();
-            }
         }
 
         // Rick Roll effect
         function startRickRoll() {
             const overlay = document.getElementById('rickroll-overlay');
             overlay.style.display = 'flex';
-            
-            // Enter fullscreen if possible
-            if (overlay.requestFullscreen) {
-                overlay.requestFullscreen().catch(err => {
-                    console.log('Fullscreen failed:', err);
-                });
-            } else if (overlay.webkitRequestFullscreen) {
-                overlay.webkitRequestFullscreen();
-            } else if (overlay.msRequestFullscreen) {
-                overlay.msRequestFullscreen();
-            } else if (overlay.mozRequestFullScreen) {
-                overlay.mozRequestFullScreen();
-            }
             
             // Auto close after 30 seconds (mercy!)
             setTimeout(() => {
@@ -1499,17 +1462,6 @@
         function closeRickRoll() {
             const overlay = document.getElementById('rickroll-overlay');
             overlay.style.display = 'none';
-            
-            // Exit fullscreen
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else if (document.webkitFullscreenElement) {
-                document.webkitExitFullscreen();
-            } else if (document.msFullscreenElement) {
-                document.msExitFullscreen();
-            } else if (document.mozFullScreenElement) {
-                document.mozCancelFullScreen();
-            }
         }
 
         // Initialize on page load
