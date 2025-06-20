@@ -386,6 +386,33 @@
         .tool-card:nth-child(2) { animation-delay: 0.2s; }
         .tool-card:nth-child(3) { animation-delay: 0.3s; }
         .tool-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        /* Matrix Effect */
+        #matrix-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: none;
+        }
+        
+        #matrix-canvas {
+            display: block;
+        }
+        
+        #matrix-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #0f0;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10001;
+            text-shadow: 0 0 10px #0f0;
+        }
 
         @media (max-width: 768px) {
             .tools-header h1 {
@@ -591,6 +618,12 @@
         </div>
     </section>
 
+    <!-- Matrix Effect Overlay -->
+    <div id="matrix-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none;">
+        <canvas id="matrix-canvas"></canvas>
+        <div id="matrix-close" style="position: absolute; top: 20px; right: 30px; color: #0f0; font-size: 2rem; cursor: pointer; z-index: 10001;">&times;</div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -782,6 +815,129 @@
             if (savedLanguage !== 'fr') {
                 switchLanguage(savedLanguage);
             }
+        });
+        
+        // Matrix effect
+        let matrixAnimation;
+        
+        function startMatrixEffect() {
+            console.log('Starting Matrix effect...'); // Debug log
+            const overlay = document.getElementById('matrix-overlay');
+            const canvas = document.getElementById('matrix-canvas');
+            
+            if (!overlay || !canvas) {
+                console.error('Matrix elements not found!');
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            
+            overlay.style.display = 'block';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            console.log(`Canvas size: ${canvas.width}x${canvas.height}`); // Debug log
+            
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+            const fontSize = 14;
+            const columns = canvas.width / fontSize;
+            const drops = Array(Math.floor(columns)).fill(1);
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#0f0';
+                ctx.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            // Clear any existing animation
+            if (matrixAnimation) {
+                clearInterval(matrixAnimation);
+            }
+            
+            matrixAnimation = setInterval(draw, 33);
+            
+            // Auto close after 10 seconds
+            setTimeout(() => {
+                closeMatrixEffect();
+            }, 10000);
+        }
+        
+        function closeMatrixEffect() {
+            const overlay = document.getElementById('matrix-overlay');
+            overlay.style.display = 'none';
+            clearInterval(matrixAnimation);
+        }
+        
+        // Matrix detection
+        let keySequence = '';
+        let sequenceTimeout;
+        
+        document.addEventListener('keypress', function(e) {
+            // Only count letters and numbers
+            if (!/[a-zA-Z0-9]/.test(e.key)) {
+                return;
+            }
+            
+            // Ignore if user is likely typing in an input field
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+                return;
+            }
+            
+            keySequence += e.key.toLowerCase();
+            console.log('Current key sequence:', keySequence); // Debug log
+            
+            clearTimeout(sequenceTimeout);
+            sequenceTimeout = setTimeout(() => {
+                keySequence = '';
+            }, 3000);
+
+            // Check for Matrix effect
+            if (keySequence.includes('matrix')) {
+                console.log('Matrix triggered with "matrix" sequence:', keySequence); // Debug
+                keySequence = '';
+                startMatrixEffect();
+                return;
+            } else if (keySequence.includes('neo')) {
+                console.log('Matrix triggered with "neo" sequence:', keySequence); // Debug
+                keySequence = '';
+                startMatrixEffect();
+                return;
+            }
+            
+            // Prevent sequence from getting too long
+            if (keySequence.length > 15) {
+                keySequence = keySequence.slice(-10);
+            }
+        });
+        
+        // Matrix close button and Escape key
+        document.addEventListener('DOMContentLoaded', function() {
+            // Matrix close button
+            const matrixCloseBtn = document.getElementById('matrix-close');
+            if (matrixCloseBtn) {
+                matrixCloseBtn.addEventListener('click', closeMatrixEffect);
+            }
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('matrix-overlay').style.display === 'block') {
+                        closeMatrixEffect();
+                    }
+                }
+            });
         });
     </script>
     

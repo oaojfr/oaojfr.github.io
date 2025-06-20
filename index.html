@@ -1643,8 +1643,19 @@
         });
 
         document.addEventListener('keypress', function(e) {
-            // Don't trigger during navigation, page loading, or first few seconds
-            if (isNavigating || pageJustLoaded) {
+            // Only count letters and numbers
+            if (!/[a-zA-Z0-9]/.test(e.key)) {
+                return;
+            }
+            
+            // Ignore if user is likely typing in an input field
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+                return;
+            }
+
+            // For Matrix effect, allow activation even during navigation or page load
+            // For games, block during navigation/loading
+            if ((isNavigating || pageJustLoaded) && !e.key.toLowerCase().match(/[mnatoeix]/)) {
                 return;
             }
 
@@ -1658,16 +1669,6 @@
                 return;
             }
             
-            // Only count letters and numbers
-            if (!/[a-zA-Z0-9]/.test(e.key)) {
-                return;
-            }
-            
-            // Ignore if user is likely typing in an input field
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
-                return;
-            }
-            
             keySequence += e.key.toLowerCase();
             lastKeyTime = currentTime;
             
@@ -1678,7 +1679,7 @@
                 keySequence = '';
             }, 3000);
 
-            // Check for Matrix effect first (more lenient conditions)
+            // Check for Matrix effect first (always available)
             if (keySequence.includes('matrix')) {
                 console.log('Matrix triggered with "matrix" sequence:', keySequence); // Debug
                 keySequence = '';
@@ -1691,8 +1692,8 @@
                 return;
             }
             
-            // Then check for games (require rapid typing)
-            if (keySequence.length >= 4 && timeSinceLastKey < 500) {
+            // Then check for games (only if not navigating/loading)
+            if (!isNavigating && !pageJustLoaded && keySequence.length >= 4 && timeSinceLastKey < 500) {
                 if (keySequence.includes('pong')) {
                     keySequence = '';
                     showPongGame();
