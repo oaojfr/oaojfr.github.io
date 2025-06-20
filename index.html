@@ -1648,12 +1648,12 @@
                 return;
             }
 
-            // Only trigger if keys are pressed rapidly (intentional typing)
+            // Only trigger if keys are pressed (intentional typing)
             const currentTime = Date.now();
             const timeSinceLastKey = currentTime - lastKeyTime;
             
-            // Reset sequence if too much time has passed or if it's a navigation key
-            if (timeSinceLastKey > 2000 || e.key === 'Enter' || e.key === ' ') {
+            // Reset sequence if too much time has passed (but more lenient for Matrix)
+            if (timeSinceLastKey > 5000 || e.key === 'Enter' || e.key === ' ') {
                 keySequence = '';
                 return;
             }
@@ -1671,24 +1671,28 @@
             keySequence += e.key.toLowerCase();
             lastKeyTime = currentTime;
             
+            console.log('Current key sequence:', keySequence); // Debug log
+            
             clearTimeout(sequenceTimeout);
             sequenceTimeout = setTimeout(() => {
                 keySequence = '';
-            }, 1500);
+            }, 3000);
 
-            // Only check for easter eggs if sequence is intentional
-            // Matrix effect has more lenient conditions (can be typed slower)
-            if (keySequence.includes('matrix') && keySequence.length >= 6) {
-                console.log('Matrix triggered with sequence:', keySequence); // Debug
+            // Check for Matrix effect first (more lenient conditions)
+            if (keySequence.includes('matrix')) {
+                console.log('Matrix triggered with "matrix" sequence:', keySequence); // Debug
                 keySequence = '';
                 startMatrixEffect();
-            } else if (keySequence.includes('neo') && keySequence.length >= 3) {
-                // Alternative trigger for Matrix effect
+                return;
+            } else if (keySequence.includes('neo')) {
                 console.log('Matrix triggered with "neo" sequence:', keySequence); // Debug
                 keySequence = '';
                 startMatrixEffect();
-            } else if (keySequence.length >= 4 && timeSinceLastKey < 300) {
-                // Available easter eggs: games (require rapid typing)
+                return;
+            }
+            
+            // Then check for games (require rapid typing)
+            if (keySequence.length >= 4 && timeSinceLastKey < 500) {
                 if (keySequence.includes('pong')) {
                     keySequence = '';
                     showPongGame();
