@@ -281,13 +281,60 @@
             text-shadow: 0 0 10px #0f0;
         }
         
-        /* GitHub Stats */
-        .github-stats {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-top: 30px;
+        /* Rick Roll Overlay */
+        #rickroll-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10001;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #rickroll-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        #rickroll-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10002;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        #rickroll-overlay:hover #rickroll-close {
+            opacity: 1;
+        }
+        
+        #rickroll-message {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            animation: rickrollPulse 2s infinite;
+            z-index: 10002;
+        }
+        
+        @keyframes rickrollPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.1); }
         }
         
         [data-theme="dark"] .github-stats {
@@ -994,10 +1041,19 @@
         </div>
     </footer>
 
-    <!-- Matrix Effect Overlay -->
-    <div id="matrix-overlay">
-        <div id="matrix-close">&times;</div>
-        <canvas id="matrix-canvas"></canvas>
+    <!-- Rick Roll Overlay -->
+    <div id="rickroll-overlay">
+        <div id="rickroll-close">&times;</div>
+        <iframe id="rickroll-video" 
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&loop=1&playlist=dQw4w9WgXcQ&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3" 
+                frameborder="0" 
+                allow="autoplay; encrypted-media" 
+                allowfullscreen>
+        </iframe>
+        <div id="rickroll-message">
+            🎵 Never gonna give you up! 🎵<br>
+            <small style="font-size: 1rem; opacity: 0.8;">Tapez des mots plus sympas la prochaine fois ! 😉</small>
+        </div>
     </div>
 
     <!-- Easter Egg: Pong Game -->
@@ -1328,10 +1384,43 @@
             }, 10000);
         }
         
-        function closeMatrixEffect() {
-            document.getElementById('matrix-overlay').style.display = 'none';
-            if (matrixAnimation) {
-                clearInterval(matrixAnimation);
+        // Rick Roll effect
+        function startRickRoll() {
+            const overlay = document.getElementById('rickroll-overlay');
+            overlay.style.display = 'flex';
+            
+            // Enter fullscreen if possible
+            if (overlay.requestFullscreen) {
+                overlay.requestFullscreen().catch(err => {
+                    console.log('Fullscreen failed:', err);
+                });
+            } else if (overlay.webkitRequestFullscreen) {
+                overlay.webkitRequestFullscreen();
+            } else if (overlay.msRequestFullscreen) {
+                overlay.msRequestFullscreen();
+            } else if (overlay.mozRequestFullScreen) {
+                overlay.mozRequestFullScreen();
+            }
+            
+            // Auto close after 30 seconds (mercy!)
+            setTimeout(() => {
+                closeRickRoll();
+            }, 30000);
+        }
+        
+        function closeRickRoll() {
+            const overlay = document.getElementById('rickroll-overlay');
+            overlay.style.display = 'none';
+            
+            // Exit fullscreen
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else if (document.webkitFullscreenElement) {
+                document.webkitExitFullscreen();
+            } else if (document.msFullscreenElement) {
+                document.msExitFullscreen();
+            } else if (document.mozFullScreenElement) {
+                document.mozCancelFullScreen();
             }
         }
 
@@ -1354,6 +1443,16 @@
             
             // Matrix close button
             document.getElementById('matrix-close').addEventListener('click', closeMatrixEffect);
+            
+            // Rick Roll close button
+            document.getElementById('rickroll-close').addEventListener('click', closeRickRoll);
+            
+            // Close rick roll on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('rickroll-overlay').style.display === 'flex') {
+                    closeRickRoll();
+                }
+            });
         });
 
         // Existing code for smooth scrolling and animations
@@ -1435,6 +1534,9 @@
             } else if (keySequence.includes('matrix')) {
                 keySequence = '';
                 startMatrixEffect();
+            } else if (keySequence.includes('nul') || keySequence.includes('ouzbek') || keySequence.includes('nullos') || keySequence.includes('naze') || keySequence.includes('pourri')) {
+                keySequence = '';
+                startRickRoll();
             }
         });
     </script>
