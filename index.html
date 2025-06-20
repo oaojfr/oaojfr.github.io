@@ -3,10 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>João</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>João - Développeur & Créateur d'Expériences Numériques</title>
+    <meta name="description" content="Portfolio de João - Développeur passionné par la création d'expériences numériques exceptionnelles. Découvrez mes projets, jeux interactifs et outils pratiques.">
+    <meta name="keywords" content="João, développeur, portfolio, développement web, GLPI, PHP, JavaScript, jeux rétro, outils en ligne, programmation">
+    <meta name="author" content="João">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="fr">
+    <link rel="canonical" href="https://oaojfr.github.io/">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+    
+    <!-- Alternate language versions -->
+    <link rel="alternate" href="https://oaojfr.github.io/" hreflang="fr">
+    <link rel="alternate" href="https://oaojfr.github.io/" hreflang="en">
+    <link rel="alternate" href="https://oaojfr.github.io/" hreflang="pt">
+    <link rel="alternate" href="https://oaojfr.github.io/" hreflang="x-default">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://oaojfr.github.io/">
+    <meta property="og:title" content="João - Développeur & Créateur d'Expériences Numériques">
+    <meta property="og:description" content="Portfolio de João - Développeur passionné par la création d'expériences numériques exceptionnelles. Découvrez mes projets, jeux interactifs et outils pratiques.">
+    <meta property="og:image" content="https://oaojfr.github.io/preview.jpg">
+    <meta property="og:site_name" content="João Portfolio">
+    <meta property="og:locale" content="fr_FR">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://oaojfr.github.io/">
+    <meta property="twitter:title" content="João - Développeur & Créateur d'Expériences Numériques">
+    <meta property="twitter:description" content="Portfolio de João - Développeur passionné par la création d'expériences numériques exceptionnelles. Découvrez mes projets, jeux interactifs et outils pratiques.">
+    <meta property="twitter:image" content="https://oaojfr.github.io/preview.jpg">
+    
+    <!-- Additional SEO -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="application-name" content="João Portfolio">
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,6 +51,62 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "João",
+        "alternateName": "oaojfr",
+        "description": "Développeur passionné par la création d'expériences numériques exceptionnelles",
+        "url": "https://oaojfr.github.io/",
+        "image": "https://oaojfr.github.io/preview.jpg",
+        "sameAs": [
+            "https://github.com/oaojfr",
+            "https://bsky.app/profile/oaoj.fr"
+        ],
+        "jobTitle": "Développeur",
+        "worksFor": {
+            "@type": "Organization",
+            "name": "Freelance"
+        },
+        "knowsAbout": [
+            "Développement Web",
+            "JavaScript",
+            "PHP",
+            "GLPI",
+            "Game Development",
+            "Frontend Development",
+            "Backend Development"
+        ],
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://oaojfr.github.io/"
+        }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "João Portfolio",
+        "description": "Portfolio professionnel de João - Développeur et créateur d'expériences numériques",
+        "url": "https://oaojfr.github.io/",
+        "author": {
+            "@type": "Person",
+            "name": "João"
+        },
+        "inLanguage": ["fr", "en", "pt"],
+        "isAccessibleForFree": true,
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://oaojfr.github.io/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
     
     <style>
         :root {
@@ -201,6 +294,64 @@
             font-size: 2rem;
             margin-bottom: 15px;
             color: #ff6b6b;
+        }
+        
+        .bitcoin-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .bitcoin-icon {
+            font-size: 2.5rem;
+            color: #f7931a;
+            margin-bottom: 15px;
+        }
+        
+        .bitcoin-address {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(45deg, #f7931a, #ff6b6b);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 147, 26, 0.3);
+        }
+        
+        .copy-feedback {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
         .footer {
@@ -821,9 +972,9 @@
                             Passionné par la création d'expériences numériques exceptionnelles<br>
                             et le développement de solutions innovantes.
                         </p>
-                        <a href="#projects" class="btn btn-custom btn-lg">
+                        <a href="#projects" class="btn btn-custom btn-lg" aria-label="Découvrir mes projets">
                             <span data-translate="hero.cta">Découvrir mes projets</span>
-                            <i class="bi bi-arrow-down ms-2"></i>
+                            <i class="bi bi-arrow-down ms-2" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -856,7 +1007,7 @@
                 <div class="col-lg-6">
                     <div class="about-image text-center">
                         <div class="d-inline-block p-5 rounded-circle" style="background: linear-gradient(45deg, #667eea, #764ba2); color: white;">
-                            <i class="bi bi-person-heart" style="font-size: 5rem;"></i>
+                            <i class="bi bi-person-heart" style="font-size: 5rem;" aria-hidden="true"></i>
                         </div>
                     </div>
                 </div>
@@ -938,8 +1089,8 @@
                                     </ul>
                                 </div>
                                 <div class="text-end">
-                                    <a href="https://github.com/oaojfr/morealerts" target="_blank" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-github me-1"></i><span data-translate="projects.view.code">Voir le code</span>
+                                    <a href="https://github.com/oaojfr/morealerts" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm" aria-label="Voir le code du projet MoreAlerts sur GitHub">
+                                        <i class="bi bi-github me-1" aria-hidden="true"></i><span data-translate="projects.view.code">Voir le code</span>
                                     </a>
                                 </div>
                             </div>
@@ -1048,10 +1199,10 @@
                             <div class="col-md-4 col-sm-6 mb-4">
                                 <div class="contact-item">
                                     <div class="contact-icon">
-                                        <i class="bi bi-github"></i>
+                                        <i class="bi bi-github" aria-hidden="true"></i>
                                     </div>
                                     <h4>GitHub</h4>
-                                    <a href="https://github.com/oaojfr" target="_blank" class="text-white text-decoration-none">
+                                    <a href="https://github.com/oaojfr" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-none" aria-label="Profil GitHub de João">
                                         @oaojfr
                                     </a>
                                 </div>
@@ -1059,10 +1210,10 @@
                             <div class="col-md-4 col-sm-6 mb-4">
                                 <div class="contact-item">
                                     <div class="contact-icon">
-                                        <i class="bi bi-cloud"></i>
+                                        <i class="bi bi-cloud" aria-hidden="true"></i>
                                     </div>
                                     <h4>Bluesky</h4>
-                                    <a href="https://bsky.app/profile/oaoj.fr" target="_blank" class="text-white text-decoration-none">
+                                    <a href="https://bsky.app/profile/oaoj.fr" target="_blank" rel="noopener noreferrer" class="text-white text-decoration-none" aria-label="Profil Bluesky de João">
                                         @oaoj.fr
                                     </a>
                                 </div>
@@ -1070,7 +1221,7 @@
                             <div class="col-md-4 col-sm-6 mb-4">
                                 <div class="contact-item">
                                     <div class="contact-icon">
-                                        <i class="bi bi-discord"></i>
+                                        <i class="bi bi-discord" aria-hidden="true"></i>
                                     </div>
                                     <h4>Discord</h4>
                                     <p class="mb-0">nethoria</p>
@@ -1083,6 +1234,28 @@
                                 <span data-translate="contact.message">N'hésitez pas à me contacter pour discuter de projets, d'idées ou tout simplement pour échanger !</span>
                             </p>
                         </div>
+                        
+                        <!-- Bitcoin Section -->
+                        <div class="bitcoin-section">
+                            <div class="text-center">
+                                <div class="bitcoin-icon">
+                                    <i class="bi bi-currency-bitcoin"></i>
+                                </div>
+                                <h4 data-translate="bitcoin.title">Portefeuille Bitcoin</h4>
+                                <p class="text-light opacity-90 mb-3" data-translate="bitcoin.description">
+                                    Vous souhaitez soutenir mon travail ? Voici mon adresse Bitcoin :
+                                </p>
+                                <div class="bitcoin-address" id="bitcoin-address">
+                                    <div class="copy-feedback" id="copy-feedback" data-translate="bitcoin.copied">Copié !</div>
+                                    bc1qhpn6u0knnwu9t57csdz2wtktuj8n8fed48tldyuat5cnv35y6ycscjqxce
+                                    <button class="copy-btn" onclick="copyBitcoinAddress()" data-translate="bitcoin.copy">Copier</button>
+                                </div>
+                                <small class="text-light opacity-75">
+                                    <i class="bi bi-shield-check me-1"></i>
+                                    Adresse vérifiée et sécurisée
+                                </small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1092,19 +1265,19 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="social-links">
-                <a href="https://github.com/oaojfr" target="_blank" class="social-link" title="GitHub">
-                    <i class="bi bi-github"></i>
+            <nav class="social-links" aria-label="Liens vers les réseaux sociaux">
+                <a href="https://github.com/oaojfr" target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub" aria-label="Profil GitHub de João">
+                    <i class="bi bi-github" aria-hidden="true"></i>
                 </a>
-                <a href="https://bsky.app/profile/oaoj.fr" target="_blank" class="social-link" title="Bluesky">
-                    <i class="bi bi-cloud"></i>
+                <a href="https://bsky.app/profile/oaoj.fr" target="_blank" rel="noopener noreferrer" class="social-link" title="Bluesky" aria-label="Profil Bluesky de João">
+                    <i class="bi bi-cloud" aria-hidden="true"></i>
                 </a>
-                <span class="social-link" title="Discord: nethoria">
-                    <i class="bi bi-discord"></i>
+                <span class="social-link" title="Discord: nethoria" aria-label="Discord: nethoria">
+                    <i class="bi bi-discord" aria-hidden="true"></i>
                 </span>
-            </div>
+            </nav>
             <p class="mb-0">
-                <span data-translate="footer.copyright">&copy; 2025 João. Tous droits réservés. Fait avec</span> <i class="bi bi-heart-fill text-danger"></i> <span data-translate="footer.made">et Bootstrap.</span>
+                <span data-translate="footer.copyright">&copy; 2025 João. Tous droits réservés. Fait avec</span> <i class="bi bi-heart-fill text-danger" aria-hidden="true"></i> <span data-translate="footer.made">et Bootstrap.</span>
             </p>
         </div>
     </footer>
@@ -1275,6 +1448,10 @@
                 'contact.title': 'Contactez-moi',
                 'contact.intro': 'Vous voulez échanger ? Retrouvez-moi sur mes réseaux sociaux !',
                 'contact.message': 'N\'hésitez pas à me contacter pour discuter de projets, d\'idées ou tout simplement pour échanger !',
+                'bitcoin.title': 'Portefeuille Bitcoin',
+                'bitcoin.description': 'Vous souhaitez soutenir mon travail ? Voici mon adresse Bitcoin :',
+                'bitcoin.copy': 'Copier',
+                'bitcoin.copied': 'Copié !',
                 'footer.copyright': '© 2025 João. Tous droits réservés. Fait avec',
                 'footer.made': 'et Bootstrap.',
                 'github.api.unavailable': 'Statistiques approximatives (API temporairement indisponible)'
@@ -1361,6 +1538,10 @@
                 'contact.title': 'Contact me',
                 'contact.intro': 'Want to chat? Find me on my social networks!',
                 'contact.message': 'Feel free to contact me to discuss projects, ideas or just to chat!',
+                'bitcoin.title': 'Bitcoin Wallet',
+                'bitcoin.description': 'Want to support my work? Here\'s my Bitcoin address:',
+                'bitcoin.copy': 'Copy',
+                'bitcoin.copied': 'Copied!',
                 'footer.copyright': '© 2025 João. All rights reserved. Made with',
                 'footer.made': 'and Bootstrap.',
                 'github.api.unavailable': 'Approximate statistics (API temporarily unavailable)'
@@ -1447,6 +1628,10 @@
                 'contact.title': 'Entre em contato',
                 'contact.intro': 'Quer conversar? Me encontre nas minhas redes sociais!',
                 'contact.message': 'Não hesite em me contatar para discutir projetos, ideias ou apenas para conversar!',
+                'bitcoin.title': 'Carteira Bitcoin',
+                'bitcoin.description': 'Quer apoiar meu trabalho? Aqui está meu endereço Bitcoin:',
+                'bitcoin.copy': 'Copiar',
+                'bitcoin.copied': 'Copiado!',
                 'footer.copyright': '© 2025 João. Todos os direitos reservados. Feito com',
                 'footer.made': 'e Bootstrap.',
                 'github.api.unavailable': 'Estatísticas aproximadas (API temporariamente indisponível)'
@@ -1459,6 +1644,9 @@
         // Language switching
         function switchLanguage(lang) {
             currentLanguage = lang;
+            
+            // Update meta tags for SEO
+            updateMetaTags(lang);
             
             // Update active language button
             document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -1487,6 +1675,63 @@
             localStorage.setItem('preferred-language', lang);
         }
 
+        // Update meta tags for SEO
+        function updateMetaTags(lang) {
+            const metaTitles = {
+                'fr': 'João - Développeur & Créateur d\'Expériences Numériques',
+                'en': 'João - Developer & Digital Experience Creator', 
+                'pt': 'João - Desenvolvedor & Criador de Experiências Digitais'
+            };
+            
+            const metaDescriptions = {
+                'fr': 'Portfolio de João - Développeur passionné par la création d\'expériences numériques exceptionnelles. Découvrez mes projets, jeux interactifs et outils pratiques.',
+                'en': 'João\'s Portfolio - Developer passionate about creating exceptional digital experiences. Discover my projects, interactive games and practical tools.',
+                'pt': 'Portfólio do João - Desenvolvedor apaixonado por criar experiências digitais excepcionais. Descubra meus projetos, jogos interativos e ferramentas práticas.'
+            };
+            
+            // Update document title
+            document.title = metaTitles[lang];
+            
+            // Update meta description
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                metaDescription.setAttribute('content', metaDescriptions[lang]);
+            }
+            
+            // Update Open Graph title
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            if (ogTitle) {
+                ogTitle.setAttribute('content', metaTitles[lang]);
+            }
+            
+            // Update Open Graph description
+            const ogDescription = document.querySelector('meta[property="og:description"]');
+            if (ogDescription) {
+                ogDescription.setAttribute('content', metaDescriptions[lang]);
+            }
+            
+            // Update Twitter title
+            const twitterTitle = document.querySelector('meta[property="twitter:title"]');
+            if (twitterTitle) {
+                twitterTitle.setAttribute('content', metaTitles[lang]);
+            }
+            
+            // Update Twitter description
+            const twitterDescription = document.querySelector('meta[property="twitter:description"]');
+            if (twitterDescription) {
+                twitterDescription.setAttribute('content', metaDescriptions[lang]);
+            }
+            
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+            
+            // Update language meta tag
+            const languageMeta = document.querySelector('meta[name="language"]');
+            if (languageMeta) {
+                languageMeta.setAttribute('content', lang);
+            }
+        }
+
         // Theme switching
         function toggleTheme() {
             const body = document.body;
@@ -1503,6 +1748,32 @@
             }
             
             localStorage.setItem('preferred-theme', currentTheme);
+        }
+
+        // Bitcoin address copy function
+        function copyBitcoinAddress() {
+            const address = 'bc1qhpn6u0knnwu9t57csdz2wtktuj8n8fed48tldyuat5cnv35y6ycscjqxce';
+            const feedback = document.getElementById('copy-feedback');
+            
+            navigator.clipboard.writeText(address).then(function() {
+                feedback.style.opacity = '1';
+                setTimeout(() => {
+                    feedback.style.opacity = '0';
+                }, 2000);
+            }).catch(function(err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = address;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                feedback.style.opacity = '1';
+                setTimeout(() => {
+                    feedback.style.opacity = '0';
+                }, 2000);
+            });
         }
 
         // GitHub API integration

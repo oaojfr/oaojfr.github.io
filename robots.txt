@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://oaojfr.github.io/sitemap.xml
+
+# Disallow common non-content files
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.github/
+
+# Allow important assets
+Allow: /tools/
+Allow: /easter/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.png
+Allow: /*.gif
+Allow: /*.webp
+Allow: /*.svg
+Allow: /*.ico
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
