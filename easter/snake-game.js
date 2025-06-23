@@ -4,6 +4,12 @@ let snakeCanvas, snakeCtx, snakeOverlay, snakeScoreElement;
 let snake, food, snakeDirection, snakeScore;
 let snakeKeys = {};
 let gridSize, tileCount;
+let snakeWrapWalls = true; // Traversée des murs
+let snakeGameSpeed = 150; // Contrôle de vitesse (ms)
+let snakeFoodEffect = 0; // Effet visuel pour la nourriture
+let snakeColorScheme = 0; // Schéma de couleurs actuel
+let snakeAudio = {}; // Effets sonores
+let snakeBackgroundMusic = null; // Musique de fond
 
 function initSnakeGame() {
     // Easter Egg: Snake Game sequence detection

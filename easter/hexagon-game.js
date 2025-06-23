@@ -35,9 +35,9 @@ const HEX_CONFIG = {
     ],
     colorSchemeTitles: ['Inferno', 'Cosmos', 'Verdant'],
     musicTracks: [
-        'https://dl.dropboxusercontent.com/s/k6pvlf9n2ltrxd0/hexagon-track1.mp3',
-        'https://dl.dropboxusercontent.com/s/g35yyztm2hm1ez2/hexagon-track2.mp3',
-        'https://dl.dropboxusercontent.com/s/zd5we3jw97xioen/hexagon-track3.mp3'
+        'https://bearable-hacker.io/hex-blue.mp3',
+        'https://bearable-hacker.io/hex-red.mp3',
+        'https://bearable-hacker.io/hex-green.mp3'
     ]
 };
 
@@ -298,7 +298,17 @@ function updateHexagonUI() {
 }
 
 function updateHexagonGame(timestamp) {
-    if (!hexagonGameRunning || hexagonGameOver) return;
+    if (!hexagonGameRunning) return;
+    
+    // Si c'est game over, ne pas continuer la mise à jour mais réinitialiser le jeu après un délai
+    if (hexagonGameOver) {
+        // Attendre 1 seconde puis réinitialiser automatiquement
+        setTimeout(() => {
+            hexagonGameOver = false;
+            restartHexagonGame();
+        }, 1000);
+        return;
+    }
     
     const now = Date.now();
     const deltaTime = now - hexagonLastTime;
@@ -499,19 +509,17 @@ function drawHexagonWall(wall) {
     hexagonCtx.strokeStyle = wall.color;
     hexagonCtx.lineWidth = wall.thickness;
     
-    // Dessiner chaque section du mur hexagonal, sauf celle du trou
-    hexagonCtx.beginPath();
-    
+    // Dessiner chaque section du mur hexagonal séparément, sauf celle du trou
     for (let i = 0; i < sections; i++) {
         if (i === gapSection) continue; // Sauter la section du trou
         
         const startAngle = (Math.PI * 2 / sections) * i;
         const endAngle = (Math.PI * 2 / sections) * (i + 1);
         
+        hexagonCtx.beginPath(); // Important: commencer un nouveau chemin pour chaque section
         hexagonCtx.arc(0, 0, wall.distance, startAngle, endAngle);
+        hexagonCtx.stroke(); // Dessiner chaque section séparément
     }
-    
-    hexagonCtx.stroke();
 }
 
 function checkHexagonCollision() {
@@ -522,13 +530,29 @@ function checkHexagonCollision() {
     for (const wall of hexagonWalls) {
         // Vérifier uniquement les murs proches du joueur
         if (Math.abs(wall.distance - playerRadius) < wall.thickness / 2) {
+            // Normaliser l'angle du joueur entre 0 et 2π
+            const normalizedAngle = ((playerAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+            
             // Calculer dans quelle section se trouve le joueur
             const sectionAngle = Math.PI * 2 / wall.sections;
-            let playerSection = Math.floor(((playerAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) / sectionAngle);
+            let playerSection = Math.floor(normalizedAngle / sectionAngle);
             
             // Si le joueur est dans une section qui n'est pas le trou, c'est une collision
             if (playerSection !== wall.gapSection) {
-                return true;
+                // Ajouter une tolérance aux bordures du trou pour rendre le jeu plus indulgent
+                const gapCenter = (wall.gapSection + 0.5) * sectionAngle;
+                const distToGap = Math.min(
+                    Math.abs(normalizedAngle - gapCenter),
+                    Math.abs(normalizedAngle - gapCenter + Math.PI * 2),
+                    Math.abs(normalizedAngle - gapCenter - Math.PI * 2)
+                );
+                
+                // Tolérance de 10% du sectionAngle
+                const tolerance = sectionAngle * 0.1;
+                
+                if (distToGap > sectionAngle / 2 + tolerance) {
+                    return true;
+                }
             }
         }
     }
