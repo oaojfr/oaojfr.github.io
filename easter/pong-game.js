@@ -39,14 +39,13 @@ function startPongGame() {
     
     pongOverlay.style.display = 'flex';
     pongGameRunning = true;
-    
-    // Game objects
+      // Game objects
     pongBall = {
         x: pongCanvas.width / 2,
         y: pongCanvas.height / 2,
         radius: 10,
-        velocityX: 3,
-        velocityY: 2,
+        velocityX: 5,
+        velocityY: 4,
         color: '#667eea'
     };
     
@@ -79,22 +78,21 @@ function startPongGame() {
     
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
-    
-    function updatePaddles() {
+      function updatePaddles() {
         // Player 1 (W/S)
         if (pongKeys['w'] || pongKeys['W']) {
-            pongPaddle1.y = Math.max(0, pongPaddle1.y - 7);
+            pongPaddle1.y = Math.max(0, pongPaddle1.y - 12);
         }
         if (pongKeys['s'] || pongKeys['S']) {
-            pongPaddle1.y = Math.min(pongCanvas.height - pongPaddle1.height, pongPaddle1.y + 7);
+            pongPaddle1.y = Math.min(pongCanvas.height - pongPaddle1.height, pongPaddle1.y + 12);
         }
         
         // Player 2 (Arrow keys)
         if (pongKeys['ArrowUp']) {
-            pongPaddle2.y = Math.max(0, pongPaddle2.y - 7);
+            pongPaddle2.y = Math.max(0, pongPaddle2.y - 12);
         }
         if (pongKeys['ArrowDown']) {
-            pongPaddle2.y = Math.min(pongCanvas.height - pongPaddle2.height, pongPaddle2.y + 7);
+            pongPaddle2.y = Math.min(pongCanvas.height - pongPaddle2.height, pongPaddle2.y + 12);
         }
     }
     
@@ -155,12 +153,11 @@ function startPongGame() {
             pongGameRunning = false;
         }
     }
-    
-    function resetBall() {
+      function resetBall() {
         pongBall.x = pongCanvas.width / 2;
         pongBall.y = pongCanvas.height / 2;
-        pongBall.velocityX = (Math.random() > 0.5 ? 1 : -1) * 3;
-        pongBall.velocityY = (Math.random() - 0.5) * 4;
+        pongBall.velocityX = (Math.random() > 0.5 ? 1 : -1) * 5;
+        pongBall.velocityY = (Math.random() - 0.5) * 6;
     }
     
     function draw() {

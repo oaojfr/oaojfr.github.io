@@ -38,14 +38,13 @@ function startBreakoutGame() {
     
     breakoutOverlay.style.display = 'flex';
     breakoutGameRunning = true;
-    
-    // Game objects
+      // Game objects
     breakoutBall = {
         x: breakoutCanvas.width / 2,
         y: breakoutCanvas.height - 50,
         radius: 8,
-        velocityX: 1.5,
-        velocityY: -1.5,
+        velocityX: 3.5,
+        velocityY: -3.5,
         color: '#667eea'
     };
     
@@ -114,14 +113,13 @@ function startBreakoutGame() {
             breakoutPaddle.x = breakoutCanvas.width - breakoutPaddle.width;
         }
     }
-    
-    function updatePaddle() {
+      function updatePaddle() {
         // Keyboard controls
         if (breakoutKeys['ArrowLeft'] || breakoutKeys['a'] || breakoutKeys['A']) {
-            breakoutPaddle.x -= 6;
+            breakoutPaddle.x -= 12;
         }
         if (breakoutKeys['ArrowRight'] || breakoutKeys['d'] || breakoutKeys['D']) {
-            breakoutPaddle.x += 6;
+            breakoutPaddle.x += 12;
         }
         
         // Keep paddle within canvas
@@ -156,9 +154,8 @@ function startBreakoutGame() {
             
             // Calculate hit position on paddle (-1 to 1)
             const hitPos = (breakoutBall.x - (breakoutPaddle.x + breakoutPaddle.width / 2)) / (breakoutPaddle.width / 2);
-            
-            // Adjust ball direction based on hit position
-            breakoutBall.velocityX = hitPos * 2;
+              // Adjust ball direction based on hit position
+            breakoutBall.velocityX = hitPos * 4;
             breakoutBall.velocityY = -Math.abs(breakoutBall.velocityY);
         }
         
