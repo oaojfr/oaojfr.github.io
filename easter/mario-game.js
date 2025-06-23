@@ -696,33 +696,17 @@ class MarioGame {
     }
     
     update(deltaTime) {
-        if (!this.gameRunning) return;
+        // Normalize deltaTime for consistent movement at different framerates
+        const normalizedDelta = deltaTime / 16.67; // 16.67ms = 60fps
         
-        // Update player
-        this.updateMario(deltaTime);
-        
-        // Update enemies
-        this.updateEnemies(deltaTime);
-        
-        // Update powerups
-        this.updatePowerUps(deltaTime);
-        
-        // Update particles
-        this.updateParticles(deltaTime);
-        
-        // Update coin animations
-        this.updateCoins(deltaTime);
-        
-        // Check collisions
-        this.checkCollisions();
-        
-        // Update camera
+        this.updateMario(normalizedDelta);
+        this.updateEnemies(normalizedDelta);
+        this.updateCoins(normalizedDelta);
+        this.updateParticles(normalizedDelta);
+        this.updateMovingPlatforms(normalizedDelta);
         this.updateCamera();
-        
-        // Update invulnerability timer
-        if (this.mario.invulnerable > 0) {
-            this.mario.invulnerable--;
-        }
+        this.checkCollisions();
+        this.checkWinCondition();
     }
     
     updateMovingPlatforms(delta) {
@@ -925,8 +909,6 @@ class MarioGame {
         this.checkMarioPlatformCollisions();
         this.checkMarioEnemyCollisions();
         this.checkMarioCoinCollisions();
-        this.checkPowerUpCollision();
-        this.checkPipeCollision();
     }
     
     checkMarioPlatformCollisions() {
@@ -1018,287 +1000,40 @@ class MarioGame {
         });
     }
     
-    updatePowerUps(deltaTime) {
-        for (let i = this.powerUps.length - 1; i >= 0; i--) {
-            const powerUp = this.powerUps[i];
-            
-            if (!powerUp.active) continue;
-            
-            // Appliquer gravité si pas sur le sol
-            if (!powerUp.onGround) {
-                powerUp.velocityY += this.gravity;
-            } else {
-                // Déplacement horizontal pour les power-ups qui bougent
-                if (powerUp.type === 'MUSHROOM' || powerUp.type === 'STAR') {
-                    // Rebondir sur les bords des plateformes
-                    const platforms = this.getPlatformsUnderEntity(powerUp);
-                    if (platforms.length > 0) {
-                        const platform = platforms[0];
-                        if (powerUp.x <= platform.x || powerUp.x + powerUp.width >= platform.x + platform.width) {
-                            powerUp.velocityX *= -1;
-                        }
-                    }
-                }
-            }
-            
-            // Mettre à jour la position
-            powerUp.x += powerUp.velocityX;
-            powerUp.y += powerUp.velocityY;
-            
-            // Vérifier collision avec le sol
-            powerUp.onGround = false;
-            for (let platform of this.platforms) {
-                if (this.checkRectCollision(powerUp, platform)) {
-                    // Corriger la position
-                    if (powerUp.y + powerUp.height > platform.y && 
-                        powerUp.y < platform.y &&
-                        powerUp.velocityY > 0) {
-                        powerUp.y = platform.y - powerUp.height;
-                        powerUp.velocityY = 0;
-                        powerUp.onGround = true;
-                    }
-                    
-                    // Collision horizontale
-                    if (powerUp.x + powerUp.width > platform.x &&
-                        powerUp.x < platform.x + platform.width &&
-                        !powerUp.onGround) {
-                        if (powerUp.velocityX > 0) {
-                            powerUp.x = platform.x - powerUp.width;
-                        } else if (powerUp.velocityX < 0) {
-                            powerUp.x = platform.x + platform.width;
-                        }
-                        powerUp.velocityX *= -1;
-                    }
-                }
-            }
-            
-            // Limiter la vitesse de chute
-            if (powerUp.velocityY > 10) {
-                powerUp.velocityY = 10;
-            }
-        }
-    }
-    
-    checkPowerUpCollision() {
-        for (let i = this.powerUps.length - 1; i >= 0; i--) {
-            const powerUp = this.powerUps[i];
-            
-            if (powerUp.active && this.checkRectCollision(this.mario, powerUp)) {
-                // Activer l'effet du power-up
-                this.activatePowerUp(powerUp);
-                
-                // Désactiver le power-up
-                powerUp.active = false;
-                
-                // Créer particules
-                this.createParticles(
-                    powerUp.x + powerUp.width / 2,
-                    powerUp.y + powerUp.height / 2,
-                    10,
-                    this.powerUpTypes[powerUp.type].color
-                );
-                
-                // Jouer le son
-                this.playSound('powerUp');
-                
-                // Ajouter des points
-                this.score += 1000;
-                this.updateUI();
-            }
-        }
-    }
-    
-    activatePowerUp(powerUp) {
-        switch (powerUp.effect) {
-            case 'grow':
-                // Devenir grand Mario
-                if (this.mario.powerState < 1) {
-                    this.mario.powerState = 1;
-                }
-                break;
-                
-            case 'fire':
-                // Devenir Fire Mario
-                this.mario.powerState = 2;
-                break;
-                
-            case 'star':
-                // Devenir invulnérable
-                this.mario.invulnerable = 600; // Environ 10 secondes
-                
-                // Jouer la musique d'étoile
-                this.playMusic('star');
-                
-                // Revenir à la musique normale après un certain temps
-                setTimeout(() => {
-                    if (this.gameRunning && this.mario.invulnerable <= 0) {
-                        this.playMusic('main');
-                    }
-                }, 10000);
-                break;
-        }
-    }
-    
-    checkPipeCollision() {
-        // Vérifier si Mario est sur un tuyau
-        for (const pipe of this.pipes) {
-            // Mario doit être exactement sur le tuyau (tolérance de quelques pixels)
-            const isOnPipe = Math.abs((this.mario.x + this.mario.width / 2) - (pipe.x + pipe.width / 2)) < 15 &&
-                             Math.abs(this.mario.y + this.mario.height - pipe.y) < 5;
-            
-            // Si Mario appuie sur 'bas' et est sur un tuyau entrable
-            if (isOnPipe && this.keys['ArrowDown'] && pipe.isEnterable && this.mario.onGround) {
-                // Jouer l'animation d'entrée de tuyau
-                this.enterPipe(pipe);
-                return;
-            }
-        }
-    }
-    
-    enterPipe(pipe) {
-        // Désactiver les contrôles pendant l'animation
-        this.gameRunning = false;
-        
-        // Son d'entrée de tuyau
-        this.playSound('pipe');
-        
-        // Animation: Mario descend dans le tuyau
-        const enterAnimation = setInterval(() => {
-            this.mario.y += 1;
-            
-            // Redessiner
-            this.render();
-            
-            // Arrêter l'animation quand Mario est complètement dans le tuyau
-            if (this.mario.y > pipe.y + 40) {
-                clearInterval(enterAnimation);
-                
-                // Jouer la musique souterraine
-                this.playMusic('underground');
-                
-                // Téléporter Mario à une autre position (soit un autre tuyau, soit une zone secrète)
-                this.teleportAfterPipe();
-            }
-        }, 20);
-    }
-    
-    teleportAfterPipe() {
-        // Trouver un autre tuyau pour sortir ou créer une zone secrète
-        const exitPipes = this.pipes.filter(p => p.isEnterable && p !== this.currentEnteredPipe);
-        
-        if (exitPipes.length > 0 && Math.random() > 0.3) {
-            // 70% de chance d'aller à un autre tuyau
-            const exitPipe = exitPipes[Math.floor(Math.random() * exitPipes.length)];
-            
-            // Placer Mario au-dessus du tuyau de sortie
-            this.mario.x = exitPipe.x + exitPipe.width / 2 - this.mario.width / 2;
-            this.mario.y = exitPipe.y - this.mario.height - 10;
-            this.mario.velocityY = 0;
-            
-            // Animation de sortie
-            setTimeout(() => {
-                // Son de sortie
-                this.playSound('pipe');
-                
-                // Animation: Mario sort du tuyau
-                let exitY = this.mario.y;
-                const exitAnimation = setInterval(() => {
-                    this.mario.y -= 1;
-                    
-                    // Redessiner
-                    this.render();
-                    
-                    // Arrêter l'animation quand Mario est complètement sorti
-                    if (this.mario.y <= exitY - 40) {
-                        clearInterval(exitAnimation);
-                        
-                        // Reprendre le jeu et la musique normale
-                        this.gameRunning = true;
-                        this.playMusic('main');
-                    }
-                }, 20);
-            }, 500);
-        } else {
-            // 30% de chance de générer une zone secrète avec beaucoup de pièces
-            this.generateSecretArea();
-            
-            // Reprendre le jeu après un court délai
-            setTimeout(() => {
-                this.gameRunning = true;
-            }, 500);
-        }
-    }
-    
-    generateSecretArea() {
-        // Créer une petite zone avec beaucoup de pièces
-        const areaWidth = 400;
-        const areaHeight = 300;
-        
-        // Position de la zone (hors caméra)
-        const areaX = this.mario.x - areaWidth / 2;
-        const areaY = this.mario.y - areaHeight + 50;
-        
-        // Placer Mario en haut de la zone
-        this.mario.x = areaX + areaWidth / 2;
-        this.mario.y = areaY + 50;
-        this.mario.velocityY = 0;
-        
-        // Créer le sol
-        this.platforms.push({
-            x: areaX,
-            y: areaY + areaHeight,
-            width: areaWidth,
-            height: 40,
-            type: 'ground'
-        });
-        
-        // Ajouter des plateformes
-        for (let i = 0; i < 3; i++) {
-            this.platforms.push({
-                x: areaX + 30 + i * 100,
-                y: areaY + 200 - i * 50,
-                width: 80,
-                height: 20,
-                type: 'platform'
+    createDeathParticles(x, y) {
+        for (let i = 0; i < 8; i++) {
+            this.particles.push({
+                x: x,
+                y: y,
+                velocityX: (Math.random() - 0.5) * 4,
+                velocityY: -Math.random() * 3 - 1,
+                color: '#ff6b6b',
+                life: 30
             });
         }
-        
-        // Ajouter beaucoup de pièces
-        for (let i = 0; i < 30; i++) {
-            this.coinItems.push({
-                x: areaX + 20 + (i % 10) * 40,
-                y: areaY + 100 + Math.floor(i / 10) * 60,
-                width: 16,
-                height: 16,
-                collected: false,
-                rotation: 0,
-                bobOffset: Math.random() * Math.PI * 2
+    }
+    
+    createCoinParticles(x, y) {
+        for (let i = 0; i < 6; i++) {
+            this.particles.push({
+                x: x,
+                y: y,
+                velocityX: (Math.random() - 0.5) * 3,
+                velocityY: -Math.random() * 2 - 1,
+                color: '#FFD700',
+                life: 25
             });
         }
-        
-        // Ajouter un tuyau de sortie
-        const exitPipe = {
-            x: areaX + areaWidth - 70,
-            y: areaY + areaHeight - 60,
-            width: 50,
-            height: 60,
-            isEnterable: true
-        };
-        
-        this.pipes.push(exitPipe);
-        
-        // Ajouter la collision pour le tuyau
-        this.platforms.push({
-            x: exitPipe.x,
-            y: exitPipe.y,
-            width: exitPipe.width,
-            height: exitPipe.height,
-            type: 'pipe'
-        });
-        
-        // Ajuster la caméra pour montrer la zone
-        this.camera.x = areaX;
-        this.camera.y = areaY;
+    }
+    
+    checkWinCondition() {
+        if (!this.levelCompleted && this.mario.x > this.levelWidth - 100) {
+            this.levelCompleted = true;
+            // Add a small delay to prevent immediate re-triggering
+            setTimeout(() => {
+                this.nextLevel();
+            }, 100);
+        }
     }
     
     render() {

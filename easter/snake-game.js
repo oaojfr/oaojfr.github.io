@@ -366,85 +366,114 @@ function startSnakeGame() {
         }
         
         // Dessiner le serpent avec un dégradé et des effets arrondis
-        drawSnakeWithEffects();
+        drawSnake();
     }
     
-    function drawSnakeWithEffects() {
-        // Dessiner chaque segment avec un dégradé
+    function drawSnake() {
+        // Dessiner le serpent avec un style moderne
+        
+        // Dégradé de couleur basé sur la longueur du serpent
+        const snakeGradient = snakeCtx.createLinearGradient(0, 0, snakeCanvas.width, snakeCanvas.height);
+        const baseHue = (snakeColorScheme * 60) % 360; // Changer la teinte selon le schéma de couleur
+        
+        snakeGradient.addColorStop(0, `hsl(${baseHue}, 80%, 60%)`);
+        snakeGradient.addColorStop(1, `hsl(${(baseHue + 40) % 360}, 80%, 60%)`);
+        
+        // Dessiner chaque segment du serpent avec un style arrondi
         for (let i = 0; i < snake.length; i++) {
             const segment = snake[i];
             
-            // Couleur différente pour la tête
-            if (i === 0) {
-                snakeCtx.fillStyle = '#4ecdc4';
-            } else {
-                // Couleur dégradée pour le corps
-                const gradient = snakeCtx.createLinearGradient(
-                    segment.x * gridSize, 
-                    segment.y * gridSize,
-                    (segment.x + 1) * gridSize,
-                    (segment.y + 1) * gridSize
-                );
-                
-                gradient.addColorStop(0, '#4ecdc4');
-                gradient.addColorStop(1, '#2eabb8');
-                
-                snakeCtx.fillStyle = gradient;
-            }
+            // Calculer la taille du segment (légèrement plus petit que la taille de la grille)
+            const padding = 2;
+            const size = gridSize - padding * 2;
             
-            // Dessiner des segments arrondis
+            // Position du segment
+            const x = segment.x * gridSize + padding;
+            const y = segment.y * gridSize + padding;
+            
+            // Rayon pour les coins arrondis (différent pour tête, corps et queue)
+            let radius = size / 4;
+            
+            // Dessiner le segment avec des coins arrondis
+            snakeCtx.fillStyle = i === 0 ? 
+                `hsl(${(baseHue + 20) % 360}, 90%, 50%)` : // Tête plus vive
+                snakeGradient;
+                
             snakeCtx.beginPath();
-            snakeCtx.roundRect(
-                segment.x * gridSize + 1, 
-                segment.y * gridSize + 1, 
-                gridSize - 2, 
-                gridSize - 2,
-                [5, 5, 5, 5]  // Coins arrondis
-            );
-            snakeCtx.fill();
             
-            // Pour la tête, ajouter des yeux
             if (i === 0) {
-                // Position des yeux selon la direction
-                let eyeX1, eyeY1, eyeX2, eyeY2;
-                const eyeSize = 3;
-                const eyeOffset = 6;
+                // Tête du serpent avec des yeux
+                snakeCtx.roundRect(x, y, size, size, radius);
+                snakeCtx.fill();
                 
-                if (snakeDirection.x === 1) {  // Droite
-                    eyeX1 = eyeX2 = segment.x * gridSize + gridSize - 7;
-                    eyeY1 = segment.y * gridSize + 7;
-                    eyeY2 = segment.y * gridSize + gridSize - 7;
-                } else if (snakeDirection.x === -1) {  // Gauche
-                    eyeX1 = eyeX2 = segment.x * gridSize + 7;
-                    eyeY1 = segment.y * gridSize + 7;
-                    eyeY2 = segment.y * gridSize + gridSize - 7;
-                } else if (snakeDirection.y === -1) {  // Haut
-                    eyeX1 = segment.x * gridSize + 7;
-                    eyeX2 = segment.x * gridSize + gridSize - 7;
-                    eyeY1 = eyeY2 = segment.y * gridSize + 7;
-                } else {  // Bas ou par défaut
-                    eyeX1 = segment.x * gridSize + 7;
-                    eyeX2 = segment.x * gridSize + gridSize - 7;
-                    eyeY1 = eyeY2 = segment.y * gridSize + gridSize - 7;
+                // Yeux
+                const eyeSize = size / 4;
+                const eyeOffset = size / 4;
+                
+                // Déterminer la position des yeux en fonction de la direction
+                let eyeX1, eyeX2, eyeY1, eyeY2;
+                
+                if (snakeDirection === 'up') {
+                    eyeX1 = x + eyeOffset;
+                    eyeX2 = x + size - eyeOffset - eyeSize;
+                    eyeY1 = eyeY2 = y + eyeOffset;
+                } else if (snakeDirection === 'down') {
+                    eyeX1 = x + eyeOffset;
+                    eyeX2 = x + size - eyeOffset - eyeSize;
+                    eyeY1 = eyeY2 = y + size - eyeOffset - eyeSize;
+                } else if (snakeDirection === 'left') {
+                    eyeX1 = eyeX2 = x + eyeOffset;
+                    eyeY1 = y + eyeOffset;
+                    eyeY2 = y + size - eyeOffset - eyeSize;
+                } else { // right
+                    eyeX1 = eyeX2 = x + size - eyeOffset - eyeSize;
+                    eyeY1 = y + eyeOffset;
+                    eyeY2 = y + size - eyeOffset - eyeSize;
                 }
+                
+                // Ajouter un peu de mouvement aux yeux (animation)
+                const eyeBlink = Math.sin(Date.now() / 300) > 0.8;
+                const eyeHeight = eyeBlink ? eyeSize / 3 : eyeSize;
                 
                 // Dessiner les yeux
                 snakeCtx.fillStyle = 'white';
                 snakeCtx.beginPath();
-                snakeCtx.arc(eyeX1, eyeY1, eyeSize, 0, Math.PI * 2);
+                snakeCtx.roundRect(eyeX1, eyeY1, eyeSize, eyeHeight, eyeSize / 2);
+                snakeCtx.roundRect(eyeX2, eyeY2, eyeSize, eyeHeight, eyeSize / 2);
                 snakeCtx.fill();
                 
-                snakeCtx.beginPath();
-                snakeCtx.arc(eyeX2, eyeY2, eyeSize, 0, Math.PI * 2);
-                snakeCtx.fill();
-                
+                // Pupilles
+                const pupilSize = eyeSize / 2;
                 snakeCtx.fillStyle = 'black';
                 snakeCtx.beginPath();
-                snakeCtx.arc(eyeX1, eyeY1, eyeSize/2, 0, Math.PI * 2);
+                snakeCtx.arc(eyeX1 + eyeSize/2, eyeY1 + eyeHeight/2, pupilSize/2, 0, Math.PI * 2);
+                snakeCtx.arc(eyeX2 + eyeSize/2, eyeY2 + eyeHeight/2, pupilSize/2, 0, Math.PI * 2);
                 snakeCtx.fill();
                 
+            } else {
+                // Corps ou queue du serpent
+                const isLast = i === snake.length - 1;
+                
+                // Segments du corps avec connexion fluide entre eux
+                let prevSegment = snake[i-1];
+                let nextSegment = i < snake.length - 1 ? snake[i+1] : null;
+                
+                // Calculer l'orientation du segment
+                let orientation;
+                if (segment.x === prevSegment.x) {
+                    orientation = segment.y < prevSegment.y ? 'up' : 'down';
+                } else {
+                    orientation = segment.x < prevSegment.x ? 'left' : 'right';
+                }
+                
+                // Dessiner le corps avec un style arrondi adapté à l'orientation
+                snakeCtx.roundRect(x, y, size, size, radius);
+                snakeCtx.fill();
+                
+                // Ajouter un léger effet de brillance
+                snakeCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
                 snakeCtx.beginPath();
-                snakeCtx.arc(eyeX2, eyeY2, eyeSize/2, 0, Math.PI * 2);
+                snakeCtx.arc(x + size/2, y + size/2, size/4, 0, Math.PI * 2);
                 snakeCtx.fill();
             }
         }
@@ -575,3 +604,117 @@ function restartSnakeGame() {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', initSnakeGame);
+
+function drawFood() {
+    // Mettre à jour l'effet visuel de la nourriture (pulsation)
+    snakeFoodEffect += 0.05;
+    
+    // Calculer la position du fruit sur le canvas
+    const x = food.x * gridSize;
+    const y = food.y * gridSize;
+    
+    // Taille de base et effet de pulsation
+    const baseSize = gridSize * 0.8;
+    const pulseSize = baseSize + Math.sin(snakeFoodEffect) * 3;
+    
+    // Choisir la couleur en fonction du type de nourriture
+    let foodColor, glowColor;
+    if (food.type === 'special') {
+        // Nourriture spéciale - couleur qui change
+        const hue = (Date.now() / 30) % 360;
+        foodColor = `hsl(${hue}, 100%, 65%)`;
+        glowColor = `hsl(${hue}, 100%, 80%)`;
+    } else {
+        // Nourriture normale - rouge
+        foodColor = '#FF4444';
+        glowColor = '#FF8888';
+    }
+    
+    // Dessiner un halo lumineux autour de la nourriture
+    const glow = snakeCtx.createRadialGradient(
+        x + gridSize/2, y + gridSize/2, 0,
+        x + gridSize/2, y + gridSize/2, gridSize
+    );
+    glow.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+    glow.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
+    glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    snakeCtx.fillStyle = glow;
+    snakeCtx.fillRect(x - gridSize/2, y - gridSize/2, gridSize * 2, gridSize * 2);
+    
+    // Dessiner la nourriture (forme de fruit)
+    snakeCtx.fillStyle = foodColor;
+    snakeCtx.beginPath();
+    snakeCtx.arc(x + gridSize/2, y + gridSize/2, pulseSize/2, 0, Math.PI * 2);
+    snakeCtx.fill();
+    
+    // Reflet sur le fruit
+    snakeCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    snakeCtx.beginPath();
+    snakeCtx.arc(x + gridSize/2 - pulseSize/5, y + gridSize/2 - pulseSize/5, pulseSize/4, 0, Math.PI * 2);
+    snakeCtx.fill();
+    
+    // Pour les fruits spéciaux, ajouter des particules autour
+    if (food.type === 'special') {
+        const particleCount = 3;
+        const radius = pulseSize/2 + 10;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const angle = (Date.now() / 300 + i * Math.PI * 2 / particleCount) % (Math.PI * 2);
+            const particleX = x + gridSize/2 + Math.cos(angle) * radius;
+            const particleY = y + gridSize/2 + Math.sin(angle) * radius;
+            const particleSize = 3 + Math.sin(Date.now() / 200 + i) * 2;
+            
+            snakeCtx.fillStyle = glowColor;
+            snakeCtx.beginPath();
+            snakeCtx.arc(particleX, particleY, particleSize, 0, Math.PI * 2);
+            snakeCtx.fill();
+        }
+    }
+    
+    // Ajouter une tige pour faire ressembler à une pomme
+    snakeCtx.fillStyle = '#4CAF50';
+    snakeCtx.fillRect(x + gridSize/2 - 2, y + gridSize/2 - pulseSize/2 - 5, 4, 8);
+}
+
+function drawBackground() {
+    // Dessiner un fond dégradé moderne
+    const baseHue = (snakeColorScheme * 60) % 360;
+    const gradient = snakeCtx.createLinearGradient(0, 0, snakeCanvas.width, snakeCanvas.height);
+    gradient.addColorStop(0, `hsl(${baseHue}, 30%, 15%)`);
+    gradient.addColorStop(1, `hsl(${baseHue}, 30%, 25%)`);
+    
+    snakeCtx.fillStyle = gradient;
+    snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+    
+    // Dessiner une grille subtile
+    snakeCtx.strokeStyle = `hsl(${baseHue}, 30%, 30%)`;
+    snakeCtx.lineWidth = 0.5;
+    
+    // Lignes horizontales
+    for (let y = 0; y <= tileCount; y++) {
+        snakeCtx.beginPath();
+        snakeCtx.moveTo(0, y * gridSize);
+        snakeCtx.lineTo(snakeCanvas.width, y * gridSize);
+        snakeCtx.stroke();
+    }
+    
+    // Lignes verticales
+    for (let x = 0; x <= tileCount; x++) {
+        snakeCtx.beginPath();
+        snakeCtx.moveTo(x * gridSize, 0);
+        snakeCtx.lineTo(x * gridSize, snakeCanvas.height);
+        snakeCtx.stroke();
+    }
+    
+    // Ajouter un effet de vignette pour un look moderne
+    const vignette = snakeCtx.createRadialGradient(
+        snakeCanvas.width/2, snakeCanvas.height/2, snakeCanvas.width/4,
+        snakeCanvas.width/2, snakeCanvas.height/2, snakeCanvas.width/1.5
+    );
+    vignette.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    vignette.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
+    
+    snakeCtx.fillStyle = vignette;
+    snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+}

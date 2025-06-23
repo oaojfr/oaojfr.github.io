@@ -5,10 +5,82 @@ let breakoutBall, breakoutPaddle, breakoutBricks, breakoutScore;
 let breakoutMouseX = 0;
 let breakoutSpeedMultiplier = 1.0; // Contrôle de vitesse global
 
+// Audio system
+let breakoutAudio = {
+    sounds: {},
+    music: null
+};
+
+// Précharger les sons et la musique pour Breakout
+function preloadBreakoutAudio() {
+    try {
+        // Créer un contexte audio
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioContext = new AudioContext();
+        
+        // Sons à précharger
+        const soundsToLoad = {
+            'hit': 'https://bearable-hacker.io/breakout-hit.mp3',
+            'brick': 'https://bearable-hacker.io/breakout-brick.mp3',
+            'paddle': 'https://bearable-hacker.io/breakout-paddle.mp3',
+            'wall': 'https://bearable-hacker.io/breakout-wall.mp3',
+            'lose': 'https://bearable-hacker.io/breakout-lose.mp3',
+            'background': 'https://bearable-hacker.io/breakout-background.mp3'
+        };
+        
+        // Charger chaque son
+        Object.entries(soundsToLoad).forEach(([name, url]) => {
+            fetch(url)
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+                .then(audioBuffer => {
+                    breakoutAudio.sounds[name] = {
+                        buffer: audioBuffer,
+                        context: audioContext,
+                        loop: name === 'background'
+                    };
+                })
+                .catch(e => console.log('Erreur de chargement audio:', e));
+        });
+    } catch (e) {
+        console.log('Audio non supporté:', e);
+    }
+}
+
+// Jouer un son
+function playBreakoutSound(soundName) {
+    try {
+        if (!breakoutAudio.sounds[soundName]) return null;
+        
+        const sound = breakoutAudio.sounds[soundName];
+        const source = sound.context.createBufferSource();
+        source.buffer = sound.buffer;
+        source.connect(sound.context.destination);
+        source.loop = sound.loop;
+        source.start(0);
+        
+        return source;
+    } catch (e) {
+        console.log('Erreur de lecture audio:', e);
+        return null;
+    }
+}
+
+// Démarrer la musique de fond
+function startBreakoutMusic() {
+    if (breakoutAudio.music) {
+        breakoutAudio.music.stop();
+    }
+    breakoutAudio.music = playBreakoutSound('background');
+}
+
 function initBreakoutGame() {
     // Easter Egg: Breakout Game sequence detection
     let easterEggSequence = [];
     const secretCode = ['b', 'r', 'e', 'a', 'k'];
+    
+    // Précharger les sons
+    preloadBreakoutAudio();
 
     // Listen for secret key sequence
     document.addEventListener('keydown', function(e) {
@@ -35,9 +107,11 @@ function startBreakoutGame() {
     breakoutCanvas = document.getElementById('breakout-canvas');
     breakoutCtx = breakoutCanvas.getContext('2d');
     const scoreElement = document.getElementById('breakout-score-value');
-    const closeBtn = document.getElementById('breakout-close');
-      breakoutOverlay.style.display = 'flex';
+    const closeBtn = document.getElementById('breakout-close');    breakoutOverlay.style.display = 'flex';
     breakoutGameRunning = true;
+    
+    // Démarrer la musique de fond
+    startBreakoutMusic();
     
     // Récupérer la vitesse sauvegardée si disponible
     const savedBreakoutSpeed = localStorage.getItem('breakoutSpeedMultiplier');
@@ -167,33 +241,50 @@ function startBreakoutGame() {
     
     breakoutCanvas.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-      function updateBall() {
-        breakoutBall.x += breakoutBall.velocityX * breakoutSpeedMultiplier;
-        breakoutBall.y += breakoutBall.velocityY * breakoutSpeedMultiplier;
+    document.addEventListener('keyup', handleKeyUp);      function updateBall() {
+        // La vitesse augmente légèrement avec le score pour plus de difficulté
+        const speedIncrement = Math.min(1.5, 1.0 + Math.min(0.5, breakoutScore / 200));
         
-        // Wall collisions
+        breakoutBall.x += breakoutBall.velocityX * breakoutSpeedMultiplier * speedIncrement;
+        breakoutBall.y += breakoutBall.velocityY * breakoutSpeedMultiplier * speedIncrement;
+          // Wall collisions
         if (breakoutBall.x + breakoutBall.radius > breakoutCanvas.width || breakoutBall.x - breakoutBall.radius < 0) {
             breakoutBall.velocityX = -breakoutBall.velocityX;
+            playBreakoutSound('wall'); // Son de rebond sur le mur
         }
         if (breakoutBall.y - breakoutBall.radius < 0) {
             breakoutBall.velocityY = -breakoutBall.velocityY;
+            playBreakoutSound('wall'); // Son de rebond sur le mur
         }
-        
-        // Paddle collision
+          // Paddle collision
         if (breakoutBall.y + breakoutBall.radius > breakoutPaddle.y &&
+            breakoutBall.y - breakoutBall.radius < breakoutPaddle.y + breakoutPaddle.height &&
             breakoutBall.x > breakoutPaddle.x &&
             breakoutBall.x < breakoutPaddle.x + breakoutPaddle.width) {
               // Calculate hit position on paddle (-1 to 1)
             const hitPos = (breakoutBall.x - (breakoutPaddle.x + breakoutPaddle.width / 2)) / (breakoutPaddle.width / 2);
-              // Adjust ball direction based on hit position
-            breakoutBall.velocityX = hitPos * 4;
+              // Adjust ball direction based on hit position (with more precision)
+            breakoutBall.velocityX = hitPos * 5; // Plus de précision dans l'angle
             breakoutBall.velocityY = -Math.abs(breakoutBall.velocityY);
-            // La vitesse sera ajustée par le multiplicateur dans la prochaine frame
+            
+            // Ajouter un petit bonus de vitesse à chaque rebond
+            const currentSpeed = Math.sqrt(breakoutBall.velocityX * breakoutBall.velocityX + 
+                                          breakoutBall.velocityY * breakoutBall.velocityY);
+            const speedFactor = Math.min(1.05, 1 + (breakoutScore / 2000)); // Augmente légèrement
+            
+            // Normaliser les vecteurs puis appliquer la nouvelle vitesse
+            breakoutBall.velocityX = (breakoutBall.velocityX / currentSpeed) * currentSpeed * speedFactor;
+            breakoutBall.velocityY = (breakoutBall.velocityY / currentSpeed) * currentSpeed * speedFactor;
+            
+            // Jouer le son de collision avec la raquette
+            playBreakoutSound('paddle');
         }
-        
-        // Bottom wall (game over)
+          // Bottom wall (game over)
         if (breakoutBall.y + breakoutBall.radius > breakoutCanvas.height) {
+            playBreakoutSound('lose'); // Son de fin de partie
+            if (breakoutAudio.music) {
+                breakoutAudio.music.stop();
+            }
             gameOver();
             return;
         }
@@ -212,6 +303,9 @@ function startBreakoutGame() {
                         brick.status = 0;
                         breakoutScore += 10;
                         scoreElement.textContent = breakoutScore;
+                        
+                        // Play brick sound
+                        playBreakoutSound('brick');
                         
                         // Check win condition
                         if (checkWin()) {
@@ -274,6 +368,9 @@ function startBreakoutGame() {
         const finalScoreSpan = document.getElementById('breakout-final-score');
         finalScoreSpan.textContent = breakoutScore;
         gameOverDiv.style.display = 'block';
+        
+        // Play lose sound
+        playBreakoutSound('lose');
     }
     
     function gameWin() {

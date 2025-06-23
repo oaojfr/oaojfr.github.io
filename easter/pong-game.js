@@ -5,10 +5,80 @@ let pongBall, pongPaddle1, pongPaddle2;
 let pongKeys = {};
 let pongSpeedMultiplier = 1.0; // Contrôle de vitesse global
 
+// Audio system
+let pongAudio = {
+    sounds: {},
+    music: null
+};
+
+// Précharger les sons et la musique pour Pong
+function preloadPongAudio() {
+    try {
+        // Créer un contexte audio
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioContext = new AudioContext();
+        
+        // Sons à précharger
+        const soundsToLoad = {
+            'hit': 'https://bearable-hacker.io/pong-hit.mp3',
+            'score': 'https://bearable-hacker.io/pong-score.mp3',
+            'wall': 'https://bearable-hacker.io/pong-wall.mp3',
+            'background': 'https://bearable-hacker.io/pong-background.mp3'
+        };
+        
+        // Charger chaque son
+        Object.entries(soundsToLoad).forEach(([name, url]) => {
+            fetch(url)
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+                .then(audioBuffer => {
+                    pongAudio.sounds[name] = {
+                        buffer: audioBuffer,
+                        context: audioContext,
+                        loop: name === 'background'
+                    };
+                })
+                .catch(e => console.log('Erreur de chargement audio:', e));
+        });
+    } catch (e) {
+        console.log('Audio non supporté:', e);
+    }
+}
+
+// Jouer un son
+function playPongSound(soundName) {
+    try {
+        if (!pongAudio.sounds[soundName]) return null;
+        
+        const sound = pongAudio.sounds[soundName];
+        const source = sound.context.createBufferSource();
+        source.buffer = sound.buffer;
+        source.connect(sound.context.destination);
+        source.loop = sound.loop;
+        source.start(0);
+        
+        return source;
+    } catch (e) {
+        console.log('Erreur de lecture audio:', e);
+        return null;
+    }
+}
+
+// Démarrer la musique de fond
+function startPongMusic() {
+    if (pongAudio.music) {
+        pongAudio.music.stop();
+    }
+    pongAudio.music = playPongSound('background');
+}
+
 function initPongGame() {
     // Easter Egg: Pong Game sequence detection
     let easterEggSequence = [];
     const secretCode = ['p', 'o', 'n', 'g'];
+    
+    // Précharger les sons
+    preloadPongAudio();
 
     // Listen for secret key sequence
     document.addEventListener('keydown', function(e) {
@@ -36,9 +106,11 @@ function startPongGame() {
     pongCtx = pongCanvas.getContext('2d');
     const score1 = document.getElementById('score1');
     const score2 = document.getElementById('score2');
-    const closeBtn = document.getElementById('pong-close');
-      pongOverlay.style.display = 'flex';
+    const closeBtn = document.getElementById('pong-close');    pongOverlay.style.display = 'flex';
     pongGameRunning = true;
+    
+    // Démarrer la musique de fond
+    startPongMusic();
     
     // Récupérer la vitesse sauvegardée si disponible
     const savedPongSpeed = localStorage.getItem('pongSpeedMultiplier');
@@ -128,14 +200,16 @@ function startPongGame() {
         if (pongKeys['ArrowDown']) {
             pongPaddle2.y = Math.min(pongCanvas.height - pongPaddle2.height, pongPaddle2.y + paddleSpeed);
         }
-    }
-      function updateBall() {
-        pongBall.x += pongBall.velocityX * pongSpeedMultiplier;
-        pongBall.y += pongBall.velocityY * pongSpeedMultiplier;
+    }      function updateBall() {
+        // La vitesse augmente légèrement avec le temps pour plus de difficulté
+        const speedIncrement = Math.min(1.5, 1.0 + Math.min(0.5, pongPaddle1.score + pongPaddle2.score) / 10);
         
-        // Top and bottom walls
+        pongBall.x += pongBall.velocityX * pongSpeedMultiplier * speedIncrement;
+        pongBall.y += pongBall.velocityY * pongSpeedMultiplier * speedIncrement;
+          // Top and bottom walls
         if (pongBall.y + pongBall.radius > pongCanvas.height || pongBall.y - pongBall.radius < 0) {
             pongBall.velocityY = -pongBall.velocityY;
+            playPongSound('wall'); // Jouer son de rebond sur mur
         }
         
         // Paddle collisions
@@ -143,21 +217,25 @@ function startPongGame() {
             pongBall.y > pongPaddle1.y && pongBall.y < pongPaddle1.y + pongPaddle1.height) {
             pongBall.velocityX = Math.abs(pongBall.velocityX);
             pongBall.velocityY += (Math.random() - 0.5) * 2;
+            playPongSound('hit'); // Jouer le son de collision
         }
         
         if (pongBall.x + pongBall.radius > pongPaddle2.x &&
             pongBall.y > pongPaddle2.y && pongBall.y < pongPaddle2.y + pongPaddle2.height) {
             pongBall.velocityX = -Math.abs(pongBall.velocityX);
             pongBall.velocityY += (Math.random() - 0.5) * 2;
+            playPongSound('hit'); // Jouer le son de collision
         }
         
         // Scoring
         if (pongBall.x < 0) {
             pongPaddle2.score++;
+            playPongSound('score'); // Jouer le son de score
             resetBall();
         }
         if (pongBall.x > pongCanvas.width) {
             pongPaddle1.score++;
+            playPongSound('score'); // Jouer le son de score
             resetBall();
         }
         
