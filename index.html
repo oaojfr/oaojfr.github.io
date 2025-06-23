@@ -1619,7 +1619,7 @@
                 'nav.contact': 'Contato',
                 'hero.title': 'Olá, eu sou João',
                 'hero.subtitle': 'pessoa legal, eu acho.',
-                'hero.description': 'Apaixonado por criar experiências digitais excepcionais<br>e desenvolver soluções inovadoras.',
+                'hero.description': 'Apaixondo por criar experiências digitais excepcionais<br>e desenvolver soluções inovadoras.',
                 'hero.cta': 'Descobrir meus projetos',
                 'about.title': 'Sobre mim',
                 'about.subtitle': 'Uma pessoa curiosa e criativa',
@@ -1634,7 +1634,7 @@
                 'projects.morealerts.description': 'Plugin GLPI avançado que oferece um sistema completo de alertas por email para gestão de ativos de TI. Fork aprimorado do plugin additionalalerts com novas funcionalidades de controle de qualidade CMDB.',
                 'projects.morealerts.features': 'Funcionalidades principais:',
                 'projects.morealerts.feature1': 'Alertas de tickets não resolvidos, pendentes, alta prioridade',
-                'projects.morealerts.feature2': 'Controle de qualidade CMDB (duplicatas, inconsistências)',
+                'projects.morealerts.feature2': 'Controle de qualidade CMDB (duplicatas, incoerências)',
                 'projects.morealerts.feature3': 'Alertas de equipamentos (garantia, manutenção, inventário)',
                 'projects.morealerts.feature4': 'Gestão multi-entidades e notificações personalizáveis',
                 'projects.games.title': 'Portfolio Gaming Easter Eggs',
@@ -1669,7 +1669,7 @@
                 'games.mario.title': '🍄 Easter Egg: Super Mario Platformer!',
                 'games.mario.controls': '←/→ ou A/D para mover, ESPAÇO para pular',
                 'games.mario.goal': 'Evite inimigos, colete moedas, complete níveis!',
-                'games.mario.random': 'Cada nível é gerado aleatoriamente',
+                'games.mario.random': 'Cada nível é gerado aléatoriamente',
                 'games.mario.score': 'Pontuação',
                 'games.mario.coins': 'Moedas',
                 'games.mario.gameover': 'Game Over!',
@@ -1963,6 +1963,32 @@
             clearInterval(matrixAnimation);
         }
 
+        // Ajout des fonctions manquantes pour afficher les jeux
+        function showSnakeGame() {
+            if (typeof initSnakeGame === 'function') {
+                startSnakeGame();
+            } else {
+                console.error("La fonction startSnakeGame n'est pas disponible");
+            }
+        }
+        
+        function showMarioGame() {
+            if (typeof MarioGame === 'function') {
+                // Vérifier si l'overlay existe déjà
+                let marioOverlay = document.getElementById('mario-overlay');
+                if (marioOverlay) {
+                    marioOverlay.style.display = 'flex';
+                    // Créer une nouvelle instance si elle n'existe pas
+                    if (!window.marioGameInstance) {
+                        window.marioGameInstance = new MarioGame();
+                        window.marioGameInstance.init();
+                    }
+                }
+            } else {
+                console.error("La classe MarioGame n'est pas disponible");
+            }
+        }
+        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Load preferences
