@@ -16,6 +16,13 @@ class MarioGame {
         this.levelWidth = 2400;
         this.tileSize = 32;
         
+        // Audio system
+        this.audio = {
+            music: null,
+            sounds: {},
+            currentMusicTrack: null
+        };
+        
         // Mario properties (slower)
         this.mario = {
             x: 100,
@@ -30,7 +37,8 @@ class MarioGame {
             direction: 1,
             animFrame: 0,
             animTime: 0,
-            invulnerable: 0
+            invulnerable: 0,
+            powerState: 0, // 0 = petit, 1 = grand, 2 = feu
         };
         
         // Camera
@@ -50,6 +58,8 @@ class MarioGame {
         this.enemies = [];
         this.coinItems = [];
         this.particles = [];
+        this.powerUps = [];
+        this.pipes = [];
         
         // Enemy types (all slower than Mario)
         this.enemyTypes = {
@@ -57,11 +67,21 @@ class MarioGame {
             KOOPA: { width: 28, height: 32, speed: 0.9, color: '#228B22', points: 200 }, // Reduced from 1.2
             SPIKY: { width: 26, height: 26, speed: 0.4, color: '#FF4500', points: 150 } // Reduced from 0.6
         };
+        
+        // PowerUp types
+        this.powerUpTypes = {
+            MUSHROOM: { width: 24, height: 24, speed: 0.8, color: '#FF0000', effect: 'grow' },
+            FIRE_FLOWER: { width: 24, height: 24, speed: 0, color: '#FFA500', effect: 'fire' },
+            STAR: { width: 24, height: 24, speed: 1.2, color: '#FFD700', effect: 'star' }
+        };
     }
     
     init() {
         this.canvas = document.getElementById('mario-canvas');
         this.ctx = this.canvas.getContext('2d');
+        
+        // Précharger les sons et la musique
+        this.preloadAudio();
         
         // Reset game state
         this.resetGame();
@@ -77,24 +97,121 @@ class MarioGame {
         this.gameLoop(this.lastTime);
     }
     
-    resetGame() {
+    preloadAudio() {
+        try {
+            // Créer un contexte audio
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioContext = new AudioContext();
+            
+            // Musiques principales
+            const musicTracks = {
+                'main': 'https://bearable-hacker.io/mario-theme.mp3',
+                'underground': 'https://bearable-hacker.io/mario-underground.mp3',
+                'star': 'https://bearable-hacker.io/mario-star.mp3',
+                'gameOver': 'https://bearable-hacker.io/mario-gameover.mp3',
+                'levelComplete': 'https://bearable-hacker.io/mario-level-complete.mp3'
+            };
+            
+            // Effets sonores
+            const soundEffects = {
+                'jump': 'https://bearable-hacker.io/mario-jump.mp3',
+                'coin': 'https://bearable-hacker.io/mario-coin.mp3',
+                'powerUp': 'https://bearable-hacker.io/mario-powerup.mp3',
+                'stomp': 'https://bearable-hacker.io/mario-stomp.mp3',
+                'pipe': 'https://bearable-hacker.io/mario-pipe.mp3',
+                'die': 'https://bearable-hacker.io/mario-die.mp3'
+            };
+            
+            // Précharger les musiques
+            Object.entries(musicTracks).forEach(([name, url]) => {
+                this.loadAudio(url, audioContext).then(buffer => {
+                    this.audio.sounds[name] = {
+                        buffer,
+                        context: audioContext,
+                        loop: true // La musique se joue en boucle
+                    };
+                });
+            });
+            
+            // Précharger les effets sonores
+            Object.entries(soundEffects).forEach(([name, url]) => {
+                this.loadAudio(url, audioContext).then(buffer => {
+                    this.audio.sounds[name] = {
+                        buffer,
+                        context: audioContext,
+                        loop: false // Les effets ne se jouent pas en boucle
+                    };
+                });
+            });
+            
+        } catch (e) {
+            console.error('Erreur lors du chargement audio:', e);
+        }
+    }
+    
+    loadAudio(url, audioContext) {
+        return fetch(url)
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+            .catch(e => {
+                console.error('Erreur de chargement audio:', url, e);
+                return null;
+            });
+    }
+    
+    playSound(name) {
+        try {
+            if (!this.audio.sounds[name]) return null;
+            
+            const sound = this.audio.sounds[name];
+            const source = sound.context.createBufferSource();
+            source.buffer = sound.buffer;
+            source.connect(sound.context.destination);
+            source.loop = sound.loop;
+            source.start(0);
+            
+            return source;
+        } catch (e) {
+            console.error('Erreur de lecture audio:', e);
+            return null;
+        }
+    }
+    
+    playMusic(trackName) {
+        // Arrêter la musique actuelle si elle existe
+        if (this.audio.currentMusicTrack) {
+            this.audio.currentMusicTrack.stop();
+            this.audio.currentMusicTrack = null;
+        }
+        
+        // Jouer la nouvelle musique
+        this.audio.currentMusicTrack = this.playSound(trackName);
+    }
+      resetGame() {
         this.mario.x = 100;
         this.mario.y = 200;
         this.mario.velocityX = 0;
         this.mario.velocityY = 0;
         this.mario.onGround = false;
         this.mario.invulnerable = 0;
+        this.mario.powerState = 0; // Remettre Mario en petit état
         this.camera.x = 0;
         this.camera.y = 0;
         this.score = 0;
         this.coins = 0;
         this.lives = 3;
+        this.level = 1;
         this.keys = {};
         this.platforms = [];
         this.enemies = [];
         this.coinItems = [];
         this.particles = [];
+        this.powerUps = [];
+        this.pipes = [];
         this.levelCompleted = false;
+        
+        // Démarrer la musique principale
+        this.playMusic('main');
         // Generate new seed for this game session
         this.levelSeed = Math.floor(Math.random() * 1000000);
     }
@@ -327,108 +444,196 @@ class MarioGame {
     }
     
     populateProceduralLevel(seed) {
-        try {
-            // Clear existing
-            this.enemies = [];
-            this.coinItems = [];
+        // Ajouter des pièces et ennemis en fonction du niveau
+        const enemyDensity = 0.4 + (this.level * 0.05); // Augmente avec le niveau
+        const coinDensity = 0.5 - (this.level * 0.02);  // Diminue légèrement avec le niveau
+        const powerUpDensity = 0.15 + (this.level * 0.01); // Légère augmentation avec le niveau
+        
+        // Semer des ennemis
+        for (let i = 0; i < this.platforms.length; i++) {
+            const platform = this.platforms[i];
+            // Ne pas ajouter d'ennemis sur certains types de plateformes
+            if (platform.type !== 'ground' && platform.width < 64) continue;
             
-            // Generate enemies based on level difficulty
-            const baseEnemies = 6;
-            const enemyCount = Math.min(baseEnemies + Math.floor(this.level / 2), 15); // Cap at 15 enemies
-            const enemyTypes = ['GOOMBA', 'KOOPA', 'SPIKY'];
-            
-            let placedEnemies = 0;
-            let attempts = 0;
-            const maxAttempts = enemyCount * 3; // Prevent infinite loops
-            
-            while (placedEnemies < enemyCount && attempts < maxAttempts) {
-                attempts++;
-                const enemySeed = seed + placedEnemies * 15 + attempts;
-                const x = 250 + this.seededRandom(enemySeed) * (this.levelWidth - 500);
+            const enemyRand = this.seededRandom(seed + i * 31);
+            if (enemyRand < enemyDensity) {
+                // Choisir un type d'ennemi en fonction du niveau
+                const enemyTypeRand = this.seededRandom(seed + i * 17) * 100;
+                let enemyType;
                 
-                // Find suitable platform
-                const platform = this.findPlatformAt(x, 360);
-                if (platform) {
-                    // Enemy type based on level and randomness
-                    let typeIndex;
-                    if (this.level <= 2) {
-                        typeIndex = 0; // Only Goombas for first levels
-                    } else if (this.level <= 4) {
-                        typeIndex = Math.floor(this.seededRandom(enemySeed + 1) * 2); // Goombas and Koopas
-                    } else {
-                        typeIndex = Math.floor(this.seededRandom(enemySeed + 1) * 3); // All enemy types
-                    }
-                    
-                    const enemyType = enemyTypes[typeIndex];
-                    const enemyStats = this.enemyTypes[enemyType];
-                    
-                    this.enemies.push({
-                        x: x,
-                        y: platform.y - enemyStats.height,
-                        width: enemyStats.width,
-                        height: enemyStats.height,
-                        velocityX: this.seededRandom(enemySeed + 2) > 0.5 ? enemyStats.speed : -enemyStats.speed,
-                        velocityY: 0,
-                        type: enemyType,
-                        alive: true,
-                        onGround: false,
-                        patrolStart: x - 80,
-                        patrolEnd: x + 80,
-                        animFrame: 0,
-                        animTime: 0
-                    });
-                    
-                    placedEnemies++;
+                if (this.level <= 2) {
+                    // Niveau 1-2: principalement des Goombas
+                    enemyType = 'GOOMBA';
+                } else if (this.level <= 4) {
+                    // Niveau 3-4: Goombas et Koopas
+                    enemyType = enemyTypeRand < 60 ? 'GOOMBA' : 'KOOPA';
+                } else {
+                    // Niveau 5+: Tous types
+                    if (enemyTypeRand < 50) enemyType = 'GOOMBA';
+                    else if (enemyTypeRand < 85) enemyType = 'KOOPA';
+                    else enemyType = 'SPIKY';
                 }
+                
+                const enemyX = platform.x + platform.width / 2;
+                const enemyY = platform.y - this.enemyTypes[enemyType].height;
+                
+                this.enemies.push({
+                    x: enemyX,
+                    y: enemyY,
+                    velocityX: -this.enemyTypes[enemyType].speed,
+                    velocityY: 0,
+                    width: this.enemyTypes[enemyType].width,
+                    height: this.enemyTypes[enemyType].height,
+                    type: enemyType,
+                    onGround: true,
+                    active: true,
+                    points: this.enemyTypes[enemyType].points
+                });
             }
             
-            // Generate coins procedurally
-            const coinCount = Math.min(15 + Math.floor(this.level / 3) * 5, 30); // Cap at 30 coins
-            
-            for (let i = 0; i < coinCount; i++) {
-                const coinSeed = seed + i * 20 + 10000;
-                const x = 200 + this.seededRandom(coinSeed) * (this.levelWidth - 400);
-                const y = 100 + this.seededRandom(coinSeed + 1) * 200;
-                
-                // Sometimes group coins together
-                if (this.seededRandom(coinSeed + 2) > 0.7) {
-                    // Create a group of 3 coins
-                    for (let j = 0; j < 3; j++) {
+            // Ajouter des pièces sur cette plateforme
+            if (platform.type === 'platform' && platform.width > 64) {
+                const coinCount = Math.floor(platform.width / 40) - 1;
+                for (let j = 0; j < coinCount; j++) {
+                    const coinRand = this.seededRandom(seed + i * 41 + j);
+                    if (coinRand < coinDensity) {
+                        const coinX = platform.x + 20 + j * 40;
+                        const coinY = platform.y - 30;
+                        
                         this.coinItems.push({
-                            x: x + j * 25,
-                            y: y,
+                            x: coinX,
+                            y: coinY,
                             width: 16,
                             height: 16,
                             collected: false,
                             rotation: 0,
-                            bobOffset: this.seededRandom(coinSeed + j) * Math.PI * 2
+                            bobOffset: this.seededRandom(seed + i + j) * Math.PI * 2
                         });
                     }
-                } else {
-                    this.coinItems.push({
-                        x: x,
-                        y: y,
-                        width: 16,
-                        height: 16,
-                        collected: false,
-                        rotation: 0,
-                        bobOffset: this.seededRandom(coinSeed + 3) * Math.PI * 2
+                }
+            }
+            
+            // Possibilité d'ajouter un power-up sur les plateformes
+            if (platform.type === 'platform' && platform.width >= 32) {
+                const powerUpRand = this.seededRandom(seed + i * 53);
+                if (powerUpRand < powerUpDensity) {
+                    // Choisir un type de power-up
+                    const powerUpTypeRand = this.seededRandom(seed + i * 79) * 100;
+                    let powerUpType;
+                    
+                    if (powerUpTypeRand < 60) {
+                        powerUpType = 'MUSHROOM';
+                    } else if (powerUpTypeRand < 90) {
+                        powerUpType = 'FIRE_FLOWER';
+                    } else {
+                        powerUpType = 'STAR';
+                    }
+                    
+                    const powerUpX = platform.x + platform.width / 2;
+                    const powerUpY = platform.y - this.powerUpTypes[powerUpType].height;
+                    
+                    this.powerUps.push({
+                        x: powerUpX,
+                        y: powerUpY,
+                        velocityX: this.powerUpTypes[powerUpType].speed * (Math.random() > 0.5 ? 1 : -1),
+                        velocityY: 0,
+                        width: this.powerUpTypes[powerUpType].width,
+                        height: this.powerUpTypes[powerUpType].height,
+                        type: powerUpType,
+                        effect: this.powerUpTypes[powerUpType].effect,
+                        active: true,
+                        onGround: true
                     });
                 }
             }
-        } catch (error) {
-            console.error('Error in populateProceduralLevel:', error);
-            // Add minimal enemies and coins as fallback
-            this.enemies = [{
-                x: 400, y: 320, width: 24, height: 24, velocityX: 0.6, velocityY: 0,
-                type: 'GOOMBA', alive: true, onGround: false, patrolStart: 350, patrolEnd: 450,
-                animFrame: 0, animTime: 0
-            }];
+        }
+        
+        // Générer des tuyaux
+        this.generateTubes(seed);
+    }
+    
+    generateTubes(seed) {
+        // Générer 3-5 tuyaux par niveau à des positions stratégiques
+        const numPipes = 3 + Math.floor(this.seededRandom(seed) * 3);
+        
+        for (let i = 0; i < numPipes; i++) {
+            const pipeSeed = seed + i * 200;
+            const minX = 400 + i * (this.levelWidth - 800) / numPipes;
+            const maxX = minX + (this.levelWidth - 800) / numPipes - 200;
             
-            this.coinItems = [{
-                x: 300, y: 200, width: 16, height: 16, collected: false,
-                rotation: 0, bobOffset: 0
-            }];
+            // Position du tuyau
+            const pipeX = minX + this.seededRandom(pipeSeed) * (maxX - minX);
+            
+            // Trouver la position y (sur le sol)
+            let pipeY = 360; // Hauteur du sol par défaut
+            
+            // Vérifier s'il y a une plateforme de sol à cette position x
+            for (const platform of this.platforms) {
+                if (platform.type === 'ground' && 
+                    pipeX >= platform.x && 
+                    pipeX <= platform.x + platform.width) {
+                    pipeY = platform.y;
+                    break;
+                }
+            }
+            
+            // Taille du tuyau
+            const pipeHeight = 60 + Math.floor(this.seededRandom(pipeSeed + 1) * 40);
+            const pipeTop = pipeY - pipeHeight;
+            
+            // Ajouter le tuyau
+            this.pipes.push({
+                x: pipeX - 25, // La base du tuyau est centrée sur pipeX
+                y: pipeTop,
+                width: 50,
+                height: pipeHeight,
+                isEnterable: this.seededRandom(pipeSeed + 2) < 0.3 // 30% des tuyaux sont entrables
+            });
+            
+            // S'assurer qu'il n'y a pas de plateforme au-dessus du tuyau
+            this.platforms = this.platforms.filter(platform => 
+                platform.type !== 'platform' || 
+                platform.y < pipeTop - 50 ||
+                platform.x + platform.width < pipeX - 30 ||
+                platform.x > pipeX + 30
+            );
+            
+            // Ajouter des plates-formes à la place des tuiles de sol où se trouve le tuyau
+            this.platforms = this.platforms.filter(platform => 
+                platform.type !== 'ground' || 
+                platform.x + platform.width <= pipeX - 25 || 
+                platform.x >= pipeX + 25
+            );
+            
+            // Ajouter la collision pour le tuyau
+            this.platforms.push({
+                x: pipeX - 25,
+                y: pipeTop,
+                width: 50,
+                height: pipeHeight,
+                type: 'pipe'
+            });
+            
+            // Possibilité d'avoir un ennemi qui sort du tuyau
+            if (this.level > 2 && this.seededRandom(pipeSeed + 3) < 0.4) {
+                const enemyX = pipeX;
+                const enemyY = pipeTop - this.enemyTypes['GOOMBA'].height;
+                
+                this.enemies.push({
+                    x: enemyX,
+                    y: enemyY,
+                    velocityX: -this.enemyTypes['GOOMBA'].speed,
+                    velocityY: 0,
+                    width: this.enemyTypes['GOOMBA'].width,
+                    height: this.enemyTypes['GOOMBA'].height,
+                    type: 'GOOMBA',
+                    onGround: true,
+                    active: true,
+                    points: this.enemyTypes['GOOMBA'].points,
+                    fromPipe: true, // Spécial pour l'animation de sortie du tuyau
+                    spawnTime: Math.random() * 5000 + 2000 // Apparaîtra aléatoirement entre 2 et 7 secondes
+                });
+            }
         }
     }
     
@@ -463,6 +668,10 @@ class MarioGame {
             if (this.mario.onGround) {
                 this.mario.velocityY = this.mario.jumpPower;
                 this.mario.onGround = false;
+                
+                // Play jump sound
+                this.audio.sounds.jump.currentTime = 0;
+                this.audio.sounds.jump.play();
             }
         }
     }
@@ -487,17 +696,33 @@ class MarioGame {
     }
     
     update(deltaTime) {
-        // Normalize deltaTime for consistent movement at different framerates
-        const normalizedDelta = deltaTime / 16.67; // 16.67ms = 60fps
+        if (!this.gameRunning) return;
         
-        this.updateMario(normalizedDelta);
-        this.updateEnemies(normalizedDelta);
-        this.updateCoins(normalizedDelta);
-        this.updateParticles(normalizedDelta);
-        this.updateMovingPlatforms(normalizedDelta);
-        this.updateCamera();
+        // Update player
+        this.updateMario(deltaTime);
+        
+        // Update enemies
+        this.updateEnemies(deltaTime);
+        
+        // Update powerups
+        this.updatePowerUps(deltaTime);
+        
+        // Update particles
+        this.updateParticles(deltaTime);
+        
+        // Update coin animations
+        this.updateCoins(deltaTime);
+        
+        // Check collisions
         this.checkCollisions();
-        this.checkWinCondition();
+        
+        // Update camera
+        this.updateCamera();
+        
+        // Update invulnerability timer
+        if (this.mario.invulnerable > 0) {
+            this.mario.invulnerable--;
+        }
     }
     
     updateMovingPlatforms(delta) {
@@ -700,6 +925,8 @@ class MarioGame {
         this.checkMarioPlatformCollisions();
         this.checkMarioEnemyCollisions();
         this.checkMarioCoinCollisions();
+        this.checkPowerUpCollision();
+        this.checkPipeCollision();
     }
     
     checkMarioPlatformCollisions() {
@@ -753,6 +980,10 @@ class MarioGame {
                     this.score += this.enemyTypes[enemy.type].points;
                     this.createDeathParticles(enemy.x + enemy.width/2, enemy.y + enemy.height/2);
                     this.updateUI();
+                    
+                    // Play stomp sound
+                    this.audio.sounds.stomp.currentTime = 0;
+                    this.audio.sounds.stomp.play();
                 } else {
                     // Mario hits enemy from side - lose life
                     if (enemy.type === 'SPIKY') {
@@ -779,44 +1010,295 @@ class MarioGame {
                 this.score += 200;
                 this.createCoinParticles(coin.x + coin.width/2, coin.y + coin.height/2);
                 this.updateUI();
+                
+                // Play coin sound
+                this.audio.sounds.coin.currentTime = 0;
+                this.audio.sounds.coin.play();
             }
         });
     }
     
-    createDeathParticles(x, y) {
-        for (let i = 0; i < 8; i++) {
-            this.particles.push({
-                x: x,
-                y: y,
-                velocityX: (Math.random() - 0.5) * 4,
-                velocityY: -Math.random() * 3 - 1,
-                color: '#ff6b6b',
-                life: 30
-            });
+    updatePowerUps(deltaTime) {
+        for (let i = this.powerUps.length - 1; i >= 0; i--) {
+            const powerUp = this.powerUps[i];
+            
+            if (!powerUp.active) continue;
+            
+            // Appliquer gravité si pas sur le sol
+            if (!powerUp.onGround) {
+                powerUp.velocityY += this.gravity;
+            } else {
+                // Déplacement horizontal pour les power-ups qui bougent
+                if (powerUp.type === 'MUSHROOM' || powerUp.type === 'STAR') {
+                    // Rebondir sur les bords des plateformes
+                    const platforms = this.getPlatformsUnderEntity(powerUp);
+                    if (platforms.length > 0) {
+                        const platform = platforms[0];
+                        if (powerUp.x <= platform.x || powerUp.x + powerUp.width >= platform.x + platform.width) {
+                            powerUp.velocityX *= -1;
+                        }
+                    }
+                }
+            }
+            
+            // Mettre à jour la position
+            powerUp.x += powerUp.velocityX;
+            powerUp.y += powerUp.velocityY;
+            
+            // Vérifier collision avec le sol
+            powerUp.onGround = false;
+            for (let platform of this.platforms) {
+                if (this.checkRectCollision(powerUp, platform)) {
+                    // Corriger la position
+                    if (powerUp.y + powerUp.height > platform.y && 
+                        powerUp.y < platform.y &&
+                        powerUp.velocityY > 0) {
+                        powerUp.y = platform.y - powerUp.height;
+                        powerUp.velocityY = 0;
+                        powerUp.onGround = true;
+                    }
+                    
+                    // Collision horizontale
+                    if (powerUp.x + powerUp.width > platform.x &&
+                        powerUp.x < platform.x + platform.width &&
+                        !powerUp.onGround) {
+                        if (powerUp.velocityX > 0) {
+                            powerUp.x = platform.x - powerUp.width;
+                        } else if (powerUp.velocityX < 0) {
+                            powerUp.x = platform.x + platform.width;
+                        }
+                        powerUp.velocityX *= -1;
+                    }
+                }
+            }
+            
+            // Limiter la vitesse de chute
+            if (powerUp.velocityY > 10) {
+                powerUp.velocityY = 10;
+            }
         }
     }
     
-    createCoinParticles(x, y) {
-        for (let i = 0; i < 6; i++) {
-            this.particles.push({
-                x: x,
-                y: y,
-                velocityX: (Math.random() - 0.5) * 3,
-                velocityY: -Math.random() * 2 - 1,
-                color: '#FFD700',
-                life: 25
-            });
+    checkPowerUpCollision() {
+        for (let i = this.powerUps.length - 1; i >= 0; i--) {
+            const powerUp = this.powerUps[i];
+            
+            if (powerUp.active && this.checkRectCollision(this.mario, powerUp)) {
+                // Activer l'effet du power-up
+                this.activatePowerUp(powerUp);
+                
+                // Désactiver le power-up
+                powerUp.active = false;
+                
+                // Créer particules
+                this.createParticles(
+                    powerUp.x + powerUp.width / 2,
+                    powerUp.y + powerUp.height / 2,
+                    10,
+                    this.powerUpTypes[powerUp.type].color
+                );
+                
+                // Jouer le son
+                this.playSound('powerUp');
+                
+                // Ajouter des points
+                this.score += 1000;
+                this.updateUI();
+            }
         }
     }
     
-    checkWinCondition() {
-        if (!this.levelCompleted && this.mario.x > this.levelWidth - 100) {
-            this.levelCompleted = true;
-            // Add a small delay to prevent immediate re-triggering
+    activatePowerUp(powerUp) {
+        switch (powerUp.effect) {
+            case 'grow':
+                // Devenir grand Mario
+                if (this.mario.powerState < 1) {
+                    this.mario.powerState = 1;
+                }
+                break;
+                
+            case 'fire':
+                // Devenir Fire Mario
+                this.mario.powerState = 2;
+                break;
+                
+            case 'star':
+                // Devenir invulnérable
+                this.mario.invulnerable = 600; // Environ 10 secondes
+                
+                // Jouer la musique d'étoile
+                this.playMusic('star');
+                
+                // Revenir à la musique normale après un certain temps
+                setTimeout(() => {
+                    if (this.gameRunning && this.mario.invulnerable <= 0) {
+                        this.playMusic('main');
+                    }
+                }, 10000);
+                break;
+        }
+    }
+    
+    checkPipeCollision() {
+        // Vérifier si Mario est sur un tuyau
+        for (const pipe of this.pipes) {
+            // Mario doit être exactement sur le tuyau (tolérance de quelques pixels)
+            const isOnPipe = Math.abs((this.mario.x + this.mario.width / 2) - (pipe.x + pipe.width / 2)) < 15 &&
+                             Math.abs(this.mario.y + this.mario.height - pipe.y) < 5;
+            
+            // Si Mario appuie sur 'bas' et est sur un tuyau entrable
+            if (isOnPipe && this.keys['ArrowDown'] && pipe.isEnterable && this.mario.onGround) {
+                // Jouer l'animation d'entrée de tuyau
+                this.enterPipe(pipe);
+                return;
+            }
+        }
+    }
+    
+    enterPipe(pipe) {
+        // Désactiver les contrôles pendant l'animation
+        this.gameRunning = false;
+        
+        // Son d'entrée de tuyau
+        this.playSound('pipe');
+        
+        // Animation: Mario descend dans le tuyau
+        const enterAnimation = setInterval(() => {
+            this.mario.y += 1;
+            
+            // Redessiner
+            this.render();
+            
+            // Arrêter l'animation quand Mario est complètement dans le tuyau
+            if (this.mario.y > pipe.y + 40) {
+                clearInterval(enterAnimation);
+                
+                // Jouer la musique souterraine
+                this.playMusic('underground');
+                
+                // Téléporter Mario à une autre position (soit un autre tuyau, soit une zone secrète)
+                this.teleportAfterPipe();
+            }
+        }, 20);
+    }
+    
+    teleportAfterPipe() {
+        // Trouver un autre tuyau pour sortir ou créer une zone secrète
+        const exitPipes = this.pipes.filter(p => p.isEnterable && p !== this.currentEnteredPipe);
+        
+        if (exitPipes.length > 0 && Math.random() > 0.3) {
+            // 70% de chance d'aller à un autre tuyau
+            const exitPipe = exitPipes[Math.floor(Math.random() * exitPipes.length)];
+            
+            // Placer Mario au-dessus du tuyau de sortie
+            this.mario.x = exitPipe.x + exitPipe.width / 2 - this.mario.width / 2;
+            this.mario.y = exitPipe.y - this.mario.height - 10;
+            this.mario.velocityY = 0;
+            
+            // Animation de sortie
             setTimeout(() => {
-                this.nextLevel();
-            }, 100);
+                // Son de sortie
+                this.playSound('pipe');
+                
+                // Animation: Mario sort du tuyau
+                let exitY = this.mario.y;
+                const exitAnimation = setInterval(() => {
+                    this.mario.y -= 1;
+                    
+                    // Redessiner
+                    this.render();
+                    
+                    // Arrêter l'animation quand Mario est complètement sorti
+                    if (this.mario.y <= exitY - 40) {
+                        clearInterval(exitAnimation);
+                        
+                        // Reprendre le jeu et la musique normale
+                        this.gameRunning = true;
+                        this.playMusic('main');
+                    }
+                }, 20);
+            }, 500);
+        } else {
+            // 30% de chance de générer une zone secrète avec beaucoup de pièces
+            this.generateSecretArea();
+            
+            // Reprendre le jeu après un court délai
+            setTimeout(() => {
+                this.gameRunning = true;
+            }, 500);
         }
+    }
+    
+    generateSecretArea() {
+        // Créer une petite zone avec beaucoup de pièces
+        const areaWidth = 400;
+        const areaHeight = 300;
+        
+        // Position de la zone (hors caméra)
+        const areaX = this.mario.x - areaWidth / 2;
+        const areaY = this.mario.y - areaHeight + 50;
+        
+        // Placer Mario en haut de la zone
+        this.mario.x = areaX + areaWidth / 2;
+        this.mario.y = areaY + 50;
+        this.mario.velocityY = 0;
+        
+        // Créer le sol
+        this.platforms.push({
+            x: areaX,
+            y: areaY + areaHeight,
+            width: areaWidth,
+            height: 40,
+            type: 'ground'
+        });
+        
+        // Ajouter des plateformes
+        for (let i = 0; i < 3; i++) {
+            this.platforms.push({
+                x: areaX + 30 + i * 100,
+                y: areaY + 200 - i * 50,
+                width: 80,
+                height: 20,
+                type: 'platform'
+            });
+        }
+        
+        // Ajouter beaucoup de pièces
+        for (let i = 0; i < 30; i++) {
+            this.coinItems.push({
+                x: areaX + 20 + (i % 10) * 40,
+                y: areaY + 100 + Math.floor(i / 10) * 60,
+                width: 16,
+                height: 16,
+                collected: false,
+                rotation: 0,
+                bobOffset: Math.random() * Math.PI * 2
+            });
+        }
+        
+        // Ajouter un tuyau de sortie
+        const exitPipe = {
+            x: areaX + areaWidth - 70,
+            y: areaY + areaHeight - 60,
+            width: 50,
+            height: 60,
+            isEnterable: true
+        };
+        
+        this.pipes.push(exitPipe);
+        
+        // Ajouter la collision pour le tuyau
+        this.platforms.push({
+            x: exitPipe.x,
+            y: exitPipe.y,
+            width: exitPipe.width,
+            height: exitPipe.height,
+            type: 'pipe'
+        });
+        
+        // Ajuster la caméra pour montrer la zone
+        this.camera.x = areaX;
+        this.camera.y = areaY;
     }
     
     render() {
@@ -1041,273 +1523,182 @@ class MarioGame {
     }
     
     drawMario() {
-        const x = this.mario.x - this.camera.x;
-        const y = this.mario.y;
+        if (!this.gameRunning) return;
         
-        // Invulnerability flashing
-        if (this.mario.invulnerable > 0 && Math.floor(this.mario.invulnerable / 3) % 2) {
-            return; // Skip drawing for flashing effect
+        // Si Mario est invulnérable, faire clignoter (visible seulement la moitié du temps)
+        if (this.mario.invulnerable > 0 && Math.floor(this.mario.invulnerable / 4) % 2 === 0) {
+            return;
         }
         
-        // Mario body
-        this.ctx.fillStyle = '#ff6b6b';
-        this.ctx.fillRect(x, y + 8, this.mario.width, this.mario.height - 8);
+        // Calculer la position relative à la caméra
+        const drawX = this.mario.x - this.camera.x;
+        const drawY = this.mario.y - this.camera.y;
         
-        // Mario hat
-        this.ctx.fillStyle = '#8B0000';
-        this.ctx.fillRect(x - 2, y - 4, this.mario.width + 4, 12);
+        this.ctx.save();
         
-        // Mario face
-        this.ctx.fillStyle = '#FFE4B5';
-        this.ctx.fillRect(x + 4, y + 8, this.mario.width - 8, 16);
-        
-        // Mustache
-        this.ctx.fillStyle = '#8B4513';
-        this.ctx.fillRect(x + 8, y + 18, 8, 3);
-        
-        // Eyes (direction-based)
-        this.ctx.fillStyle = 'black';
-        if (this.mario.direction === 1) {
-            this.ctx.fillRect(x + 14, y + 12, 2, 2);
-            this.ctx.fillRect(x + 18, y + 12, 2, 2);
-        } else {
-            this.ctx.fillRect(x + 4, y + 12, 2, 2);
-            this.ctx.fillRect(x + 8, y + 12, 2, 2);
+        // Appliquer une transformation pour le sens de Mario
+        if (this.mario.direction < 0) {
+            this.ctx.translate(drawX * 2 + this.mario.width, 0);
+            this.ctx.scale(-1, 1);
         }
         
-        // Legs animation
-        if (Math.abs(this.mario.velocityX) > 0.1) {
-            this.ctx.fillStyle = '#000080';
-            if (this.mario.animFrame % 2 === 0) {
-                this.ctx.fillRect(x + 6, y + this.mario.height - 8, 4, 8);
-                this.ctx.fillRect(x + 14, y + this.mario.height - 6, 4, 6);
-            } else {
-                this.ctx.fillRect(x + 6, y + this.mario.height - 6, 4, 6);
-                this.ctx.fillRect(x + 14, y + this.mario.height - 8, 4, 8);
-            }
-        } else {
-            this.ctx.fillStyle = '#000080';
-            this.ctx.fillRect(x + 8, y + this.mario.height - 8, 8, 8);
+        // Changer la hauteur en fonction de l'état de puissance
+        const height = this.mario.powerState > 0 ? this.mario.height * 1.5 : this.mario.height;
+        const yOffset = this.mario.powerState > 0 ? this.mario.height * 0.5 : 0;
+        
+        // Couleur de base selon le power state
+        let color = '#FF0000'; // Base rouge
+        if (this.mario.powerState === 1) color = '#FF0000'; // Grand Mario: rouge
+        else if (this.mario.powerState === 2) color = '#FFA500'; // Fire Mario: orange
+        
+        // Dessiner le corps
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(drawX, drawY - yOffset, this.mario.width, height);
+        
+        // Dessiner la tête
+        this.ctx.fillStyle = '#FFC0CB';
+        this.ctx.fillRect(drawX, drawY - yOffset, this.mario.width, height / 3);
+        
+        // Casquette (seulement pour Mario grand et feu)
+        if (this.mario.powerState > 0) {
+            this.ctx.fillStyle = '#FF0000';
+            this.ctx.fillRect(drawX - 4, drawY - yOffset, this.mario.width + 8, height / 6);
         }
+        
+        // Yeux
+        this.ctx.fillStyle = '#000000';
+        this.ctx.fillRect(drawX + (this.mario.width * 0.7), drawY - yOffset + (height / 10), this.mario.width / 5, height / 15);
+        
+        this.ctx.restore();
     }
     
-    drawParticles() {
-        this.particles.forEach(particle => {
-            const x = particle.x - this.camera.x;
-            const alpha = particle.life / 30;
+    drawPlatform(platform) {
+        // Calculer la position relative à la caméra
+        const drawX = platform.x - this.camera.x;
+        const drawY = platform.y - this.camera.y;
+        
+        // Couleurs selon le type
+        let fillColor = '#795548'; // Brown for ground
+        let strokeColor = '#5D4037';
+        
+        if (platform.type === 'platform') {
+            fillColor = '#FF9800'; // Orange for platforms
+            strokeColor = '#F57C00';
+        } else if (platform.type === 'pipe') {
+            fillColor = '#4CAF50'; // Vert pour les tuyaux
+            strokeColor = '#388E3C';
+        }
+        
+        // Remplissage avec dégradé pour plus de profondeur
+        const gradient = this.ctx.createLinearGradient(drawX, drawY, drawX, drawY + platform.height);
+        gradient.addColorStop(0, fillColor);
+        gradient.addColorStop(1, this.adjustColor(fillColor, -20));
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(drawX, drawY, platform.width, platform.height);
+        
+        // Contour
+        this.ctx.strokeStyle = strokeColor;
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(drawX, drawY, platform.width, platform.height);
+        
+        // Détails pour les pipes
+        if (platform.type === 'pipe') {
+            // Lèvre du tuyau
+            this.ctx.fillStyle = '#2E7D32';
+            this.ctx.fillRect(drawX - 5, drawY, platform.width + 10, 10);
             
-            this.ctx.save();
-            this.ctx.globalAlpha = alpha;
-            this.ctx.fillStyle = particle.color;
-            this.ctx.fillRect(x, particle.y, 3, 3);
-            this.ctx.restore();
-        });
-    }
-    
-    drawUI() {
-        // Semi-transparent background for UI
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        this.ctx.fillRect(10, 10, 300, 40);
-        
-        this.ctx.fillStyle = 'white';
-        this.ctx.font = '16px Poppins, sans-serif';
-        this.ctx.fillText(`Vies: ${this.lives} | Score: ${this.score} | Pièces: ${this.coins} | Niveau: ${this.level}`, 15, 35);
-        
-        // Progress bar
-        const progress = this.mario.x / this.levelWidth;
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        this.ctx.fillRect(10, 60, 200, 10);
-        this.ctx.fillStyle = '#4CAF50';
-        this.ctx.fillRect(10, 60, 200 * progress, 10);
-    }
-    
-    loseLife() {
-        if (this.mario.invulnerable > 0) return; // Prevent multiple calls
-        
-        this.lives--;
-        this.mario.invulnerable = 120; // 2 seconds of invulnerability
-        
-        if (this.lives <= 0) {
-            this.gameOver();
-        } else {
-            // Respawn Mario safely
-            this.respawnMario();
-        }
-        
-        this.updateUI();
-    }
-    
-    respawnMario() {
-        // Find a safe spawn position
-        let spawnX = 100;
-        let spawnY = 200;
-        
-        // Check if spawn position is safe (on a platform)
-        const spawnPlatform = this.findPlatformAt(spawnX, 360);
-        if (spawnPlatform) {
-            spawnY = spawnPlatform.y - this.mario.height;
-        }
-        
-        this.mario.x = spawnX;
-        this.mario.y = spawnY;
-        this.mario.velocityX = 0;
-        this.mario.velocityY = 0;
-        this.camera.x = 0;
-        this.levelCompleted = false; // Reset in case of respawn near end
-    }
-    
-    nextLevel() {
-        if (!this.gameRunning) return; // Safety check
-        
-        this.level++;
-        this.mario.x = 100;
-        this.mario.y = 200;
-        this.mario.velocityX = 0;
-        this.mario.velocityY = 0;
-        this.camera.x = 0;
-        this.levelCompleted = false; // Reset for next level
-        
-        // Bonus points for completing level
-        this.score += 1000 + (this.level * 500);
-        
-        // Generate completely new level with new seed
-        this.levelSeed = Math.floor(Math.random() * 1000000);
-        
-        try {
-            this.generateProceduralLevel();
-            this.updateUI();
-        } catch (error) {
-            console.error('Error generating next level:', error);
-            // Fallback: generate a simple level
-            this.generateSimpleFallbackLevel();
-            this.updateUI();
+            // Reflet
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            this.ctx.fillRect(drawX + 5, drawY + 5, 10, platform.height - 10);
         }
     }
     
-    // Fallback level generation in case of errors
-    generateSimpleFallbackLevel() {
-        this.platforms = [];
-        this.enemies = [];
-        this.coinItems = [];
+    drawPowerUp(powerUp) {
+        // Ignorer les power-ups inactifs
+        if (!powerUp.active) return;
         
-        // Simple ground
-        for (let x = 0; x < this.levelWidth; x += this.tileSize) {
-            this.platforms.push({
-                x: x,
-                y: 360,
-                width: this.tileSize,
-                height: 40,
-                type: 'ground'
-            });
-        }
+        // Calculer la position relative à la caméra
+        const drawX = powerUp.x - this.camera.x;
+        const drawY = powerUp.y - this.camera.y;
         
-        // Simple platforms
-        for (let i = 1; i < 6; i++) {
-            this.platforms.push({
-                x: i * 300,
-                y: 280 - i * 20,
-                width: 96,
-                height: 20,
-                type: 'platform'
-            });
-        }
+        this.ctx.fillStyle = this.powerUpTypes[powerUp.type].color;
         
-        // Simple enemies
-        for (let i = 1; i < 4; i++) {
-            this.enemies.push({
-                x: i * 400,
-                y: 320,
-                width: 24,
-                height: 24,
-                velocityX: 0.6,
-                velocityY: 0,
-                type: 'GOOMBA',
-                alive: true,
-                onGround: false,
-                patrolStart: i * 400 - 50,
-                patrolEnd: i * 400 + 50,
-                animFrame: 0,
-                animTime: 0
-            });
-        }
-        
-        // Simple coins
-        for (let i = 1; i < 8; i++) {
-            this.coinItems.push({
-                x: i * 250,
-                y: 200,
-                width: 16,
-                height: 16,
-                collected: false,
-                rotation: 0,
-                bobOffset: 0
-            });
+        // Dessiner le power-up avec une forme différente selon son type
+        if (powerUp.type === 'MUSHROOM') {
+            // Champignon
+            this.ctx.beginPath();
+            this.ctx.arc(drawX + powerUp.width / 2, drawY + powerUp.height / 2, 
+                          powerUp.width / 2, 0, Math.PI * 2);
+            this.ctx.fill();
+            
+            // Détails du champignon
+            this.ctx.fillStyle = '#FFFFFF';
+            this.ctx.beginPath();
+            this.ctx.arc(drawX + powerUp.width / 2, drawY + powerUp.height / 2, 
+                          powerUp.width / 3, 0, Math.PI * 2);
+            this.ctx.fill();
+        } else if (powerUp.type === 'FIRE_FLOWER') {
+            // Fleur de feu
+            this.ctx.fillStyle = '#FFA500';
+            this.ctx.fillRect(drawX, drawY, powerUp.width, powerUp.height);
+            
+            // Pétales
+            const petalColors = ['#FF0000', '#FFFF00'];
+            for (let i = 0; i < 4; i++) {
+                const angle = Math.PI / 2 * i;
+                const petalX = drawX + powerUp.width/2 + Math.cos(angle) * powerUp.width/3;
+                const petalY = drawY + powerUp.height/2 + Math.sin(angle) * powerUp.height/3;
+                
+                this.ctx.fillStyle = petalColors[i % 2];
+                this.ctx.beginPath();
+                this.ctx.arc(petalX, petalY, powerUp.width/4, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+            
+            // Centre de la fleur
+            this.ctx.fillStyle = '#FFFFFF';
+            this.ctx.beginPath();
+            this.ctx.arc(drawX + powerUp.width/2, drawY + powerUp.height/2, 
+                        powerUp.width/6, 0, Math.PI * 2);
+            this.ctx.fill();
+        } else if (powerUp.type === 'STAR') {
+            // Étoile
+            this.ctx.fillStyle = this.powerUpTypes[powerUp.type].color;
+            
+            // Dessiner une étoile à 5 branches
+            this.ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const angle = Math.PI / 5 * i * 2 - Math.PI / 2;
+                const x = drawX + powerUp.width/2 + Math.cos(angle) * powerUp.width/2;
+                const y = drawY + powerUp.height/2 + Math.sin(angle) * powerUp.height/2;
+                
+                if (i === 0) this.ctx.moveTo(x, y);
+                else this.ctx.lineTo(x, y);
+                
+                const innerAngle = angle + Math.PI / 5;
+                const innerX = drawX + powerUp.width/2 + Math.cos(innerAngle) * powerUp.width/4;
+                const innerY = drawY + powerUp.height/2 + Math.sin(innerAngle) * powerUp.height/4;
+                this.ctx.lineTo(innerX, innerY);
+            }
+            this.ctx.closePath();
+            this.ctx.fill();
+            
+            // Effet de brillance
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            this.ctx.beginPath();
+            this.ctx.arc(drawX + powerUp.width/2, drawY + powerUp.height/2, 
+                        powerUp.width/6, 0, Math.PI * 2);
+            this.ctx.fill();
         }
     }
     
-    gameOver() {
-        this.gameRunning = false;
-        document.getElementById('final-score').textContent = this.score;
-        document.getElementById('mario-game-over').style.display = 'block';
-        this.cleanup();
-    }
-    
-    updateUI() {
-        document.getElementById('mario-score-value').textContent = this.score;
-        document.getElementById('mario-coins').textContent = this.coins;
-    }
-    
-    cleanup() {
-        document.removeEventListener('keydown', this.handleKeyDown);
-        document.removeEventListener('keyup', this.handleKeyUp);
-    }
-    
-    close() {
-        this.gameRunning = false;
-        document.getElementById('mario-overlay').style.display = 'none';
-        document.getElementById('mario-game-over').style.display = 'none';
-        this.cleanup();
+    // Fonction utilitaire pour ajuster une couleur
+    adjustColor(color, percent) {
+        const num = parseInt(color.replace('#', ''), 16);
+        const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+        const g = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
+        const b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
+        return '#' + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
     }
 }
-
-// Global game instance
-let marioGameInstance = null;
-
-// Global functions for HTML buttons
-window.restartMarioGame = function() {
-    if (marioGameInstance) {
-        marioGameInstance.init();
-    }
-};
-
-window.closeMarioGame = function() {
-    if (marioGameInstance) {
-        marioGameInstance.close();
-    }
-};
-
-// Initialize game when mario sequence is typed
-let marioSequence = '';
-document.addEventListener('keydown', function(e) {
-    // Don't interfere with game controls
-    if (marioGameInstance && marioGameInstance.gameRunning) return;
-    
-    marioSequence += e.key.toLowerCase();
-    if (marioSequence.length > 5) {
-        marioSequence = marioSequence.slice(-5);
-    }
-    
-    if (marioSequence === 'mario') {
-        document.getElementById('mario-overlay').style.display = 'flex';
-        marioGameInstance = new MarioGame();
-        marioGameInstance.init();
-        marioSequence = '';
-    }
-});
-
-// Close button
-document.getElementById('mario-close').addEventListener('click', function() {
-    if (marioGameInstance) {
-        marioGameInstance.close();
-    }
-});

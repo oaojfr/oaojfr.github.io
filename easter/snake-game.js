@@ -111,31 +111,23 @@ function startSnakeGame() {
     addSnakeControls();
     
     // Define functions first    function generateFood() {
-        // Générer la nourriture autour du serpent (dans un rayon de 5 cases)
+        // Générer la nourriture autour du serpent (exactement à 5 cases comme demandé)
         const head = snake[0];
         let validPosition = false;
         let attempts = 0;
         
         while (!validPosition && attempts < 100) {
-            // Générer une position à une distance de 3-7 cases de la tête
-            const distance = Math.floor(Math.random() * 5) + 3; // Distance de 3 à 7 
+            // Générer une position à une distance exacte de 5 cases
+            const distance = 5; // Distance fixée à 5 comme demandé
             const angle = Math.random() * Math.PI * 2; // Angle aléatoire (0-360°)
             
             // Calculer les coordonnées
             let x = Math.floor(head.x + Math.cos(angle) * distance);
             let y = Math.floor(head.y + Math.sin(angle) * distance);
             
-            // Ajuster les coordonnées si on peut traverser les murs
-            if (snakeWrapWalls) {
-                x = ((x % tileCount) + tileCount) % tileCount;
-                y = ((y % tileCount) + tileCount) % tileCount;
-            } else {
-                // Sinon, s'assurer que c'est dans les limites
-                if (x < 0 || x >= tileCount || y < 0 || y >= tileCount) {
-                    attempts++;
-                    continue;
-                }
-            }
+            // Ajuster les coordonnées si on peut traverser les murs (maintenant activé par défaut)
+            x = ((x % tileCount) + tileCount) % tileCount;
+            y = ((y % tileCount) + tileCount) % tileCount;
             
             // Vérifier si cette position est libre
             validPosition = true;
@@ -147,7 +139,13 @@ function startSnakeGame() {
             }
             
             if (validPosition) {
-                food = { x, y, type: Math.random() < 0.2 ? 'special' : 'normal' };
+                // 30% de chance d'avoir un fruit spécial (augmentation par rapport à avant)
+                food = { 
+                    x, 
+                    y, 
+                    type: Math.random() < 0.3 ? 'special' : 'normal',
+                    effect: Math.random() < 0.5 ? 'speed' : 'grow' // Effets différents
+                };
                 // Réinitialiser l'effet visuel
                 snakeFoodEffect = 0;
                 break;
@@ -182,20 +180,26 @@ function startSnakeGame() {
                 food = { 
                     x: randomPos.x, 
                     y: randomPos.y,
-                    type: 'normal' 
+                    type: 'normal',
+                    effect: 'grow'
                 };
             } else {
                 // Dernier recours: position aléatoire
                 food = { 
                     x: Math.floor(Math.random() * tileCount), 
                     y: Math.floor(Math.random() * tileCount),
-                    type: 'normal' 
+                    type: 'normal',
+                    effect: 'grow'
                 };
             }
         }
         
-        // Jouer le son d'apparition de nourriture
-        // Pas de son pour ne pas surcharger l'audio
+        // Jouer le son d'apparition de nourriture (subtil)
+        if (Math.random() > 0.7) { // 30% de chance de jouer le son pour ne pas surcharger
+            const audio = new Audio('https://bearable-hacker.io/snake-food-appear.mp3');
+            audio.volume = 0.3; // Volume bas
+            audio.play().catch(e => {}); // Ignorer les erreurs
+        }
     }
     
     // Game state
