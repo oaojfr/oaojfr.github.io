@@ -123,7 +123,7 @@ function resetSnake() {
         {x: 9, y: 10},
         {x: 8, y: 10}
     ];
-    snakeDirection = 'right';
+    snakeDirection = { x: 1, y: 0 }; // Vers la droite
     snakeScore = 0;
     generateFood();
 }
@@ -520,17 +520,17 @@ function generateFood() {
         setTimeout(() => {
             gameOverDiv.style.opacity = '1';
         }, 10);
-    }
-      function gameLoop() {
-        if (!snakeGameRunning) return;
-        
-        updateSnake();
-        draw();
-        
-        // Utiliser la vitesse définie par l'utilisateur
-        setTimeout(gameLoop, snakeGameSpeed);
-    }
-      function closeSnakeGameInternal() {
+    }function gameLoop() {
+    if (!snakeGameRunning) return;
+    
+    updateSnake();
+    draw();
+    
+    // Utiliser la vitesse définie par l'utilisateur
+    setTimeout(gameLoop, snakeGameSpeed);
+}
+
+    function closeSnakeGameInternal() {
         snakeGameRunning = false;
         snakeOverlay.style.display = 'none';
         document.getElementById('snake-game-over').style.display = 'none';

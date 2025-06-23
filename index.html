@@ -1963,6 +1963,13 @@
             clearInterval(matrixAnimation);
         }
 
+        // Fonction pour fermer le jeu Mario
+        function closeMarioGame() {
+            if (window.marioGameInstance) {
+                window.marioGameInstance.close();
+            }
+        }
+        
         // Ajout des fonctions manquantes pour afficher les jeux
         function showSnakeGame() {
             if (typeof initSnakeGame === 'function') {
