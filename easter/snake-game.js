@@ -33,10 +33,111 @@ function initSnakeGame() {
         // Check if sequence matches
         if (easterEggSequence.length === secretCode.length && 
             easterEggSequence.every((key, index) => key === secretCode[index])) {
+            // Créer l'interface si elle n'existe pas
+            createSnakeGameInterface();
             startSnakeGame();
             easterEggSequence = [];
         }
     });
+
+    // Préparer l'interface du jeu Snake
+    createSnakeGameInterface();
+}
+
+function createSnakeGameInterface() {
+    // Vérifier si l'interface existe déjà
+    if (document.getElementById('snake-overlay')) return;
+    
+    // Créer l'overlay principal
+    const snakeOverlay = document.createElement('div');
+    snakeOverlay.id = 'snake-overlay';
+    snakeOverlay.style.position = 'fixed';
+    snakeOverlay.style.top = '0';
+    snakeOverlay.style.left = '0';
+    snakeOverlay.style.width = '100%';
+    snakeOverlay.style.height = '100%';
+    snakeOverlay.style.backgroundColor = '#000';
+    snakeOverlay.style.zIndex = '9999';
+    snakeOverlay.style.display = 'none'; // Caché par défaut
+    snakeOverlay.style.flexDirection = 'column';
+    snakeOverlay.style.justifyContent = 'center';
+    snakeOverlay.style.alignItems = 'center';
+    snakeOverlay.style.fontFamily = "'Poppins', sans-serif";
+    
+    // Créer le canvas pour le jeu
+    const snakeCanvas = document.createElement('canvas');
+    snakeCanvas.id = 'snake-canvas';
+    snakeCanvas.width = 400;
+    snakeCanvas.height = 400;
+    snakeCanvas.style.display = 'block';
+    snakeCanvas.style.border = '2px solid #30336b';
+    
+    // Créer l'interface UI
+    const snakeUI = document.createElement('div');
+    snakeUI.id = 'snake-ui';
+    snakeUI.style.position = 'absolute';
+    snakeUI.style.top = '20px';
+    snakeUI.style.left = '0';
+    snakeUI.style.width = '100%';
+    snakeUI.style.padding = '0 20px';
+    snakeUI.style.boxSizing = 'border-box';
+    snakeUI.style.color = '#fff';
+    snakeUI.style.textShadow = '0 0 5px rgba(0,0,0,0.7)';
+    snakeUI.style.display = 'flex';
+    snakeUI.style.justifyContent = 'space-between';
+    snakeUI.style.zIndex = '10';
+    
+    snakeUI.innerHTML = `
+        <div>
+            <div>SCORE: <span id="snake-score-value">0</span></div>
+        </div>
+        <div>
+            <div><button id="snake-close" style="padding: 5px 10px; background: #ff6b6b; color: white; border: none; border-radius: 5px; cursor: pointer;">Fermer</button></div>
+        </div>
+    `;
+    
+    // Créer l'écran de fin de jeu
+    const gameOverScreen = document.createElement('div');
+    gameOverScreen.id = 'snake-game-over';
+    gameOverScreen.style.position = 'absolute';
+    gameOverScreen.style.top = '0';
+    gameOverScreen.style.left = '0';
+    gameOverScreen.style.width = '100%';
+    gameOverScreen.style.height = '100%';
+    gameOverScreen.style.backgroundColor = 'rgba(0,0,0,0.8)';
+    gameOverScreen.style.display = 'none';
+    gameOverScreen.style.flexDirection = 'column';
+    gameOverScreen.style.justifyContent = 'center';
+    gameOverScreen.style.alignItems = 'center';
+    gameOverScreen.style.zIndex = '20';
+    gameOverScreen.style.color = '#fff';
+    
+    gameOverScreen.innerHTML = `
+        <div style="font-size: 3rem; margin-bottom: 30px; text-align: center;">GAME OVER</div>
+        <div style="font-size: 1.5rem; margin-bottom: 30px;">Score: <span id="snake-final-score">0</span></div>
+        <div style="display: flex; gap: 20px;">
+            <button id="snake-retry" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Réessayer</button>
+            <button id="snake-close-button" style="padding: 10px 20px; background: #ff6b6b; color: white; border: none; border-radius: 5px; cursor: pointer;">Fermer</button>
+        </div>
+    `;
+    
+    // Ajouter les éléments à l'overlay
+    snakeOverlay.appendChild(snakeCanvas);
+    snakeOverlay.appendChild(snakeUI);
+    snakeOverlay.appendChild(gameOverScreen);
+    
+    // Ajouter l'overlay au body
+    document.body.appendChild(snakeOverlay);
+    
+    // Ajouter les événements aux boutons
+    document.getElementById('snake-retry').addEventListener('click', function() {
+        resetSnake();
+        snakeGameRunning = true;
+        document.getElementById('snake-game-over').style.display = 'none';
+        gameLoop();
+    });
+    
+    document.getElementById('snake-close-button').addEventListener('click', closeSnakeGameInternal);
 }
 
 function preloadSnakeSounds() {
@@ -109,8 +210,26 @@ function startSnakeGame() {
     
     // Ajouter un contrôleur de vitesse et d'options
     addSnakeControls();
+      // Initialiser le serpent, la nourriture et la direction
+    resetSnake();
     
-    // Define functions first    function generateFood() {
+    // Démarrer la boucle de jeu
+    gameLoop();
+}
+
+// Fonction pour initialiser le serpent et la nourriture
+function resetSnake() {
+    snake = [
+        {x: 10, y: 10},
+        {x: 9, y: 10},
+        {x: 8, y: 10}
+    ];
+    snakeDirection = {x: 1, y: 0}; // Direction initiale vers la droite
+    snakeScore = 0;
+    generateFood();
+}
+
+function generateFood() {
         // Générer la nourriture autour du serpent (exactement à 5 cases comme demandé)
         const head = snake[0];
         let validPosition = false;
@@ -244,12 +363,11 @@ function startSnakeGame() {
     
     // Remove any existing listeners first
     document.removeEventListener('keydown', handleKeyDown);
-    document.addEventListener('keydown', handleKeyDown);
-      function updateSnake() {
-        // Don't move if no direction is set
-        if (snakeDirection.x === 0 && snakeDirection.y === 0) {
-            return;
-        }
+    document.addEventListener('keydown', handleKeyDown);function updateSnake() {
+    // Don't move if no direction is set
+    if (!snakeDirection || (snakeDirection.x === 0 && snakeDirection.y === 0)) {
+        return;
+    }
         
         // Créer une nouvelle tête en fonction de la direction
         let newX = snake[0].x + snakeDirection.x;
@@ -295,16 +413,12 @@ function startSnakeGame() {
         } else {
             snake.pop(); // Remove tail when not eating
         }
-    }
-      function draw() {
-        // Clear canvas with gradient background
-        const gradient = snakeCtx.createLinearGradient(0, 0, snakeCanvas.width, snakeCanvas.height);
-        gradient.addColorStop(0, '#0f0c29');
-        gradient.addColorStop(0.5, '#302b63');
-        gradient.addColorStop(1, '#24243e');
+    }function draw() {
+        // Clear canvas with modern background
+        drawBackground();
         
-        snakeCtx.fillStyle = gradient;
-        snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+        // Dessiner la nourriture
+        drawFood();
         
         // Dessiner une grille subtile
         snakeCtx.strokeStyle = 'rgba(255,255,255,0.1)';
@@ -365,11 +479,11 @@ function startSnakeGame() {
             snakeCtx.fill();
         }
         
-        // Dessiner le serpent avec un dégradé et des effets arrondis
+        // Dessiner le serpent avec un dégradé et des effets arrondis        // Dessiner le serpent
         drawSnake();
     }
     
-    function drawSnake() {
+function drawSnake() {
         // Dessiner le serpent avec un style moderne
         
         // Dégradé de couleur basé sur la longueur du serpent
@@ -477,17 +591,16 @@ function startSnakeGame() {
                 snakeCtx.fill();
             }
         }
+    }function gameOver() {
+    snakeGameRunning = false;
+    
+    // Jouer le son de fin de jeu
+    playSnakeSound('gameOver');
+    
+    // Arrêter la musique de fond
+    if (snakeBackgroundMusic) {
+        snakeBackgroundMusic.stop();
     }
-      function gameOver() {
-        snakeGameRunning = false;
-        
-        // Jouer le son de fin de jeu
-        playSnakeSound('gameOver');
-        
-        // Arrêter la musique de fond
-        if (snakeBackgroundMusic) {
-            snakeBackgroundMusic.stop();
-        }
         
         // Afficher l'écran de game over avec animation
         const gameOverDiv = document.getElementById('snake-game-over');
@@ -502,27 +615,25 @@ function startSnakeGame() {
         setTimeout(() => {
             gameOverDiv.style.opacity = '1';
         }, 10);
+    }function gameLoop() {
+    if (!snakeGameRunning) return;
+    
+    updateSnake();
+    draw();
+    
+    // Utiliser la vitesse définie par l'utilisateur
+    setTimeout(gameLoop, snakeGameSpeed);
+}function closeSnakeGameInternal() {
+    snakeGameRunning = false;
+    snakeOverlay.style.display = 'none';
+    document.getElementById('snake-game-over').style.display = 'none';
+    document.removeEventListener('keydown', handleKeyDown);
+    
+    // Arrêter la musique de fond
+    if (snakeBackgroundMusic) {
+        snakeBackgroundMusic.stop();
     }
-      function gameLoop() {
-        if (!snakeGameRunning) return;
-        
-        updateSnake();
-        draw();
-        
-        // Utiliser la vitesse définie par l'utilisateur
-        setTimeout(gameLoop, snakeGameSpeed);
-    }
-      function closeSnakeGameInternal() {
-        snakeGameRunning = false;
-        snakeOverlay.style.display = 'none';
-        document.getElementById('snake-game-over').style.display = 'none';
-        document.removeEventListener('keydown', handleKeyDown);
-        
-        // Arrêter la musique de fond
-        if (snakeBackgroundMusic) {
-            snakeBackgroundMusic.stop();
-        }
-    }
+}
     
     // Close button event
     closeBtn.onclick = closeSnakeGameInternal;

@@ -1436,4 +1436,151 @@ class MarioGame {
         const b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
         return '#' + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
     }
+    
+    // Fermer le jeu Mario
+    close() {
+        this.gameRunning = false;
+        
+        // Arrêter la musique
+        if (this.audio.currentMusicTrack) {
+            this.audio.currentMusicTrack.stop();
+        }
+        
+        // Cacher l'overlay
+        document.getElementById('mario-overlay').style.display = 'none';
+        
+        // Supprimer les événements
+        document.removeEventListener('keydown', this.handleKeyDown);
+        document.removeEventListener('keyup', this.handleKeyUp);
+    }
+}
+
+// Initialiser le jeu Mario quand le DOM est chargé
+let marioGameInstance = null;
+let marioSequence = '';
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Easter Egg: Mario Game sequence detection
+    document.addEventListener('keydown', function(e) {
+        if (marioGameInstance && marioGameInstance.gameRunning) return;
+        
+        marioSequence += e.key.toLowerCase();
+        
+        // Ne garder que les 5 dernières touches
+        if (marioSequence.length > 5) {
+            marioSequence = marioSequence.substring(marioSequence.length - 5);
+        }
+        
+        if (marioSequence === 'mario') {
+            // Créer l'interface si elle n'existe pas
+            createMarioGameInterface();
+            
+            document.getElementById('mario-overlay').style.display = 'flex';
+            marioGameInstance = new MarioGame();
+            marioGameInstance.init();
+            marioSequence = '';
+        }
+    });
+
+    // Préparer l'interface du jeu Mario
+    createMarioGameInterface();
+});
+
+function createMarioGameInterface() {
+    // Vérifier si l'interface existe déjà
+    if (document.getElementById('mario-overlay')) return;
+    
+    // Créer l'overlay principal
+    const marioOverlay = document.createElement('div');
+    marioOverlay.id = 'mario-overlay';
+    marioOverlay.style.position = 'fixed';
+    marioOverlay.style.top = '0';
+    marioOverlay.style.left = '0';
+    marioOverlay.style.width = '100%';
+    marioOverlay.style.height = '100%';
+    marioOverlay.style.backgroundColor = '#000';
+    marioOverlay.style.zIndex = '9999';
+    marioOverlay.style.display = 'none'; // Caché par défaut
+    marioOverlay.style.flexDirection = 'column';
+    marioOverlay.style.justifyContent = 'center';
+    marioOverlay.style.alignItems = 'center';
+    marioOverlay.style.fontFamily = "'Press Start 2P', 'Courier New', monospace";
+    
+    // Créer le canvas pour le jeu
+    const marioCanvas = document.createElement('canvas');
+    marioCanvas.id = 'mario-canvas';
+    marioCanvas.width = 800;
+    marioCanvas.height = 480;
+    marioCanvas.style.display = 'block';
+    marioCanvas.style.backgroundColor = '#6B8CFF'; // Ciel bleu
+    
+    // Créer l'interface UI
+    const marioUI = document.createElement('div');
+    marioUI.id = 'mario-ui';
+    marioUI.style.position = 'absolute';
+    marioUI.style.top = '20px';
+    marioUI.style.left = '0';
+    marioUI.style.width = '100%';
+    marioUI.style.padding = '0 20px';
+    marioUI.style.boxSizing = 'border-box';
+    marioUI.style.color = '#fff';
+    marioUI.style.display = 'flex';
+    marioUI.style.justifyContent = 'space-between';
+    marioUI.style.zIndex = '10';
+    
+    marioUI.innerHTML = `
+        <div>
+            <div>SCORE: <span id="mario-score">0</span></div>
+            <div>COINS: <span id="mario-coins">0</span></div>
+        </div>
+        <div>
+            <div>LEVEL: <span id="mario-level">1</span></div>
+            <div>LIVES: <span id="mario-lives">3</span></div>
+        </div>
+    `;
+    
+    // Créer l'écran de fin de jeu
+    const gameOverScreen = document.createElement('div');
+    gameOverScreen.id = 'mario-game-over';
+    gameOverScreen.style.position = 'absolute';
+    gameOverScreen.style.top = '0';
+    gameOverScreen.style.left = '0';
+    gameOverScreen.style.width = '100%';
+    gameOverScreen.style.height = '100%';
+    gameOverScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    gameOverScreen.style.display = 'none';
+    gameOverScreen.style.flexDirection = 'column';
+    gameOverScreen.style.justifyContent = 'center';
+    gameOverScreen.style.alignItems = 'center';
+    gameOverScreen.style.zIndex = '20';
+    gameOverScreen.style.color = '#fff';
+    
+    gameOverScreen.innerHTML = `
+        <div style="font-size: 2rem; margin-bottom: 30px; text-align: center;">GAME OVER</div>
+        <div style="display: flex; gap: 20px;">
+            <button id="mario-retry" style="padding: 10px 20px; background: #E52521; color: white; border: none; border-radius: 5px; cursor: pointer;">Recommencer</button>
+            <button id="mario-close" style="padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer;">Fermer</button>
+        </div>
+    `;
+    
+    // Ajouter les éléments à l'overlay
+    marioOverlay.appendChild(marioCanvas);
+    marioOverlay.appendChild(marioUI);
+    marioOverlay.appendChild(gameOverScreen);
+    
+    // Ajouter l'overlay au body
+    document.body.appendChild(marioOverlay);
+    
+    // Ajouter les événements aux boutons
+    document.getElementById('mario-retry').addEventListener('click', function() {
+        if (marioGameInstance) {
+            marioGameInstance.resetGame();
+        }
+    });
+    
+    document.getElementById('mario-close').addEventListener('click', function() {
+        if (marioGameInstance) {
+            marioGameInstance.close();
+        }
+    });
 }
