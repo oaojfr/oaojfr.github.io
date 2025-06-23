@@ -3,6 +3,7 @@ let breakoutGameRunning = false;
 let breakoutCanvas, breakoutCtx, breakoutOverlay;
 let breakoutBall, breakoutPaddle, breakoutBricks, breakoutScore;
 let breakoutMouseX = 0;
+let breakoutSpeedMultiplier = 1.0; // Contrôle de vitesse global
 
 function initBreakoutGame() {
     // Easter Egg: Breakout Game sequence detection
@@ -35,9 +36,41 @@ function startBreakoutGame() {
     breakoutCtx = breakoutCanvas.getContext('2d');
     const scoreElement = document.getElementById('breakout-score-value');
     const closeBtn = document.getElementById('breakout-close');
-    
-    breakoutOverlay.style.display = 'flex';
+      breakoutOverlay.style.display = 'flex';
     breakoutGameRunning = true;
+    
+    // Récupérer la vitesse sauvegardée si disponible
+    const savedBreakoutSpeed = localStorage.getItem('breakoutSpeedMultiplier');
+    if (savedBreakoutSpeed) {
+        breakoutSpeedMultiplier = parseFloat(savedBreakoutSpeed);
+    }
+    
+    // Créer les contrôles de vitesse
+    const speedControls = document.createElement('div');
+    speedControls.style.position = 'absolute';
+    speedControls.style.top = '10px';
+    speedControls.style.left = '10px';
+    speedControls.style.color = 'white';
+    speedControls.style.zIndex = '100';
+    speedControls.innerHTML = `
+        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+            <label for="breakout-speed" style="margin-right: 10px;">Vitesse: </label>
+            <input type="range" id="breakout-speed" min="0.5" max="2.0" step="0.1" value="${breakoutSpeedMultiplier}" style="width: 100px;">
+            <span id="breakout-speed-value" style="margin-left: 5px;">${breakoutSpeedMultiplier.toFixed(1)}</span>
+        </div>
+    `;
+    breakoutOverlay.appendChild(speedControls);
+    
+    // Mettre à jour la vitesse du jeu
+    const speedSlider = document.getElementById('breakout-speed');
+    const speedValue = document.getElementById('breakout-speed-value');
+    
+    speedSlider.addEventListener('input', function() {
+        breakoutSpeedMultiplier = parseFloat(this.value);
+        speedValue.textContent = breakoutSpeedMultiplier.toFixed(1);
+        localStorage.setItem('breakoutSpeedMultiplier', breakoutSpeedMultiplier);
+    });
+      
       // Game objects
     breakoutBall = {
         x: breakoutCanvas.width / 2,
@@ -112,14 +145,15 @@ function startBreakoutGame() {
         if (breakoutPaddle.x + breakoutPaddle.width > breakoutCanvas.width) {
             breakoutPaddle.x = breakoutCanvas.width - breakoutPaddle.width;
         }
-    }
-      function updatePaddle() {
+    }      function updatePaddle() {
+        const paddleSpeed = 12 * breakoutSpeedMultiplier;
+        
         // Keyboard controls
         if (breakoutKeys['ArrowLeft'] || breakoutKeys['a'] || breakoutKeys['A']) {
-            breakoutPaddle.x -= 12;
+            breakoutPaddle.x -= paddleSpeed;
         }
         if (breakoutKeys['ArrowRight'] || breakoutKeys['d'] || breakoutKeys['D']) {
-            breakoutPaddle.x += 12;
+            breakoutPaddle.x += paddleSpeed;
         }
         
         // Keep paddle within canvas
@@ -134,10 +168,9 @@ function startBreakoutGame() {
     breakoutCanvas.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
-    
-    function updateBall() {
-        breakoutBall.x += breakoutBall.velocityX;
-        breakoutBall.y += breakoutBall.velocityY;
+      function updateBall() {
+        breakoutBall.x += breakoutBall.velocityX * breakoutSpeedMultiplier;
+        breakoutBall.y += breakoutBall.velocityY * breakoutSpeedMultiplier;
         
         // Wall collisions
         if (breakoutBall.x + breakoutBall.radius > breakoutCanvas.width || breakoutBall.x - breakoutBall.radius < 0) {
@@ -151,12 +184,12 @@ function startBreakoutGame() {
         if (breakoutBall.y + breakoutBall.radius > breakoutPaddle.y &&
             breakoutBall.x > breakoutPaddle.x &&
             breakoutBall.x < breakoutPaddle.x + breakoutPaddle.width) {
-            
-            // Calculate hit position on paddle (-1 to 1)
+              // Calculate hit position on paddle (-1 to 1)
             const hitPos = (breakoutBall.x - (breakoutPaddle.x + breakoutPaddle.width / 2)) / (breakoutPaddle.width / 2);
               // Adjust ball direction based on hit position
             breakoutBall.velocityX = hitPos * 4;
             breakoutBall.velocityY = -Math.abs(breakoutBall.velocityY);
+            // La vitesse sera ajustée par le multiplicateur dans la prochaine frame
         }
         
         // Bottom wall (game over)

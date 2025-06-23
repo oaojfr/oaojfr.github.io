@@ -3,6 +3,7 @@ let pongGameRunning = false;
 let pongCanvas, pongCtx, pongOverlay;
 let pongBall, pongPaddle1, pongPaddle2;
 let pongKeys = {};
+let pongSpeedMultiplier = 1.0; // Contrôle de vitesse global
 
 function initPongGame() {
     // Easter Egg: Pong Game sequence detection
@@ -36,9 +37,41 @@ function startPongGame() {
     const score1 = document.getElementById('score1');
     const score2 = document.getElementById('score2');
     const closeBtn = document.getElementById('pong-close');
-    
-    pongOverlay.style.display = 'flex';
+      pongOverlay.style.display = 'flex';
     pongGameRunning = true;
+    
+    // Récupérer la vitesse sauvegardée si disponible
+    const savedPongSpeed = localStorage.getItem('pongSpeedMultiplier');
+    if (savedPongSpeed) {
+        pongSpeedMultiplier = parseFloat(savedPongSpeed);
+    }
+    
+    // Créer les contrôles de vitesse
+    const speedControls = document.createElement('div');
+    speedControls.style.position = 'absolute';
+    speedControls.style.top = '10px';
+    speedControls.style.left = '10px';
+    speedControls.style.color = 'white';
+    speedControls.style.zIndex = '100';
+    speedControls.innerHTML = `
+        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+            <label for="pong-speed" style="margin-right: 10px;">Vitesse: </label>
+            <input type="range" id="pong-speed" min="0.5" max="2.0" step="0.1" value="${pongSpeedMultiplier}" style="width: 100px;">
+            <span id="pong-speed-value" style="margin-left: 5px;">${pongSpeedMultiplier.toFixed(1)}</span>
+        </div>
+    `;
+    pongOverlay.appendChild(speedControls);
+    
+    // Mettre à jour la vitesse du jeu
+    const speedSlider = document.getElementById('pong-speed');
+    const speedValue = document.getElementById('pong-speed-value');
+    
+    speedSlider.addEventListener('input', function() {
+        pongSpeedMultiplier = parseFloat(this.value);
+        speedValue.textContent = pongSpeedMultiplier.toFixed(1);
+        localStorage.setItem('pongSpeedMultiplier', pongSpeedMultiplier);
+    });
+      
       // Game objects
     pongBall = {
         x: pongCanvas.width / 2,
@@ -77,28 +110,28 @@ function startPongGame() {
     }
     
     document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-      function updatePaddles() {
+    document.addEventListener('keyup', handleKeyUp);    function updatePaddles() {
+        const paddleSpeed = 12 * pongSpeedMultiplier;
+        
         // Player 1 (W/S)
         if (pongKeys['w'] || pongKeys['W']) {
-            pongPaddle1.y = Math.max(0, pongPaddle1.y - 12);
+            pongPaddle1.y = Math.max(0, pongPaddle1.y - paddleSpeed);
         }
         if (pongKeys['s'] || pongKeys['S']) {
-            pongPaddle1.y = Math.min(pongCanvas.height - pongPaddle1.height, pongPaddle1.y + 12);
+            pongPaddle1.y = Math.min(pongCanvas.height - pongPaddle1.height, pongPaddle1.y + paddleSpeed);
         }
         
         // Player 2 (Arrow keys)
         if (pongKeys['ArrowUp']) {
-            pongPaddle2.y = Math.max(0, pongPaddle2.y - 12);
+            pongPaddle2.y = Math.max(0, pongPaddle2.y - paddleSpeed);
         }
         if (pongKeys['ArrowDown']) {
-            pongPaddle2.y = Math.min(pongCanvas.height - pongPaddle2.height, pongPaddle2.y + 12);
+            pongPaddle2.y = Math.min(pongCanvas.height - pongPaddle2.height, pongPaddle2.y + paddleSpeed);
         }
     }
-    
-    function updateBall() {
-        pongBall.x += pongBall.velocityX;
-        pongBall.y += pongBall.velocityY;
+      function updateBall() {
+        pongBall.x += pongBall.velocityX * pongSpeedMultiplier;
+        pongBall.y += pongBall.velocityY * pongSpeedMultiplier;
         
         // Top and bottom walls
         if (pongBall.y + pongBall.radius > pongCanvas.height || pongBall.y - pongBall.radius < 0) {
@@ -152,12 +185,12 @@ function startPongGame() {
             winnerDiv.style.display = 'block';
             pongGameRunning = false;
         }
-    }
-      function resetBall() {
+    }    function resetBall() {
         pongBall.x = pongCanvas.width / 2;
         pongBall.y = pongCanvas.height / 2;
         pongBall.velocityX = (Math.random() > 0.5 ? 1 : -1) * 5;
         pongBall.velocityY = (Math.random() - 0.5) * 6;
+        // La vitesse sera ajustée par le multiplicateur dans updateBall()
     }
     
     function draw() {
