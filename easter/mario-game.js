@@ -1051,8 +1051,9 @@ class MarioGame {
                 this.nextLevel();
             }, 100);
         }
-    }
-      render() {
+    }    render() {
+        console.log('Mario render() called - canvas:', this.canvas, 'ctx:', this.ctx);
+        
         // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
@@ -1063,7 +1064,9 @@ class MarioGame {
         // Test text
         this.ctx.fillStyle = '#000';
         this.ctx.font = '24px Arial';
-        this.ctx.fillText('Mario Game Test', 50, 50);
+        this.ctx.fillText('Mario Game Test - Render Working!', 50, 50);
+        
+        console.log('Mario render() - basic drawing done');
         
         // Normal game rendering
         this.drawBackground();
@@ -1073,6 +1076,8 @@ class MarioGame {
         this.drawMario();
         this.drawParticles();
         this.drawUI();
+        
+        console.log('Mario render() completed');
     }
     
     drawBackground() {

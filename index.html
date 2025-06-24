@@ -1990,15 +1990,14 @@
                 console.error("La fonction startSnakeGame n'est pas disponible");
             }
         }
-        
-        function showMarioGame() {
+          function showMarioGame() {
             if (typeof MarioGame === 'function') {
                 // Vérifier si l'overlay existe déjà
                 let marioOverlay = document.getElementById('mario-overlay');
                 if (marioOverlay) {
                     marioOverlay.style.display = 'flex';
-                    // Créer une nouvelle instance si elle n'existe pas
-                    if (!window.marioGameInstance) {
+                    // Créer une nouvelle instance ou redémarrer l'existante
+                    if (!window.marioGameInstance || !window.marioGameInstance.gameRunning) {
                         window.marioGameInstance = new MarioGame();
                         window.marioGameInstance.init();
                     }
