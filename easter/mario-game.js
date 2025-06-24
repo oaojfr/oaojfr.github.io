@@ -75,10 +75,24 @@ class MarioGame {
             STAR: { width: 24, height: 24, speed: 1.2, color: '#FFD700', effect: 'star' }
         };
     }
-    
-    init() {
+      init() {
         this.canvas = document.getElementById('mario-canvas');
+        if (!this.canvas) {
+            console.error('Mario canvas not found!');
+            return;
+        }
+        
         this.ctx = this.canvas.getContext('2d');
+        if (!this.ctx) {
+            console.error('Could not get 2D context for Mario canvas!');
+            return;
+        }
+        
+        // Ensure canvas dimensions are set
+        this.canvas.width = 800;
+        this.canvas.height = 400;
+        
+        console.log('Mario game initialized successfully');
         
         // Précharger les sons et la musique
         this.preloadAudio();
@@ -94,6 +108,10 @@ class MarioGame {
         
         this.gameRunning = true;
         this.lastTime = performance.now();
+        
+        // Start with a simple test render
+        this.render();
+        
         this.gameLoop(this.lastTime);
     }
     
@@ -186,8 +204,7 @@ class MarioGame {
         
         // Jouer la nouvelle musique
         this.audio.currentMusicTrack = this.playSound(trackName);
-    }
-      resetGame() {
+    }    resetGame() {
         this.mario.x = 100;
         this.mario.y = 200;
         this.mario.velocityX = 0;
@@ -1035,10 +1052,20 @@ class MarioGame {
             }, 100);
         }
     }
-    
-    render() {
+      render() {
+        // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
+        // Test render - simple colored rectangle to verify canvas works
+        this.ctx.fillStyle = '#87CEEB';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Test text
+        this.ctx.fillStyle = '#000';
+        this.ctx.font = '24px Arial';
+        this.ctx.fillText('Mario Game Test', 50, 50);
+        
+        // Normal game rendering
         this.drawBackground();
         this.drawPlatforms();
         this.drawCoins();
@@ -1435,6 +1462,17 @@ class MarioGame {
         const g = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
         const b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
         return '#' + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+    }
+    
+    updateUI() {
+        // Update score display if elements exist
+        const scoreElement = document.getElementById('mario-score-value');
+        const coinsElement = document.getElementById('mario-coins-value');
+        const livesElement = document.getElementById('mario-lives-value');
+        
+        if (scoreElement) scoreElement.textContent = this.score;
+        if (coinsElement) coinsElement.textContent = this.coins;
+        if (livesElement) livesElement.textContent = this.lives;
     }
     
     // Fermer le jeu Mario

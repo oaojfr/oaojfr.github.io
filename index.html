@@ -1367,7 +1367,7 @@
             <p data-translate="games.mario.random">Chaque niveau est généré aléatoirement</p>
         </div>
         <canvas id="mario-canvas" width="800" height="400"></canvas>
-        <div id="mario-score"><span data-translate="games.mario.score">Score</span>: <span id="mario-score-value">0</span> | <span data-translate="games.mario.coins">Pièces</span>: <span id="mario-coins">0</span></div>
+        <div id="mario-score"><span data-translate="games.mario.score">Score</span>: <span id="mario-score-value">0</span> | <span data-translate="games.mario.coins">Pièces</span>: <span id="mario-coins-value">0</span> | <span data-translate="games.mario.lives">Vies</span>: <span id="mario-lives-value">3</span></div>
         <div id="mario-game-over">
             <div data-translate="games.mario.gameover">Game Over!</div>
             <div style="margin: 10px 0; font-size: 1.2rem;"><span data-translate="games.mario.finalscore">Score final</span>: <span id="final-score">0</span></div>
@@ -1963,6 +1963,18 @@
             clearInterval(matrixAnimation);
         }
 
+        // Fonction pour redémarrer le jeu Mario
+        function restartMarioGame() {
+            if (window.marioGameInstance) {
+                window.marioGameInstance.resetGame();
+                window.marioGameInstance.generateProceduralLevel();
+                document.getElementById('mario-game-over').style.display = 'none';
+                window.marioGameInstance.gameRunning = true;
+                window.marioGameInstance.lastTime = performance.now();
+                window.marioGameInstance.gameLoop(window.marioGameInstance.lastTime);
+            }
+        }
+        
         // Fonction pour fermer le jeu Mario
         function closeMarioGame() {
             if (window.marioGameInstance) {
