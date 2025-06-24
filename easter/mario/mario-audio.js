@@ -2,7 +2,7 @@
  * Système audio de Mario avec sons 8-bit générés
  */
 
-class MarioAudio {
+class MarioAudioManager {
     constructor() {
         this.audioContext = null;
         this.sounds = {};
@@ -486,4 +486,4 @@ class MarioAudio {
     }
 }
 
-window.MarioAudio = MarioAudio;
+window.MarioAudioManager = MarioAudioManager;

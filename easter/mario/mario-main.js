@@ -57,34 +57,79 @@ class MarioGame {
         // Transitions
         this.isTransitioning = false;
         this.transitionData = null;
-        
-        // Initialiser les systèmes
-        this.audioSystem = new MarioAudio();
+          // Initialiser les systèmes
+        this.audioManager = new MarioAudioManager();
         this.levelManager = new MarioLevelManager(this);
         this.entityManager = new MarioEntityManager(this);
-        this.uiManager = new MarioUI(this);
-        this.inputManager = new MarioInput(this);
+        this.ui = new MarioUI(this);
+        this.inputManager = new MarioInputManager(this);
         
         // Charger le premier niveau
-        this.loadLevel(1);
+        this.startLevel(1);
         
-        // Démarrer la musique de fond
-        this.audioSystem.playBackgroundMusic('overworld');
+        console.log('MarioGame initialisé avec succès');
     }
-    
-    loadLevel(levelNumber) {
-        this.currentLevel = levelNumber;
+      startLevel(levelNumber) {
+        console.log(`Démarrage du niveau ${levelNumber}`);
+        
+        // Réinitialiser les entités
+        this.entityManager.clear();
+        
+        // Charger le niveau
         this.levelManager.loadLevel(levelNumber);
-        this.entityManager.reset();
         
         // Créer Mario
+        this.createMario();
+        
+        // Générer les ennemis du niveau
+        this.generateLevelEnemies(levelNumber);
+        
+        // Réinitialiser la caméra
+        this.camera.x = 0;
+        this.camera.y = 0;
+        
+        // Réinitialiser le temps
+        this.time = 400;
+        this.timeWarning = false;
+        
+        // Afficher le début du niveau
+        this.ui.showLevelStart(levelNumber);
+        
+        // Changer l'état du jeu
+        this.gameState = 'playing';
+        this.currentLevel = levelNumber;
+        
+        // Démarrer la musique de fond
+        this.audioManager.playBackgroundMusic('overworld');
+        
+        console.log(`Niveau ${levelNumber} démarré`);
+    }
+    
+    createMario() {
         this.mario = new Mario(this, 100, this.WORLD_HEIGHT - 200);
         this.entityManager.addEntity(this.mario);
+        console.log('Mario créé');
+    }
+    
+    generateLevelEnemies(levelNumber) {
+        // Générer des ennemis selon le niveau
+        const groundY = this.WORLD_HEIGHT - 3 * this.TILE_SIZE;
         
-        // Générer les ennemis et objets pour ce niveau
-        this.levelManager.populateLevel();
+        // Goombas de base
+        for (let i = 0; i < 3 + levelNumber; i++) {
+            const x = 300 + i * 200 + Math.random() * 100;
+            const goomba = new Goomba(this, x, groundY);
+            this.entityManager.addEntity(goomba);
+        }
         
-        console.log(`Niveau ${levelNumber} chargé`);
+        // Koopas
+        for (let i = 0; i < 2 + Math.floor(levelNumber / 2); i++) {
+            const x = 500 + i * 300 + Math.random() * 100;
+            const koopa = new Koopa(this, x, groundY);
+            this.entityManager.addEntity(koopa);
+        }
+        
+        console.log(`Ennemis générés pour le niveau ${levelNumber}`);
     }
     
     update(deltaTime) {
@@ -132,9 +177,8 @@ class MarioGame {
         
         // Rendu des entités
         this.entityManager.render(this.ctx);
-        
-        // Rendu de l'interface utilisateur
-        this.uiManager.render(this.ctx);
+          // Rendu de l'interface utilisateur
+        this.ui.render(this.ctx);
         
         // Effet de transition
         if (this.isTransitioning) {
@@ -159,28 +203,31 @@ class MarioGame {
         this.ctx.fillText('Transition...', this.canvas.width / 2, this.canvas.height / 2);
     }
     
-    gameLoop(currentTime) {
-        if (!this.gameRunning) return;
-        
-        const deltaTime = Math.min(currentTime - (this.lastTime || currentTime), 1000/30);
-        this.lastTime = currentTime;
-        
-        // Appliquer le multiplicateur de vitesse
-        const adjustedDelta = deltaTime * this.SPEED_MULTIPLIER;
-        
-        this.update(adjustedDelta);
-        this.render();
-        
-        this.gameLoopId = requestAnimationFrame((time) => this.gameLoop(time));
-    }
-    
     start() {
         if (this.gameRunning) return;
         
         this.gameRunning = true;
-        this.audioSystem.playBackgroundMusic('overworld');
-        this.gameLoop(performance.now());
-        console.log('Mario démarré !');
+        this.lastTime = 0;
+        
+        console.log('Démarrage du jeu Mario...');
+        
+        const gameLoop = (currentTime) => {
+            if (!this.gameRunning) return;
+            
+            const deltaTime = currentTime - this.lastTime;
+            this.lastTime = currentTime;
+            
+            // Limiter le deltaTime pour éviter les gros sauts
+            const clampedDelta = Math.min(deltaTime, 16);
+            
+            this.update(clampedDelta);
+            this.render();
+            
+            this.gameLoopId = requestAnimationFrame(gameLoop);
+        };
+        
+        this.gameLoopId = requestAnimationFrame(gameLoop);
+        console.log('Jeu démarré avec succès');
     }
     
     stop() {
@@ -189,16 +236,16 @@ class MarioGame {
             cancelAnimationFrame(this.gameLoopId);
             this.gameLoopId = null;
         }
-        this.audioSystem.stopAllSounds();
-        console.log('Mario arrêté !');
+        this.audioManager.stopBackgroundMusic();
+        console.log('Jeu arrêté');
     }
     
     pause() {
         this.gameState = this.gameState === 'paused' ? 'playing' : 'paused';
         if (this.gameState === 'paused') {
-            this.audioSystem.pauseBackgroundMusic();
+            this.audioManager.pauseBackgroundMusic();
         } else {
-            this.audioSystem.resumeBackgroundMusic();
+            this.audioManager.resumeBackgroundMusic();
         }
     }
     
@@ -218,7 +265,7 @@ class MarioGame {
     
     levelComplete() {
         this.gameState = 'levelComplete';
-        this.audioSystem.playSound('levelComplete');
+        this.audioManager.playSFX('levelComplete');
         this.score += Math.floor(this.time) * 50; // Bonus de temps
         
         // Charger le niveau suivant après un délai
@@ -241,7 +288,7 @@ class MarioGame {
     
     addCoins(amount = 1) {
         this.coins += amount;
-        this.audioSystem.playSound('coin');
+        this.audioManager.playSFX('coin');
         this.addScore(200 * amount);
         
         // 100 pièces = 1 vie
@@ -253,7 +300,7 @@ class MarioGame {
     
     addLife() {
         this.lives++;
-        this.audioSystem.playSound('1up');
+        this.audioManager.playSFX('1up');
     }
     
     loseLife() {

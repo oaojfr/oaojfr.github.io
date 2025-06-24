@@ -2,7 +2,7 @@
  * Système de gestion des entrées de Mario
  */
 
-class MarioInput {
+class MarioInputManager {
     constructor(game) {
         this.game = game;
         this.keys = {};
@@ -335,4 +335,4 @@ class MarioInput {
     }
 }
 
-window.MarioInput = MarioInput;
+window.MarioInputManager = MarioInputManager;

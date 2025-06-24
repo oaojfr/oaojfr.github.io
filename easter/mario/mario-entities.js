@@ -18,6 +18,12 @@ class MarioEntityManager {
         this.entitiesToRemove.push(entity);
     }
     
+    clear() {
+        this.entities = [];
+        this.entitiesToAdd = [];
+        this.entitiesToRemove = [];
+    }
+    
     update(deltaTime) {
         // Ajouter les nouvelles entités
         this.entities.push(...this.entitiesToAdd);
