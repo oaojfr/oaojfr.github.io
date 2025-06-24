@@ -235,8 +235,7 @@ class Mario extends Entity {
             ctx.fillRect(particle.x, particle.y, 4, 4);
         }
     }
-    
-    collectPowerup(powerType) {
+      collectPowerup(powerType) {
         switch (powerType) {
             case 'mushroom':
                 if (this.powerState === 0) {
@@ -244,6 +243,7 @@ class Mario extends Entity {
                     this.height = 40;
                     this.y -= 8; // Ajuster position quand Mario grandit
                     this.game.audioSystem.playSound('powerup');
+                    this.game.uiManager.showPowerUpCollected('mushroom');
                 }
                 break;
                 
@@ -251,6 +251,7 @@ class Mario extends Entity {
                 if (this.powerState >= 1) {
                     this.powerState = 2;
                     this.game.audioSystem.playSound('powerup');
+                    this.game.uiManager.showPowerUpCollected('fireflower');
                 }
                 break;
                 
@@ -260,10 +261,12 @@ class Mario extends Entity {
                 this.invulnerabilityTime = 10000; // 10 secondes
                 this.game.audioSystem.playSound('star');
                 this.game.audioSystem.playBackgroundMusic('star');
+                this.game.uiManager.showPowerUpCollected('star');
                 break;
                 
             case '1up':
                 this.game.addLife();
+                this.game.uiManager.showPowerUpCollected('1up');
                 break;
         }
     }

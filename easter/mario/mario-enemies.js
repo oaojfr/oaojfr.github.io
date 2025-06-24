@@ -34,8 +34,7 @@ class Enemy extends Entity {
         // Mouvement de base - à surcharger
         this.velocityX = this.direction * this.speed;
     }
-    
-    updatePhysics(deltaTime) {
+      updatePhysics(deltaTime) {
         // Gravité
         this.velocityY += this.gravity;
         
@@ -43,15 +42,38 @@ class Enemy extends Entity {
         this.x += this.velocityX * deltaTime / 16;
         this.y += this.velocityY * deltaTime / 16;
         
-        // Collision avec le sol
+        // Collision avec le sol du monde
         if (this.y + this.height >= this.game.WORLD_HEIGHT) {
             this.y = this.game.WORLD_HEIGHT - this.height;
             this.velocityY = 0;
             this.onGround = true;
+        } else {
+            // Vérifier collisions avec les plateformes
+            this.onGround = this.checkGroundCollision();
         }
         
         // Vérifier les murs et plateformes
         this.checkWallCollisions();
+    }
+    
+    checkGroundCollision() {
+        // Vérifier collision avec les blocs solides en dessous (même logique que Mario)
+        const level = this.game.levelManager;
+        const tileSize = this.game.TILE_SIZE;
+        
+        const leftTile = Math.floor(this.x / tileSize);
+        const rightTile = Math.floor((this.x + this.width) / tileSize);
+        const bottomTile = Math.floor((this.y + this.height + 1) / tileSize);
+        
+        for (let x = leftTile; x <= rightTile; x++) {
+            if (level.isSolidTile(x, bottomTile)) {
+                this.y = bottomTile * tileSize - this.height;
+                this.velocityY = 0;
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     checkWallCollisions() {

@@ -173,19 +173,26 @@ class MarioEntityManager {
             }
         }
     }
-    
-    handleMarioPowerupCollision(mario, powerup) {
+      handleMarioPowerupCollision(mario, powerup) {
+        // Créer des effets visuels
+        const particles = ObjectFactory.createPowerUpCollectEffect(this.game, powerup.x, powerup.y);
+        particles.forEach(particle => this.addEntity(particle));
+        
+        // Appliquer le power-up
         mario.collectPowerup(powerup.powerType);
         this.removeEntity(powerup);
         this.game.addScore(powerup.points || 1000);
     }
     
     handleMarioCoinCollision(mario, coin) {
+        // Créer des effets visuels
+        const particles = ObjectFactory.createCoinCollectEffect(this.game, coin.x, coin.y);
+        particles.forEach(particle => this.addEntity(particle));
+        
         this.game.addCoins(1);
         this.removeEntity(coin);
     }
-    
-    handleMarioBlockCollision(mario, block) {
+      handleMarioBlockCollision(mario, block) {
         // Collision détaillée avec les blocs
         const overlapX = Math.min(mario.x + mario.width - block.x, block.x + block.width - mario.x);
         const overlapY = Math.min(mario.y + mario.height - block.y, block.y + block.height - mario.y);
@@ -197,14 +204,16 @@ class MarioEntityManager {
             } else {
                 mario.x = block.x + block.width;
             }
-            mario.velocityX = 0;
-        } else {
+            mario.velocityX = 0;        } else {
             // Collision verticale
             if (mario.y < block.y) {
                 // Mario frappe le bloc par en dessous
                 mario.y = block.y - mario.height;
                 mario.velocityY = 0;
-                block.hit?.(mario);
+                // Appeler la méthode hit du bloc si elle existe
+                if (typeof block.hit === 'function') {
+                    block.hit(mario);
+                }
             } else {
                 // Mario atterrit sur le bloc
                 mario.y = block.y + block.height;

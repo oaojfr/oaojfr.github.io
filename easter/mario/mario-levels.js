@@ -59,8 +59,7 @@ class MarioLevelManager {
         this.currentLevel = levelNumber;
         console.log(`Niveau ${levelNumber} généré`);
     }
-    
-    generateLevel1() {
+      generateLevel1() {
         const width = this.tiles[0].length;
         const height = this.tiles.length;
         
@@ -71,15 +70,25 @@ class MarioLevelManager {
             }
         }
         
-        // Plateformes et obstacles
+        // Plateformes et obstacles - espacés pour un gameplay fluide
         this.addPlatform(20, height - 6, 4, 1, this.TILE_TYPES.BRICK);
-        this.addPlatform(30, height - 4, 2, 1, this.TILE_TYPES.QUESTION);
-        this.addPlatform(50, height - 8, 8, 1, this.TILE_TYPES.BRICK);
-        this.addPlatform(70, height - 5, 3, 1, this.TILE_TYPES.QUESTION);
+        this.addPlatform(26, height - 9, 2, 1, this.TILE_TYPES.QUESTION);
+        this.addPlatform(35, height - 6, 3, 1, this.TILE_TYPES.BRICK);
+        this.addPlatform(45, height - 4, 1, 1, this.TILE_TYPES.QUESTION);
+        this.addPlatform(55, height - 8, 6, 1, this.TILE_TYPES.BRICK);
+        this.addPlatform(65, height - 5, 2, 1, this.TILE_TYPES.QUESTION);
         
-        // Trous dans le sol
-        this.addGap(80, 5);
-        this.addGap(120, 8);
+        // Trous avec passerelles
+        this.addGap(75, 4);
+        this.addPlatform(77, height - 6, 2, 1, this.TILE_TYPES.BRICK);
+        
+        this.addGap(90, 6);
+        this.addPlatform(92, height - 8, 3, 1, this.TILE_TYPES.BRICK);
+        
+        // Structure en escalier vers la fin
+        for (let i = 0; i < 5; i++) {
+            this.addPlatform(110 + i * 3, height - 3 - i, 2, i + 1, this.TILE_TYPES.BRICK);
+        }
         
         // Château à la fin
         this.addCastle(width - 15, height - 8);
@@ -265,16 +274,16 @@ class MarioLevelManager {
             });
         }
     }
-    
-    populateLevel() {
+      populateLevel() {
         const width = this.tiles[0].length;
         const height = this.tiles.length;
         
-        // Placer les ennemis
+        // Placer les ennemis sur le sol (pas dedans)
         const enemyCount = 5 + this.currentLevel * 2;
         for (let i = 0; i < enemyCount; i++) {
             const x = (50 + Math.random() * (width - 100)) * this.TILE_SIZE;
-            const y = (height - 3) * this.TILE_SIZE;
+            // Placer les ennemis sur le sol, pas dedans
+            const y = (height - 2) * this.TILE_SIZE - 32; // 32 = hauteur de l'ennemi
             
             // Types d'ennemis selon le niveau
             let enemyType = 'goomba';
@@ -291,8 +300,7 @@ class MarioLevelManager {
         // Placer quelques pièces
         this.placeCoins();
     }
-    
-    placePowerUps() {
+      placePowerUps() {
         const width = this.tiles[0].length;
         const height = this.tiles.length;
         
@@ -310,6 +318,14 @@ class MarioLevelManager {
                         );
                         this.game.entityManager.addEntity(block);
                     }
+                } else if (this.tiles[y][x] === this.TILE_TYPES.BRICK) {
+                    // Créer un bloc destructible
+                    const brickBlock = new BrickBlock(
+                        this.game,
+                        x * this.TILE_SIZE,
+                        y * this.TILE_SIZE
+                    );
+                    this.game.entityManager.addEntity(brickBlock);
                 }
             }
         }
@@ -455,6 +471,12 @@ class MarioLevelManager {
         if (!this.isValidTilePosition(x, y)) return this.TILE_TYPES.EMPTY;
         return this.tiles[y][x];
     }
+    
+    setTile(x, y, tileType) {
+        if (this.isValidTilePosition(x, y)) {
+            this.tiles[y][x] = tileType;
+        }
+    }
 }
 
 /**
@@ -550,6 +572,72 @@ class QuestionBlock extends Entity {
     }
 }
 
+class BrickBlock extends Entity {
+    constructor(game, x, y) {
+        super(game, x, y, 32, 32);
+        this.type = 'block';
+        this.blockType = 'brick';
+        this.destroyed = false;
+        this.animationOffset = 0;
+    }
+    
+    hit(mario) {
+        if (this.destroyed) return;
+        
+        if (mario.powerState > 0) {
+            // Mario assez puissant pour casser le bloc
+            this.destroyed = true;
+            this.collidable = false;
+            this.game.addScore(50);
+            this.game.audioSystem.playSound('block_hit');
+            
+            // Créer des particules de destruction
+            const particles = ObjectFactory.createBlockBreakEffect(this.game, this.x, this.y);
+            particles.forEach(particle => this.game.entityManager.addEntity(particle));
+            
+            // Supprimer de la grille de tiles aussi
+            const tileX = Math.floor(this.x / this.game.TILE_SIZE);
+            const tileY = Math.floor(this.y / this.game.TILE_SIZE);
+            this.game.levelManager.setTile(tileX, tileY, this.game.levelManager.TILE_TYPES.EMPTY);
+            
+            this.destroy();
+        } else {
+            // Mario trop petit, juste faire rebondir
+            this.game.audioSystem.playSound('bump');
+            this.animationOffset = -8;
+        }
+    }
+    
+    update(deltaTime) {
+        if (this.animationOffset < 0) {
+            this.animationOffset += deltaTime / 30;
+            if (this.animationOffset > 0) this.animationOffset = 0;
+        }
+    }
+    
+    render(ctx) {
+        if (this.destroyed) return;
+        
+        const y = this.y + this.animationOffset;
+        
+        ctx.fillStyle = '#CD853F';
+        ctx.fillRect(this.x, y, this.width, this.height);
+        
+        // Motif de briques
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.x, y, this.width, this.height);
+        
+        // Lignes de brique
+        ctx.beginPath();
+        ctx.moveTo(this.x + this.width/2, y);
+        ctx.lineTo(this.x + this.width/2, y + this.height);
+        ctx.stroke();
+    }
+}
+
 window.MarioLevelManager = MarioLevelManager;
 window.Flag = Flag;
 window.QuestionBlock = QuestionBlock;
+window.BrickBlock = BrickBlock;
+window.BrickBlock = BrickBlock;
