@@ -5,7 +5,8 @@ let snake, food, snakeDirection, snakeScore;
 let snakeKeys = {};
 let gridSize, tileCount, tileCountY; // Ajout de tileCountY pour la hauteur
 let snakeWrapWalls = true; // Traversée des murs
-let snakeGameSpeed = 150; // Contrôle de vitesse (ms)
+let snakeGameSpeed = 250; // Contrôle de vitesse (ms) - plus lent par défaut
+let snakeSpeedSlider = null; // Référence au slider de vitesse
 let snakeFoodEffect = 0; // Effet visuel pour la nourriture
 let snakeColorScheme = 0; // Schéma de couleurs actuel
 let snakeAudio = {}; // Effets sonores
@@ -427,37 +428,32 @@ function gameOverSnake() {
 }
 
 function addSnakeControls() {
-    const controlsDiv = document.createElement('div');
-    controlsDiv.style.position = 'absolute';
-    controlsDiv.style.top = '10px';
-    controlsDiv.style.left = '10px';
-    controlsDiv.style.color = 'white';
-    controlsDiv.style.zIndex = '100';
-    controlsDiv.style.background = 'rgba(0,0,0,0.5)';
-    controlsDiv.style.padding = '5px';
-    controlsDiv.style.borderRadius = '5px';
+    // Utiliser les contrôles déjà présents dans l'HTML
+    snakeSpeedSlider = document.getElementById('snake-speed-slider');
+    const speedValueDisplay = document.getElementById('snake-speed-value');
     
-    controlsDiv.innerHTML = `
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-            <label for="snake-walls" style="margin-right: 10px;">Traverser les murs: </label>
-            <input type="checkbox" id="snake-walls" ${snakeWrapWalls ? 'checked' : ''}>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-            <label for="snake-speed" style="margin-right: 10px;">Vitesse: </label>
-            <input type="range" id="snake-speed" min="50" max="250" step="10" value="${250-snakeGameSpeed}" style="width: 100px;">
-        </div>
-    `;
+    if (snakeSpeedSlider && speedValueDisplay) {
+        snakeSpeedSlider.value = snakeGameSpeed;
+        updateSpeedDisplay();
+        
+        snakeSpeedSlider.addEventListener('input', function() {
+            snakeGameSpeed = parseInt(this.value);
+            updateSpeedDisplay();
+        });
+    }
     
-    snakeOverlay.appendChild(controlsDiv);
-    
-    // Ajouter les événements
-    document.getElementById('snake-walls').addEventListener('change', function() {
-        snakeWrapWalls = this.checked;
-    });
-    
-    document.getElementById('snake-speed').addEventListener('input', function() {
-        snakeGameSpeed = 250 - parseInt(this.value);
-    });
+    function updateSpeedDisplay() {
+        if (!speedValueDisplay) return;
+        
+        if (snakeGameSpeed <= 150) {
+            speedValueDisplay.textContent = 'Rapide';
+        } else if (snakeGameSpeed <= 250) {
+            speedValueDisplay.textContent = 'Normal';
+        } else if (snakeGameSpeed <= 350) {
+            speedValueDisplay.textContent = 'Lent';
+        } else {            speedValueDisplay.textContent = 'Très lent';
+        }
+    }
 }
 
 // Global functions for buttons

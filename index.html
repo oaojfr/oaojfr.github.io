@@ -1339,9 +1339,7 @@
     <div id="matrix-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none;">
         <canvas id="matrix-canvas"></canvas>
         <div id="matrix-close" style="position: absolute; top: 20px; right: 30px; color: #0f0; font-size: 2rem; cursor: pointer; z-index: 10001;">&times;</div>
-    </div>
-
-    <!-- Easter Egg: Pong Game -->
+    </div>    <!-- Easter Egg: Pong Game -->
     <div id="pong-overlay">
         <div id="pong-close">&times;</div>
         <div id="pong-instructions">
@@ -1349,15 +1347,18 @@
             <p data-translate="games.pong.controls">Utilisez W/S pour le joueur gauche, ↑/↓ pour le joueur droit</p>
             <p data-translate="games.pong.goal">Premier à 5 points gagne!</p>
         </div>
+        <div id="pong-controls" style="margin: 10px 0; text-align: center;">
+            <label for="pong-speed-slider" style="color: white; margin-right: 10px;">Vitesse de jeu:</label>
+            <input type="range" id="pong-speed-slider" min="1" max="5" value="3" step="0.5" style="width: 200px;">
+            <span id="pong-speed-value" style="color: white; margin-left: 10px;">Normal</span>
+        </div>
         <canvas id="pong-canvas" width="800" height="400"></canvas>
         <div id="pong-score"><span data-translate="games.pong.player1">Joueur 1</span>: <span id="score1">0</span> | <span data-translate="games.pong.player2">Joueur 2</span>: <span id="score2">0</span></div>
         <div id="pong-winner">
             <div id="winner-text" data-translate="games.pong.winner">🎉 Joueur 1 gagne!</div>
             <button onclick="closePongGame()" data-translate="games.pong.newgame">Nouvelle partie</button>
         </div>
-    </div>
-
-    <!-- Easter Egg: Mario Game -->
+    </div><!-- Easter Egg: Mario Game -->
     <div id="mario-overlay">
         <div id="mario-close">&times;</div>
         <div id="mario-instructions">
@@ -1365,6 +1366,11 @@
             <p data-translate="games.mario.controls">←/→ ou A/D pour bouger, ESPACE pour sauter</p>
             <p data-translate="games.mario.goal">Évitez les ennemis, collectez les pièces, terminez les niveaux!</p>
             <p data-translate="games.mario.random">Chaque niveau est généré aléatoirement</p>
+        </div>
+        <div id="mario-controls" style="margin: 10px 0; text-align: center;">
+            <label for="mario-speed-slider" style="color: white; margin-right: 10px;">Vitesse de jeu:</label>
+            <input type="range" id="mario-speed-slider" min="30" max="120" value="60" step="15" style="width: 200px;">
+            <span id="mario-speed-value" style="color: white; margin-left: 10px;">Normal</span>
         </div>
         <canvas id="mario-canvas" width="800" height="400"></canvas>
         <div id="mario-score"><span data-translate="games.mario.score">Score</span>: <span id="mario-score-value">0</span> | <span data-translate="games.mario.coins">Pièces</span>: <span id="mario-coins-value">0</span> | <span data-translate="games.mario.lives">Vies</span>: <span id="mario-lives-value">3</span></div>
@@ -1376,13 +1382,17 @@
         </div>
     </div>
 
-    <!-- Easter Egg: Snake Game -->
-    <div id="snake-overlay">
+    <!-- Easter Egg: Snake Game -->    <div id="snake-overlay">
         <div id="snake-close">&times;</div>
         <div id="snake-instructions">
             <h3 data-translate="games.snake.title">🐍 Easter Egg: Snake Game!</h3>
             <p data-translate="games.snake.controls">Utilisez les flèches directionnelles pour diriger le serpent</p>
             <p data-translate="games.snake.goal">Mangez les pommes pour grandir, évitez les murs et votre queue!</p>
+        </div>
+        <div id="snake-controls" style="margin: 10px 0; text-align: center;">
+            <label for="snake-speed-slider" style="color: white; margin-right: 10px;">Vitesse:</label>
+            <input type="range" id="snake-speed-slider" min="100" max="500" value="250" step="50" style="width: 200px;">
+            <span id="snake-speed-value" style="color: white; margin-left: 10px;">Normal</span>
         </div>
         <canvas id="snake-canvas" width="800" height="400"></canvas>
         <div id="snake-score"><span data-translate="games.snake.score">Score</span>: <span id="snake-score-value">0</span></div>
@@ -1396,11 +1406,15 @@
 
     <!-- Easter Egg: Breakout Game -->
     <div id="breakout-overlay">
-        <div id="breakout-close">&times;</div>
-        <div id="breakout-instructions">
+        <div id="breakout-close">&times;</div>        <div id="breakout-instructions">
             <h3 data-translate="games.breakout.title">🧱 Easter Egg: Breakout Game!</h3>
             <p data-translate="games.breakout.controls">Souris pour contrôler la palette, ou ←/→ ou A/D</p>
             <p data-translate="games.breakout.goal">Cassez toutes les briques pour gagner!</p>
+        </div>
+        <div id="breakout-controls" style="margin: 10px 0; text-align: center;">
+            <label for="breakout-speed-slider" style="color: white; margin-right: 10px;">Vitesse de jeu:</label>
+            <input type="range" id="breakout-speed-slider" min="0.5" max="3" value="1.5" step="0.25" style="width: 200px;">
+            <span id="breakout-speed-value" style="color: white; margin-left: 10px;">Normal</span>
         </div>
         <canvas id="breakout-canvas" width="800" height="400"></canvas>
         <div id="breakout-score"><span data-translate="games.breakout.score">Score</span>: <span id="breakout-score-value">0</span></div>

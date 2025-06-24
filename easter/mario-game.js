@@ -74,8 +74,7 @@ class MarioGame {
             FIRE_FLOWER: { width: 24, height: 24, speed: 0, color: '#FFA500', effect: 'fire' },
             STAR: { width: 24, height: 24, speed: 1.2, color: '#FFD700', effect: 'star' }
         };
-    }
-      init() {
+    }      init() {
         this.canvas = document.getElementById('mario-canvas');
         if (!this.canvas) {
             console.error('Mario canvas not found!');
@@ -96,6 +95,9 @@ class MarioGame {
         
         // Précharger les sons et la musique
         this.preloadAudio();
+        
+        // Setup speed control
+        this.setupSpeedControl();
         
         // Reset game state
         this.resetGame();
@@ -238,8 +240,7 @@ class MarioGame {
         const x = Math.sin(seed) * 10000;
         return x - Math.floor(x);
     }
-    
-    generateProceduralLevel() {
+      generateProceduralLevel() {
         try {
             this.platforms = [];
             this.enemies = [];
@@ -247,6 +248,8 @@ class MarioGame {
             
             // Use level and seed to generate different levels
             const currentSeed = this.levelSeed + this.level * 1000;
+            
+            console.log('Mario: Starting level generation with seed:', currentSeed);
             
             // Generate ground with procedural gaps
             this.generateProceduralGround(currentSeed);
@@ -259,6 +262,8 @@ class MarioGame {
             
             // Validate level has minimum required elements
             this.validateLevel();
+            
+            console.log('Mario: Level generated successfully - platforms:', this.platforms.length, 'enemies:', this.enemies.length, 'coins:', this.coinItems.length);
             
         } catch (error) {
             console.error('Error in generateProceduralLevel:', error);
@@ -698,9 +703,11 @@ class MarioGame {
         console.log('Mario key up:', e.code); // Debug
         this.keys[e.code] = false;
     }
-    
-    gameLoop(currentTime) {
-        if (!this.gameRunning) return;
+      gameLoop(currentTime) {
+        if (!this.gameRunning) {
+            console.log('Mario gameLoop stopped - gameRunning is false');
+            return;
+        }
         
         // FPS limiting
         const deltaTime = currentTime - this.lastTime;
@@ -713,8 +720,12 @@ class MarioGame {
         
         requestAnimationFrame((time) => this.gameLoop(time));
     }
-    
-    update(deltaTime) {
+      update(deltaTime) {
+        // Debug: log occasionally to see if update is running
+        if (Math.random() < 0.002) {
+            console.log('Mario update() called, deltaTime:', deltaTime, 'gameRunning:', this.gameRunning);
+        }
+        
         // Normalize deltaTime for consistent movement at different framerates
         const normalizedDelta = deltaTime / 16.67; // 16.67ms = 60fps
         
@@ -1502,6 +1513,72 @@ class MarioGame {
     }
     
     // Fermer le jeu Mario
+    // Simple fallback level if procedural generation fails
+    generateSimpleFallbackLevel() {
+        console.log('Mario: Using fallback level generation');
+        
+        this.platforms = [];
+        this.enemies = [];
+        this.coinItems = [];
+        
+        // Create simple ground platforms
+        for (let x = 0; x < this.levelWidth; x += 128) {
+            this.platforms.push({
+                x: x,
+                y: this.canvas.height - 32,
+                width: 128,
+                height: 32,
+                type: 'ground',
+                color: '#8B4513'
+            });
+        }
+        
+        // Add a few floating platforms
+        this.platforms.push({
+            x: 200,
+            y: this.canvas.height - 150,
+            width: 128,
+            height: 16,
+            type: 'platform',
+            color: '#228B22'
+        });
+        
+        this.platforms.push({
+            x: 400,
+            y: this.canvas.height - 200,
+            width: 96,
+            height: 16,
+            type: 'platform',
+            color: '#228B22'
+        });
+        
+        // Add some coins
+        for (let i = 0; i < 5; i++) {
+            this.coinItems.push({
+                x: 150 + i * 100,
+                y: this.canvas.height - 100,
+                width: 16,
+                height: 16,
+                collected: false
+            });
+        }
+        
+        // Add a simple enemy
+        this.enemies.push({
+            x: 300,
+            y: this.canvas.height - 64,
+            width: 24,
+            height: 24,
+            velocityX: -0.8,
+            velocityY: 0,
+            type: 'GOOMBA',
+            onGround: false,
+            direction: -1
+        });
+        
+        console.log('Mario: Fallback level created - platforms:', this.platforms.length);
+    }
+
     close() {
         this.gameRunning = false;
         
@@ -1516,6 +1593,38 @@ class MarioGame {
         // Supprimer les événements
         document.removeEventListener('keydown', this.handleKeyDown);
         document.removeEventListener('keyup', this.handleKeyUp);
+    }
+    
+    setupSpeedControl() {
+        const speedSlider = document.getElementById('mario-speed-slider');
+        const speedValueDisplay = document.getElementById('mario-speed-value');
+        
+        if (speedSlider && speedValueDisplay) {
+            speedSlider.value = this.targetFPS;
+            this.updateSpeedDisplay();
+            
+            speedSlider.addEventListener('input', () => {
+                this.targetFPS = parseInt(speedSlider.value);
+                this.frameTime = 1000 / this.targetFPS;
+                this.updateSpeedDisplay();
+                console.log(`Mario FPS changed to: ${this.targetFPS}`);
+            });
+        }
+    }
+
+    updateSpeedDisplay() {
+        const speedValueDisplay = document.getElementById('mario-speed-value');
+        if (!speedValueDisplay) return;
+        
+        if (this.targetFPS <= 30) {
+            speedValueDisplay.textContent = 'Lent';
+        } else if (this.targetFPS <= 60) {
+            speedValueDisplay.textContent = 'Normal';
+        } else if (this.targetFPS <= 90) {
+            speedValueDisplay.textContent = 'Rapide';
+        } else {
+            speedValueDisplay.textContent = 'Très rapide';
+        }
     }
 }
 
