@@ -3,7 +3,7 @@ let snakeGameRunning = false;
 let snakeCanvas, snakeCtx, snakeOverlay, snakeScoreElement;
 let snake, food, snakeDirection, snakeScore;
 let snakeKeys = {};
-let gridSize, tileCount;
+let gridSize, tileCount, tileCountY; // Ajout de tileCountY pour la hauteur
 let snakeWrapWalls = true; // Traversée des murs
 let snakeGameSpeed = 150; // Contrôle de vitesse (ms)
 let snakeFoodEffect = 0; // Effet visuel pour la nourriture
@@ -96,11 +96,10 @@ function startSnakeGame() {
     const closeBtn = document.getElementById('snake-close');
     
     snakeOverlay.style.display = 'flex';
-    snakeGameRunning = true;
-    
-    // Game settings
+    snakeGameRunning = true;    // Game settings
     gridSize = 20;
-    tileCount = snakeCanvas.width / gridSize;
+    tileCount = Math.floor(snakeCanvas.width / gridSize); // Nombre de tuiles en largeur
+    tileCountY = Math.floor(snakeCanvas.height / gridSize); // Nombre de tuiles en hauteur
     
     // Démarrer la musique de fond
     if (snakeBackgroundMusic) {
@@ -200,10 +199,9 @@ function generateFood() {
         // Calculer les coordonnées
         let x = Math.floor(head.x + Math.cos(angle) * distance);
         let y = Math.floor(head.y + Math.sin(angle) * distance);
-        
-        // Ajuster les coordonnées si on peut traverser les murs (maintenant activé par défaut)
+          // Ajuster les coordonnées si on peut traverser les murs (maintenant activé par défaut)
         x = ((x % tileCount) + tileCount) % tileCount;
-        y = ((y % tileCount) + tileCount) % tileCount;
+        y = ((y % tileCountY) + tileCountY) % tileCountY;
         
         // Vérifier si cette position est libre
         validPosition = true;
@@ -228,12 +226,11 @@ function generateFood() {
         
         attempts++;
     }
-    
-    // Fallback si on ne trouve pas de position valide
+      // Fallback si on ne trouve pas de position valide
     if (!validPosition) {
         food = { 
             x: Math.floor(Math.random() * tileCount), 
-            y: Math.floor(Math.random() * tileCount),
+            y: Math.floor(Math.random() * tileCountY),
             type: 'normal',
             effect: 'grow'
         };
@@ -254,10 +251,10 @@ function updateSnake() {
     if (snakeWrapWalls) {
         // Si on peut traverser les murs, on apparaît de l'autre côté
         newX = ((newX % tileCount) + tileCount) % tileCount;
-        newY = ((newY % tileCount) + tileCount) % tileCount;
+        newY = ((newY % tileCountY) + tileCountY) % tileCountY;
     } else {
         // Vérifier les collisions avec les murs
-        if (newX < 0 || newX >= tileCount || newY < 0 || newY >= tileCount) {
+        if (newX < 0 || newX >= tileCount || newY < 0 || newY >= tileCountY) {
             gameOverSnake();
             return;
         }
@@ -305,16 +302,18 @@ function draw() {
     gradient.addColorStop(1, '#1a1a1a');
     snakeCtx.fillStyle = gradient;
     snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
-    
-    // Dessiner une grille subtile
+      // Dessiner une grille subtile
     snakeCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     snakeCtx.lineWidth = 1;
+    // Lignes verticales
     for (let i = 0; i <= tileCount; i++) {
         snakeCtx.beginPath();
         snakeCtx.moveTo(i * gridSize, 0);
         snakeCtx.lineTo(i * gridSize, snakeCanvas.height);
         snakeCtx.stroke();
-        
+    }
+    // Lignes horizontales
+    for (let i = 0; i <= tileCountY; i++) {
         snakeCtx.beginPath();
         snakeCtx.moveTo(0, i * gridSize);
         snakeCtx.lineTo(snakeCanvas.width, i * gridSize);

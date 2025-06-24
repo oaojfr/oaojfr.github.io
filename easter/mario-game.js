@@ -674,10 +674,10 @@ class MarioGame {
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
     }
-    
-    handleKeyDown(e) {
+      handleKeyDown(e) {
         if (!this.gameRunning) return;
         
+        console.log('Mario key down:', e.code); // Debug
         this.keys[e.code] = true;
         
         if (e.code === 'Space') {
@@ -687,13 +687,15 @@ class MarioGame {
                 this.mario.onGround = false;
                 
                 // Play jump sound
-                this.audio.sounds.jump.currentTime = 0;
-                this.audio.sounds.jump.play();
+                if (this.audio.sounds.jump) {
+                    this.audio.sounds.jump.currentTime = 0;
+                    this.audio.sounds.jump.play();
+                }
             }
         }
     }
-    
-    handleKeyUp(e) {
+      handleKeyUp(e) {
+        console.log('Mario key up:', e.code); // Debug
         this.keys[e.code] = false;
     }
     
@@ -740,8 +742,12 @@ class MarioGame {
             }
         });
     }
-    
-    updateMario(delta) {
+      updateMario(delta) {
+        // Debug: log key states occasionally
+        if (Math.random() < 0.01) {
+            console.log('Keys state:', this.keys, 'Mario X velocity:', this.mario.velocityX);
+        }
+        
         // Handle input with delta time
         if (this.keys['ArrowLeft'] || this.keys['KeyA']) {
             this.mario.velocityX = Math.max(this.mario.velocityX - 0.4 * delta, -this.mario.speed);
@@ -927,8 +933,7 @@ class MarioGame {
         this.checkMarioEnemyCollisions();
         this.checkMarioCoinCollisions();
     }
-    
-    checkMarioPlatformCollisions() {
+      checkMarioPlatformCollisions() {
         this.mario.onGround = false;
         
         this.platforms.forEach(platform => {
@@ -942,6 +947,10 @@ class MarioGame {
                     this.mario.y = platform.y - this.mario.height;
                     this.mario.velocityY = 0;
                     this.mario.onGround = true;
+                    // Debug log only occasionally to avoid spam
+                    if (Math.random() < 0.01) {
+                        console.log('Mario is on ground at platform', platform);
+                    }
                 }
                 // Hitting platform from below
                 else if (this.mario.velocityY < 0 && this.mario.y > platform.y) {
@@ -959,6 +968,18 @@ class MarioGame {
                 }
             }
         });
+        
+        // Debug: log Mario state occasionally
+        if (Math.random() < 0.005) {
+            console.log('Mario state:', {
+                x: this.mario.x,
+                y: this.mario.y,
+                velocityX: this.mario.velocityX,
+                velocityY: this.mario.velocityY,
+                onGround: this.mario.onGround,
+                platformsCount: this.platforms.length
+            });
+        }
     }
     
     checkMarioEnemyCollisions() {
