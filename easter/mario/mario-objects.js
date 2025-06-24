@@ -367,8 +367,166 @@ class ObjectFactory {
     }
 }
 
+/**
+ * Classe Pipe - Tuyaux pour transitions entre niveaux
+ */
+class Pipe extends GameObject {
+    constructor(game, x, y, height = 2, direction = 'down', targetLevel = null, targetX = null, targetY = null) {
+        super(game, x, y, 32, height * 32);
+        this.height = height;
+        this.direction = direction; // 'down', 'up', 'left', 'right'
+        this.targetLevel = targetLevel;
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.isEnterable = targetLevel !== null;
+        this.enterCooldown = 0;
+        this.isUnderground = false;
+    }
+    
+    update(deltaTime) {
+        super.update(deltaTime);
+        
+        if (this.enterCooldown > 0) {
+            this.enterCooldown -= deltaTime;
+        }
+    }
+    
+    render(ctx) {
+        const screenPos = this.game.getScreenPosition(this.x, this.y);
+        
+        // Corps du tuyau
+        ctx.fillStyle = '#00AA00';
+        ctx.fillRect(screenPos.x, screenPos.y, this.width, this.height);
+        
+        // Détails du tuyau
+        ctx.fillStyle = '#008800';
+        ctx.fillRect(screenPos.x + 2, screenPos.y, 4, this.height);
+        ctx.fillRect(screenPos.x + this.width - 6, screenPos.y, 4, this.height);
+        
+        // Embout du tuyau
+        if (this.direction === 'down' || this.direction === 'up') {
+            ctx.fillStyle = '#00CC00';
+            ctx.fillRect(screenPos.x - 4, screenPos.y - 8, this.width + 8, 8);
+        }
+        
+        // Indicateur si entrable
+        if (this.isEnterable && this.enterCooldown <= 0) {
+            ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+            ctx.fillRect(screenPos.x - 2, screenPos.y - 10, this.width + 4, 4);
+        }
+    }
+    
+    onCollision(other) {
+        if (other === this.game.mario && this.isEnterable && this.enterCooldown <= 0) {
+            const mario = this.game.mario;
+            
+            // Vérifier si Mario appuie sur la touche appropriée
+            const input = this.game.inputManager;
+            let canEnter = false;
+            
+            switch (this.direction) {
+                case 'down':
+                    canEnter = input.keys.down && mario.onGround;
+                    break;
+                case 'up':
+                    canEnter = input.keys.up;
+                    break;
+                case 'left':
+                    canEnter = input.keys.left;
+                    break;
+                case 'right':
+                    canEnter = input.keys.right;
+                    break;
+            }
+            
+            if (canEnter) {
+                this.enterPipe(mario);
+            }
+        }
+    }
+    
+    enterPipe(mario) {
+        console.log(`Mario entre dans le tuyau vers le niveau ${this.targetLevel}`);
+        this.enterCooldown = 2000; // 2 secondes de cooldown
+        
+        // Animation d'entrée
+        mario.state = 'entering_pipe';
+        mario.velocityX = 0;
+        mario.velocityY = 0;
+        
+        // Jouer son d'entrée de tuyau
+        this.game.audioManager.playSFX('pipe');
+        
+        // Transition vers le niveau cible après animation
+        setTimeout(() => {
+            this.game.transitionToLevel(this.targetLevel, this.targetX, this.targetY);
+        }, 1000);
+    }
+}
+
+/**
+ * Checkpoint pour sauvegarder la progression
+ */
+class Checkpoint extends GameObject {
+    constructor(game, x, y) {
+        super(game, x, y, 24, 48);
+        this.activated = false;
+        this.animationFrame = 0;
+        this.animationSpeed = 0.1;
+    }
+    
+    update(deltaTime) {
+        super.update(deltaTime);
+        this.animationFrame += this.animationSpeed;
+    }
+    
+    render(ctx) {
+        const screenPos = this.game.getScreenPosition(this.x, this.y);
+        
+        // Mât
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(screenPos.x + 10, screenPos.y, 4, this.height);
+        
+        // Drapeau
+        const flagColor = this.activated ? '#00FF00' : '#FF0000';
+        ctx.fillStyle = flagColor;
+        
+        if (this.activated) {
+            // Drapeau hissé
+            ctx.fillRect(screenPos.x + 14, screenPos.y + 5, 16, 12);
+        } else {
+            // Drapeau en bas
+            ctx.fillRect(screenPos.x + 14, screenPos.y + 30, 16, 12);
+        }
+        
+        // Animation de brillance si activé
+        if (this.activated) {
+            const alpha = 0.5 + 0.5 * Math.sin(this.animationFrame * 5);
+            ctx.fillStyle = `rgba(255, 255, 0, ${alpha})`;
+            ctx.fillRect(screenPos.x - 2, screenPos.y - 2, this.width + 4, this.height + 4);
+        }
+    }
+    
+    onCollision(other) {
+        if (other === this.game.mario && !this.activated) {
+            this.activate();
+        }
+    }
+    
+    activate() {
+        this.activated = true;
+        this.game.setCheckpoint(this.x, this.y);
+        this.game.audioManager.playSFX('checkpoint');
+        this.game.ui.showMessage('CHECKPOINT ACTIVÉ !', 1500);
+        
+        console.log(`Checkpoint activé à (${this.x}, ${this.y})`);
+    }
+}
+
 window.PowerUp = PowerUp;
 window.Coin = Coin;
 window.ScorePopup = ScorePopup;
 window.Particle = Particle;
 window.ObjectFactory = ObjectFactory;
+window.Pipe = Pipe;
+window.Checkpoint = Checkpoint;

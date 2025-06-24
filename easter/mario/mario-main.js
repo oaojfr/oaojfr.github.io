@@ -35,7 +35,28 @@ class MarioGame {
         this.score = 0;
         this.lives = 3;
         this.coins = 0;
-        this.time = 400;
+        this.time = 400; // Temps initial en secondes
+        this.timeWarning = false;
+        
+        // Système de checkpoints
+        this.checkpoint = {
+            active: false,
+            x: 0,
+            y: 0,
+            level: 1,
+            levelType: 'overworld',
+            coins: 0,
+            score: 0,
+            powerState: 0
+        };
+        
+        // Système de sauvegarde
+        this.saveSystem = new MarioSaveSystem(this);
+        this.saveSystem.enableAutoSave(2); // Sauvegarde automatique toutes les 2 minutes
+        
+        // Transitions
+        this.isTransitioning = false;
+        this.transitionData = null;
         
         // Initialiser les systèmes
         this.audioSystem = new MarioAudio();
@@ -102,25 +123,40 @@ class MarioGame {
     }
     
     render() {
-        // Effacer l'écran
-        this.ctx.fillStyle = '#5C94FC'; // Bleu ciel Mario
+        // Effacer le canvas
+        this.ctx.fillStyle = this.getBackgroundColor();
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Sauvegarder le contexte pour la caméra
-        this.ctx.save();
-        this.ctx.translate(-Math.floor(this.camera.x), -Math.floor(this.camera.y));
-        
-        // Dessiner le niveau
+        // Rendu du niveau
         this.levelManager.render(this.ctx);
         
-        // Dessiner les entités
+        // Rendu des entités
         this.entityManager.render(this.ctx);
         
-        // Restaurer le contexte
-        this.ctx.restore();
-        
-        // Dessiner l'UI (pas affectée par la caméra)
+        // Rendu de l'interface utilisateur
         this.uiManager.render(this.ctx);
+        
+        // Effet de transition
+        if (this.isTransitioning) {
+            this.renderTransitionEffect();
+        }
+    }
+    
+    getBackgroundColor() {
+        if (this.levelManager.isUnderground) {
+            return '#000011'; // Bleu très foncé pour les niveaux souterrains
+        }
+        return '#5C94FC'; // Bleu ciel pour les niveaux extérieurs
+    }
+    
+    renderTransitionEffect() {
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.font = '24px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('Transition...', this.canvas.width / 2, this.canvas.height / 2);
     }
     
     gameLoop(currentTime) {
@@ -168,9 +204,16 @@ class MarioGame {
     
     gameOver() {
         this.gameState = 'gameOver';
-        this.audioSystem.playSound('gameOver');
-        this.audioSystem.stopBackgroundMusic();
-        console.log('Game Over !');
+        this.audioManager.stopBackgroundMusic();
+        this.ui.showGameOver();
+        
+        // Sauvegarder le high score
+        if (this.saveSystem.isNewHighScore(this.score)) {
+            this.saveSystem.saveHighScore(this.score, this.currentLevel);
+            this.ui.showMessage('NOUVEAU RECORD !', 3000, '28px Arial');
+        }
+        
+        console.log(`Game Over - Score final: ${this.score}`);
     }
     
     levelComplete() {
@@ -215,13 +258,16 @@ class MarioGame {
     
     loseLife() {
         this.lives--;
-        this.audioSystem.playSound('death');
+        this.ui.showLifeLost();
+        this.audioManager.playSFX('death');
         
         if (this.lives <= 0) {
             this.gameOver();
         } else {
-            // Respawn Mario
-            this.mario.respawn();
+            // Respawn au checkpoint ou au début du niveau
+            setTimeout(() => {
+                this.respawnAtCheckpoint();
+            }, 2000);
         }
     }
     
@@ -241,6 +287,166 @@ class MarioGame {
             x: worldX - this.camera.x,
             y: worldY - this.camera.y
         };
+    }
+    
+    startLevel(levelNumber) {
+        console.log(`Démarrage du niveau ${levelNumber}`);
+        
+        // Réinitialiser les entités
+        this.entityManager.clear();
+        
+        // Charger le niveau
+        this.levelManager.loadLevel(levelNumber);
+        
+        // Créer Mario
+        this.createMario();
+        
+        // Générer les ennemis du niveau
+        this.generateLevelEnemies(levelNumber);
+        
+        // Réinitialiser la caméra
+        this.camera.x = 0;
+        this.camera.y = 0;
+        
+        // Réinitialiser le temps
+        this.time = 400;
+        this.timeWarning = false;
+        
+        // Afficher le début du niveau
+        this.ui.showLevelStart(levelNumber);
+        
+        // Changer l'état du jeu
+        this.gameState = 'playing';
+        this.currentLevel = levelNumber;
+        
+        console.log(`Niveau ${levelNumber} démarré`);
+    }
+    
+    startLevelWithType(levelNumber, levelType = 'overworld') {
+        console.log(`Démarrage du niveau ${levelNumber} (${levelType})`);
+        
+        // Réinitialiser les entités
+        this.entityManager.clear();
+        
+        // Charger le niveau avec le type spécifié
+        this.levelManager.loadLevel(levelNumber, levelType);
+        
+        // Créer Mario
+        this.createMario();
+        
+        // Générer les ennemis du niveau
+        this.generateLevelEnemies(levelNumber);
+        
+        // Réinitialiser la caméra
+        this.camera.x = 0;
+        this.camera.y = 0;
+        
+        // Réinitialiser le temps
+        this.time = 400;
+        this.timeWarning = false;
+        
+        // Afficher le début du niveau
+        const levelName = levelType === 'underground' ? `NIVEAU ${levelNumber} SOUTERRAIN` : `NIVEAU ${levelNumber}`;
+        this.ui.showMessage(levelName, 2000, '24px Arial');
+        
+        // Musique selon le type de niveau
+        if (this.levelManager.isUnderground) {
+            this.audioManager.playBackgroundMusic('underground');
+        } else {
+            this.audioManager.playBackgroundMusic('overworld');
+        }
+        
+        // Changer l'état du jeu
+        this.gameState = 'playing';
+        this.currentLevel = levelNumber;
+        
+        console.log(`Niveau ${levelNumber} (${levelType}) démarré`);
+    }
+    
+    transitionToLevel(levelIdentifier, targetX = null, targetY = null) {
+        console.log(`Transition vers ${levelIdentifier}`);
+        
+        this.isTransitioning = true;
+        this.transitionData = {
+            levelIdentifier,
+            targetX,
+            targetY
+        };
+        
+        // Fade out
+        setTimeout(() => {
+            this.executeTransition();
+        }, 500);
+    }
+    
+    executeTransition() {
+        const { levelIdentifier, targetX, targetY } = this.transitionData;
+        
+        // Parser l'identifiant du niveau (ex: "1-underground", "2")
+        let levelNumber, levelType;
+        
+        if (levelIdentifier.includes('-')) {
+            const parts = levelIdentifier.split('-');
+            levelNumber = parseInt(parts[0]);
+            levelType = parts[1];
+        } else {
+            levelNumber = parseInt(levelIdentifier);
+            levelType = 'overworld';
+        }
+        
+        // Démarrer le nouveau niveau
+        this.startLevelWithType(levelNumber, levelType);
+        
+        // Positionner Mario si des coordonnées sont spécifiées
+        if (targetX !== null && targetY !== null) {
+            this.mario.x = targetX * this.levelManager.TILE_SIZE;
+            this.mario.y = targetY * this.levelManager.TILE_SIZE;
+            this.camera.x = Math.max(0, this.mario.x - this.canvas.width / 2);
+        }
+        
+        this.isTransitioning = false;
+        this.transitionData = null;
+    }
+    
+    setCheckpoint(x, y) {
+        this.checkpoint = {
+            active: true,
+            x: x,
+            y: y,
+            level: this.currentLevel,
+            levelType: this.levelManager.levelType,
+            coins: this.coins,
+            score: this.score,
+            powerState: this.mario ? this.mario.powerState : 0
+        };
+        
+        console.log('Checkpoint sauvegardé:', this.checkpoint);
+    }
+    
+    respawnAtCheckpoint() {
+        if (!this.checkpoint.active) {
+            this.resetGame();
+            return;
+        }
+        
+        console.log('Respawn au checkpoint:', this.checkpoint);
+        
+        // Restaurer le niveau et la position
+        this.startLevelWithType(this.checkpoint.level, this.checkpoint.levelType);
+        
+        // Restaurer la position de Mario
+        this.mario.x = this.checkpoint.x;
+        this.mario.y = this.checkpoint.y;
+        this.mario.powerState = this.checkpoint.powerState;
+        
+        // Restaurer les stats partiellement
+        this.coins = this.checkpoint.coins;
+        this.score = this.checkpoint.score;
+        
+        // Positionner la caméra
+        this.camera.x = Math.max(0, this.mario.x - this.canvas.width / 2);
+        
+        this.ui.showMessage('RESPAWN AU CHECKPOINT', 1500);
     }
 }
 

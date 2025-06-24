@@ -12,6 +12,18 @@ class MarioAudio {
         this.sfxVolume = 0.4;
         this.enabled = true;
         
+        // Effets sonores avec fréquences 8-bit
+        this.sfxConfig = {
+            jump: { freq: 440, duration: 0.1, type: 'square' },
+            coin: { freq: 660, duration: 0.2, type: 'square' },
+            powerup: { freq: 523, duration: 0.3, type: 'square' },
+            death: { freq: 220, duration: 0.5, type: 'sawtooth' },
+            enemy_defeat: { freq: 330, duration: 0.15, type: 'square' },
+            pipe: { freq: 200, duration: 0.8, type: 'sine' },
+            checkpoint: { freq: 880, duration: 0.4, type: 'square' },
+            underground: { freq: 150, duration: 1.0, type: 'triangle' }
+        };
+        
         this.initAudioContext();
         this.preloadSounds();
     }
@@ -379,22 +391,51 @@ class MarioAudio {
         }
     }
     
-    playBackgroundMusic(musicName) {
-        if (!this.enabled || !this.backgroundMusic[musicName]) return;
+    playBackgroundMusic(theme = 'overworld') {
+        if (!this.enabled) return;
         
         // Arrêter la musique actuelle
         this.stopBackgroundMusic();
         
-        try {
-            if (this.audioContext.state === 'suspended') {
-                this.audioContext.resume();
-            }
-            
-            this.currentMusic = this.backgroundMusic[musicName];
-            this.currentMusic.play();
-        } catch (e) {
-            console.warn(`Erreur lecture musique ${musicName}:`, e);
+        // Choisir la mélodie selon le thème
+        let melody, tempo;
+        
+        switch (theme) {
+            case 'underground':
+                melody = [
+                    261, 293, 329, 261, 293, 329,
+                    392, 440, 392, 329, 293, 261,
+                    220, 246, 261, 293, 329, 392,
+                    440, 392, 329, 293, 261, 220
+                ];
+                tempo = 500;
+                break;
+                
+            case 'castle':
+                melody = [
+                    220, 220, 220, 174, 220, 261,
+                    174, 220, 261, 293, 220, 174,
+                    146, 174, 220, 261, 293, 329,
+                    261, 220, 174, 146, 130, 146
+                ];
+                tempo = 600;
+                break;
+                
+            default: // overworld
+                melody = [
+                    659, 659, 0, 659, 0, 523, 659, 0,
+                    784, 0, 0, 0, 392, 0, 0, 0,
+                    523, 0, 0, 392, 0, 0, 330, 0,
+                    0, 440, 0, 494, 0, 466, 440, 0
+                ];
+                tempo = 400;
+                break;
         }
+        
+        this.currentMelody = melody;
+        this.currentTempo = tempo;
+        this.currentTheme = theme;
+        this.playMelodyNote(0);
     }
     
     stopBackgroundMusic() {

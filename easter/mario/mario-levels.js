@@ -9,6 +9,8 @@ class MarioLevelManager {
         this.tiles = [];
         this.backgroundElements = [];
         this.TILE_SIZE = 32;
+        this.isUnderground = false;
+        this.levelType = 'overworld'; // 'overworld', 'underground', 'castle', 'underwater'
         
         // Types de tiles
         this.TILE_TYPES = {
@@ -21,16 +23,22 @@ class MarioLevelManager {
             HILL: 6,
             CLOUD: 7,
             BUSH: 8,
-            FLAG: 9
+            FLAG: 9,
+            UNDERGROUND_BRICK: 10,
+            UNDERGROUND_GROUND: 11,
+            WATER: 12,
+            LAVA: 13
         };
     }
     
-    loadLevel(levelNumber) {
-        console.log(`Chargement du niveau ${levelNumber}`);
+    loadLevel(levelNumber, levelType = 'overworld') {
+        console.log(`Chargement du niveau ${levelNumber} (${levelType})`);
         
         // Réinitialiser le niveau
         this.tiles = [];
         this.backgroundElements = [];
+        this.levelType = levelType;
+        this.isUnderground = (levelType === 'underground');
         
         // Créer une grille vide
         const width = Math.floor(this.game.WORLD_WIDTH / this.TILE_SIZE);
@@ -43,23 +51,28 @@ class MarioLevelManager {
             }
         }
         
-        // Générer le niveau selon le numéro
-        switch (levelNumber) {
-            case 1:
-                this.generateLevel1();
-                break;
-            case 2:
-                this.generateLevel2();
-                break;
-            default:
-                this.generateRandomLevel(levelNumber);
-                break;
+        // Générer le niveau selon le numéro et le type
+        if (levelType === 'underground') {
+            this.generateUndergroundLevel(levelNumber);
+        } else {
+            switch (levelNumber) {
+                case 1:
+                    this.generateLevel1();
+                    break;
+                case 2:
+                    this.generateLevel2();
+                    break;
+                default:
+                    this.generateRandomLevel(levelNumber);
+                    break;
+            }
         }
         
         this.currentLevel = levelNumber;
-        console.log(`Niveau ${levelNumber} généré`);
+        console.log(`Niveau ${levelNumber} (${levelType}) généré`);
     }
-      generateLevel1() {
+    
+    generateLevel1() {
         const width = this.tiles[0].length;
         const height = this.tiles.length;
         
@@ -95,6 +108,14 @@ class MarioLevelManager {
         
         // Drapeau de fin
         this.addFlag(width - 25, height - 10);
+        
+        // Tuyau d'entrée vers le niveau souterrain
+        const entrancePipe = new Pipe(this.game, 30 * this.TILE_SIZE, (height - 4) * this.TILE_SIZE, 2, 'down', '1-underground', 50, height - 4);
+        this.game.entityManager.addEntity(entrancePipe);
+        
+        // Checkpoint au milieu du niveau
+        const checkpoint = new Checkpoint(this.game, 50 * this.TILE_SIZE, (height - 3) * this.TILE_SIZE);
+        this.game.entityManager.addEntity(checkpoint);
         
         // Éléments de décor
         this.addBackgroundElements();
@@ -132,6 +153,10 @@ class MarioLevelManager {
         // Château et drapeau
         this.addCastle(width - 15, height - 8);
         this.addFlag(width - 25, height - 10);
+        
+        // Boss Bowser devant le château
+        const bowser = new Bowser(this.game, (width - 20) * this.TILE_SIZE, (height - 6) * this.TILE_SIZE);
+        this.game.entityManager.addEntity(bowser);
         
         this.addBackgroundElements();
     }
@@ -406,49 +431,107 @@ class MarioLevelManager {
     }
     
     renderTile(ctx, x, y, tileType) {
-        const screenX = x * this.TILE_SIZE;
-        const screenY = y * this.TILE_SIZE;
+        const screenPos = this.game.getScreenPosition(x * this.TILE_SIZE, y * this.TILE_SIZE);
         
         switch (tileType) {
             case this.TILE_TYPES.GROUND:
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(screenX, screenY, this.TILE_SIZE, this.TILE_SIZE);
+                this.renderGroundTile(ctx, screenPos.x, screenPos.y);
+                break;
+                
+            case this.TILE_TYPES.UNDERGROUND_GROUND:
+                this.renderUndergroundGroundTile(ctx, screenPos.x, screenPos.y);
+                break;
+                
+            case this.TILE_TYPES.UNDERGROUND_BRICK:
+                this.renderUndergroundBrickTile(ctx, screenPos.x, screenPos.y);
                 break;
                 
             case this.TILE_TYPES.BRICK:
-                ctx.fillStyle = '#CD853F';
-                ctx.fillRect(screenX, screenY, this.TILE_SIZE, this.TILE_SIZE);
-                // Motif de briques
-                ctx.strokeStyle = '#8B4513';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(screenX, screenY, this.TILE_SIZE, this.TILE_SIZE);
+                this.renderBrickTile(ctx, screenPos.x, screenPos.y);
                 break;
                 
             case this.TILE_TYPES.QUESTION:
-                ctx.fillStyle = '#FFD700';
-                ctx.fillRect(screenX, screenY, this.TILE_SIZE, this.TILE_SIZE);
-                // Point d'interrogation
-                ctx.fillStyle = '#000000';
-                ctx.font = '20px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('?', screenX + this.TILE_SIZE/2, screenY + this.TILE_SIZE/2 + 6);
-                break;
-                
-            case this.TILE_TYPES.PIPE:
-                ctx.fillStyle = '#00AA00';
-                ctx.fillRect(screenX, screenY, this.TILE_SIZE, this.TILE_SIZE);
+                this.renderQuestionTile(ctx, screenPos.x, screenPos.y);
                 break;
                 
             case this.TILE_TYPES.CASTLE:
-                ctx.fillStyle = '#666666';
-                ctx.fillRect(screenX, screenY, this.TILE_SIZE, this.TILE_SIZE);
+                this.renderCastleTile(ctx, screenPos.x, screenPos.y);
                 break;
                 
             case this.TILE_TYPES.FLAG:
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(screenX + this.TILE_SIZE/2 - 2, screenY, 4, this.TILE_SIZE);
+                this.renderFlagTile(ctx, screenPos.x, screenPos.y);
                 break;
         }
+    }
+    
+    renderGroundTile(ctx, x, y) {
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(x, y, this.TILE_SIZE, this.TILE_SIZE);
+    }
+    
+    renderUndergroundGroundTile(ctx, x, y) {
+        // Texture de terre souterraine plus sombre
+        ctx.fillStyle = '#2D1B0F';
+        ctx.fillRect(x, y, this.TILE_SIZE, this.TILE_SIZE);
+        
+        // Détails de la texture
+        ctx.fillStyle = '#3D2B1F';
+        ctx.fillRect(x + 2, y + 2, this.TILE_SIZE - 4, this.TILE_SIZE - 4);
+        
+        // Points de brillance minérale
+        ctx.fillStyle = '#5D4B3F';
+        for (let i = 0; i < 3; i++) {
+            const px = x + 4 + (i * 8);
+            const py = y + 4 + (i % 2) * 8;
+            ctx.fillRect(px, py, 2, 2);
+        }
+    }
+    
+    renderUndergroundBrickTile(ctx, x, y) {
+        // Briques souterraines bleu foncé
+        ctx.fillStyle = '#1A1A3A';
+        ctx.fillRect(x, y, this.TILE_SIZE, this.TILE_SIZE);
+        
+        // Lignes de mortier
+        ctx.fillStyle = '#0A0A2A';
+        ctx.fillRect(x, y + this.TILE_SIZE / 2 - 1, this.TILE_SIZE, 2);
+        ctx.fillRect(x + this.TILE_SIZE / 2 - 1, y, 2, this.TILE_SIZE);
+        
+        // Reflets
+        ctx.fillStyle = '#2A2A4A';
+        ctx.fillRect(x + 2, y + 2, this.TILE_SIZE - 6, 4);
+        ctx.fillRect(x + 2, y + this.TILE_SIZE / 2 + 2, this.TILE_SIZE - 6, 4);
+    }
+    
+    renderBrickTile(ctx, x, y) {
+        ctx.fillStyle = '#CD853F';
+        ctx.fillRect(x, y, this.TILE_SIZE, this.TILE_SIZE);
+        
+        // Motif de briques
+        ctx.strokeStyle = '#8B4513';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, this.TILE_SIZE, this.TILE_SIZE);
+    }
+    
+    renderQuestionTile(ctx, x, y) {
+        ctx.fillStyle = '#FFD700';
+        ctx.fillRect(x, y, this.TILE_SIZE, this.TILE_SIZE);
+        
+        // Point d'interrogation
+        ctx.fillStyle = '#000000';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('?', x + this.TILE_SIZE/2, y + this.TILE_SIZE/2 + 6);
+    }
+    
+    renderCastleTile(ctx, x, y) {
+        ctx.fillStyle = '#666666';
+        ctx.fillRect(x, y, this.TILE_SIZE, this.TILE_SIZE);
+    }
+    
+    renderFlagTile(ctx, x, y) {
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(x + this.TILE_SIZE/2 - 2, y, 4, this.TILE_SIZE);
     }
     
     isSolidTile(x, y) {
@@ -459,7 +542,9 @@ class MarioLevelManager {
                tileType === this.TILE_TYPES.BRICK ||
                tileType === this.TILE_TYPES.QUESTION ||
                tileType === this.TILE_TYPES.PIPE ||
-               tileType === this.TILE_TYPES.CASTLE;
+               tileType === this.TILE_TYPES.CASTLE ||
+               tileType === this.TILE_TYPES.UNDERGROUND_GROUND ||
+               tileType === this.TILE_TYPES.UNDERGROUND_BRICK;
     }
     
     isValidTilePosition(x, y) {

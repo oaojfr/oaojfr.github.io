@@ -419,4 +419,295 @@ window.Goomba = Goomba;
 window.Koopa = Koopa;
 window.PiranhaPlant = PiranhaPlant;
 window.Spiny = Spiny;
-window.EnemyFactory = EnemyFactory;
+window.Bowser = Bowser;
+window.BowserFireball = BowserFireball;
+
+/**
+ * Bowser - Boss de fin de niveau
+ */
+class Bowser extends Enemy {
+    constructor(game, x, y) {
+        super(game, x, y, 64, 64);
+        this.health = 5;
+        this.maxHealth = 5;
+        this.attackTimer = 0;
+        this.attackCooldown = 2000;
+        this.isAttacking = false;
+        this.direction = -1;
+        this.jumpTimer = 0;
+        this.jumpCooldown = 3000;
+        this.fireballTimer = 0;
+        this.fireballCooldown = 4000;
+    }
+    
+    update(deltaTime) {
+        super.update(deltaTime);
+        
+        this.attackTimer += deltaTime;
+        this.jumpTimer += deltaTime;
+        this.fireballTimer += deltaTime;
+        
+        // IA de Bowser
+        if (this.game.mario) {
+            const distanceToMario = Math.abs(this.game.mario.x - this.x);
+            
+            // Mouvement vers Mario
+            if (distanceToMario > 100) {
+                this.velocityX = this.direction * 30;
+            } else {
+                this.velocityX = 0;
+                
+                // Attaque au corps à corps
+                if (this.attackTimer >= this.attackCooldown) {
+                    this.meleeAttack();
+                    this.attackTimer = 0;
+                }
+                
+                // Saut
+                if (this.jumpTimer >= this.jumpCooldown && this.onGround) {
+                    this.jump();
+                    this.jumpTimer = 0;
+                }
+            }
+            
+            // Attaque à distance (boules de feu)
+            if (this.fireballTimer >= this.fireballCooldown) {
+                this.shootFireball();
+                this.fireballTimer = 0;
+            }
+            
+            // Changer de direction si Mario est de l'autre côté
+            if (this.game.mario.x < this.x) {
+                this.direction = -1;
+            } else if (this.game.mario.x > this.x) {
+                this.direction = 1;
+            }
+        }
+    }
+    
+    render(ctx) {
+        const screenPos = this.game.getScreenPosition(this.x, this.y);
+        
+        // Corps de Bowser
+        ctx.fillStyle = this.isAttacking ? '#CC4400' : '#FF6600';
+        ctx.fillRect(screenPos.x, screenPos.y, this.width, this.height);
+        
+        // Carapace
+        ctx.fillStyle = '#228B22';
+        ctx.fillRect(screenPos.x + 8, screenPos.y + 8, this.width - 16, this.height - 24);
+        
+        // Épines sur la carapace
+        ctx.fillStyle = '#FFFFFF';
+        for (let i = 0; i < 6; i++) {
+            const spikeX = screenPos.x + 12 + i * 8;
+            const spikeY = screenPos.y + 8;
+            ctx.fillRect(spikeX, spikeY, 4, 8);
+        }
+        
+        // Yeux
+        ctx.fillStyle = '#FF0000';
+        ctx.fillRect(screenPos.x + 16, screenPos.y + 16, 8, 8);
+        ctx.fillRect(screenPos.x + 40, screenPos.y + 16, 8, 8);
+        
+        // Barre de vie
+        this.renderHealthBar(ctx, screenPos);
+    }
+    
+    renderHealthBar(ctx, screenPos) {
+        const barWidth = 60;
+        const barHeight = 6;
+        const barX = screenPos.x + 2;
+        const barY = screenPos.y - 12;
+        
+        // Fond de la barre
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(barX, barY, barWidth, barHeight);
+        
+        // Barre de vie
+        const healthPercent = this.health / this.maxHealth;
+        const healthWidth = barWidth * healthPercent;
+        
+        ctx.fillStyle = healthPercent > 0.5 ? '#00FF00' : 
+                       healthPercent > 0.25 ? '#FFFF00' : '#FF0000';
+        ctx.fillRect(barX, barY, healthWidth, barHeight);
+        
+        // Bordure
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(barX, barY, barWidth, barHeight);
+    }
+    
+    meleeAttack() {
+        this.isAttacking = true;
+        
+        // Zone d'attaque
+        const attackRange = 80;
+        if (this.game.mario && 
+            Math.abs(this.game.mario.x - this.x) < attackRange &&
+            Math.abs(this.game.mario.y - this.y) < this.height) {
+            
+            this.game.mario.takeDamage();
+        }
+        
+        setTimeout(() => {
+            this.isAttacking = false;
+        }, 500);
+    }
+    
+    jump() {
+        this.velocityY = -400;
+        this.onGround = false;
+        
+        // Onde de choc à l'atterrissage
+        setTimeout(() => {
+            if (this.onGround) {
+                this.createShockwave();
+            }
+        }, 800);
+    }
+    
+    shootFireball() {
+        const fireball = new BowserFireball(this.game, 
+            this.x + (this.direction > 0 ? this.width : 0), 
+            this.y + this.height / 2, 
+            this.direction);
+        this.game.entityManager.addEntity(fireball);
+        
+        this.game.audioManager.playSFX('enemy_attack');
+    }
+    
+    createShockwave() {
+        // Créer des particules d'onde de choc
+        for (let i = 0; i < 10; i++) {
+            const particle = new Particle(this.game, 
+                this.x + this.width / 2, 
+                this.y + this.height,
+                Math.random() * 200 - 100, // velocityX aléatoire
+                -50, // velocityY vers le haut
+                '#FFAA00', 
+                300);
+            this.game.entityManager.addEntity(particle);
+        }
+    }
+    
+    onCollision(other) {
+        if (other === this.game.mario) {
+            // Bowser ne peut pas être vaincu par saut
+            this.game.mario.takeDamage();
+        } else if (other.constructor.name === 'Fireball') {
+            this.takeDamage();
+            other.destroy();
+        }
+    }
+    
+    takeDamage() {
+        this.health--;
+        this.game.audioManager.playSFX('enemy_defeat');
+        
+        // Effet visuel de dégât
+        this.createDamageEffect();
+        
+        if (this.health <= 0) {
+            this.die();
+        }
+    }
+    
+    createDamageEffect() {
+        for (let i = 0; i < 5; i++) {
+            const particle = new Particle(this.game, 
+                this.x + Math.random() * this.width, 
+                this.y + Math.random() * this.height,
+                Math.random() * 100 - 50,
+                Math.random() * 100 - 50,
+                '#FF0000', 
+                500);
+            this.game.entityManager.addEntity(particle);
+        }
+    }
+    
+    die() {
+        console.log('Bowser vaincu !');
+        
+        // Points pour vaincre le boss
+        this.game.addScore(5000);
+        
+        // Effet de victoire
+        for (let i = 0; i < 20; i++) {
+            const particle = new Particle(this.game, 
+                this.x + this.width / 2, 
+                this.y + this.height / 2,
+                Math.random() * 300 - 150,
+                Math.random() * 300 - 150,
+                '#FFD700', 
+                2000);
+            this.game.entityManager.addEntity(particle);
+        }
+        
+        // Message de victoire
+        this.game.ui.showMessage('BOWSER VAINCU !', 3000, '32px Arial');
+        
+        // Terminer le niveau
+        setTimeout(() => {
+            this.game.completeLevel();
+        }, 2000);
+        
+        this.destroy();
+    }
+}
+
+/**
+ * Boule de feu de Bowser
+ */
+class BowserFireball extends Enemy {
+    constructor(game, x, y, direction) {
+        super(game, x, y, 16, 16);
+        this.velocityX = direction * 150;
+        this.velocityY = -50;
+        this.lifetime = 3000;
+        this.age = 0;
+        this.bounces = 3;
+    }
+    
+    update(deltaTime) {
+        this.age += deltaTime;
+        
+        if (this.age >= this.lifetime) {
+            this.destroy();
+            return;
+        }
+        
+        // Gravité réduite
+        this.velocityY += this.game.GRAVITY * 0.5 * deltaTime / 1000;
+        
+        super.update(deltaTime);
+    }
+    
+    render(ctx) {
+        const screenPos = this.game.getScreenPosition(this.x, this.y);
+        
+        // Boule de feu animée
+        const time = Date.now() * 0.01;
+        ctx.fillStyle = '#FF4400';
+        ctx.beginPath();
+        ctx.arc(screenPos.x + this.width / 2, screenPos.y + this.height / 2, 
+                8 + Math.sin(time) * 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Flammes
+        ctx.fillStyle = '#FFAA00';
+        ctx.beginPath();
+        ctx.arc(screenPos.x + this.width / 2, screenPos.y + this.height / 2, 
+                4 + Math.cos(time * 1.5) * 1, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    onCollision(other) {
+        if (other === this.game.mario) {
+            this.game.mario.takeDamage();
+            this.destroy();
+        } else if (other.isSolid && this.bounces > 0) {
+            this.velocityY = -Math.abs(this.velocityY) * 0.7;
+            this.bounces--;
+        }
+    }
+}

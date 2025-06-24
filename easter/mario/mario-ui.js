@@ -108,6 +108,10 @@ class MarioUI {
             case 'levelComplete':
                 this.renderLevelCompleteScreen(ctx, centerX, centerY);
                 break;
+                
+            case 'highScores':
+                this.renderHighScoresScreen(ctx, centerX, centerY);
+                break;
         }
     }
     
@@ -141,6 +145,7 @@ class MarioUI {
         ctx.font = this.font;
         ctx.fillText(`Score final: ${this.game.score}`, centerX, centerY);
         ctx.fillText('Appuyez sur R pour recommencer', centerX, centerY + 40);
+        ctx.fillText('Appuyez sur H pour voir les high scores', centerX, centerY + 70);
     }
     
     renderLevelCompleteScreen(ctx, centerX, centerY) {
@@ -162,6 +167,51 @@ class MarioUI {
         ctx.fillText(`Niveau ${this.game.currentLevel} terminé`, centerX, centerY - 20);
         ctx.fillText(`Bonus de temps: ${Math.floor(this.game.time) * 50}`, centerX, centerY + 20);
         ctx.fillText('Niveau suivant dans 3 secondes...', centerX, centerY + 60);
+    }
+    
+    renderHighScoresScreen(ctx, centerX, centerY) {
+        // Fond
+        ctx.fillStyle = 'rgba(0, 0, 50, 0.9)';
+        ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+        
+        // Titre
+        ctx.fillStyle = '#FFD700';
+        ctx.font = '32px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('MEILLEURS SCORES', centerX, centerY - 200);
+        
+        // High scores
+        const highScores = this.game.saveSystem.getHighScores();
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '18px Arial';
+        
+        if (highScores.length === 0) {
+            ctx.fillText('Aucun score enregistré', centerX, centerY - 100);
+        } else {
+            for (let i = 0; i < Math.min(highScores.length, 10); i++) {
+                const score = highScores[i];
+                const y = centerY - 150 + i * 25;
+                
+                ctx.textAlign = 'left';
+                ctx.fillText(`${i + 1}.`, centerX - 150, y);
+                ctx.fillText(`${score.score.toString().padStart(6, '0')}`, centerX - 120, y);
+                ctx.fillText(`Niveau ${score.level || 1}`, centerX - 20, y);
+                ctx.fillText(`${score.date}`, centerX + 80, y);
+            }
+        }
+        
+        // Instructions
+        ctx.fillStyle = '#AAAAAA';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Appuyez sur ESC pour revenir', centerX, centerY + 150);
+        
+        // Statistiques
+        const stats = this.game.saveSystem.getGameStats();
+        ctx.fillStyle = '#FFFF00';
+        ctx.font = '14px Arial';
+        ctx.fillText(`Parties jouées: ${stats.totalGames}`, centerX - 100, centerY + 100);
+        ctx.fillText(`Meilleur niveau: ${stats.bestLevel}`, centerX + 100, centerY + 100);
     }
     
     renderDebugInfo(ctx) {

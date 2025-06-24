@@ -33,7 +33,10 @@ class MarioInput {
             'KeyR': 'restart',
             'KeyF': 'fps',
             'KeyG': 'debug',
-            'Escape': 'menu'
+            'Escape': 'menu',
+            
+            // High Scores
+            'KeyH': 'highScores'
         };
         
         this.setupEventListeners();
@@ -179,6 +182,14 @@ class MarioInput {
                 // Retour au menu principal ou pause
                 this.game.pause();
                 break;
+                
+            case 'highScores':
+                if (this.game.gameState === 'gameOver') {
+                    this.game.gameState = 'highScores';
+                } else if (this.game.gameState === 'highScores') {
+                    this.game.gameState = 'gameOver';
+                }
+                break;
         }
     }
     
@@ -191,6 +202,19 @@ class MarioInput {
             if (active) {
                 this.keys[control] = true;
             }
+        }
+        
+        // Touches de contrôle du jeu
+        if (this.keys.r && this.game.gameState === 'gameOver') {
+            this.game.resetGame();
+        }
+        
+        if (this.keys.h && this.game.gameState === 'gameOver') {
+            this.game.gameState = 'highScores';
+        }
+        
+        if (this.keys.escape && this.game.gameState === 'highScores') {
+            this.game.gameState = 'gameOver';
         }
     }
     

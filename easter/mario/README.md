@@ -1,8 +1,8 @@
-# Super Mario Bros - Version Complète
+# 🍄 Super Mario Bros - Version Complète
 
 ## 🎮 Vue d'ensemble
 
-Cette version complètement recréée de Super Mario Bros offre une expérience de jeu fidèle aux mécaniques classiques avec une architecture moderne et modulaire.
+Cette version complètement recréée de Super Mario Bros offre une expérience de jeu fidèle aux mécaniques classiques avec une architecture moderne et modulaire, incluant maintenant des niveaux souterrains, un système de checkpoints, et un boss Bowser.
 
 ## 📁 Structure du projet
 
@@ -17,8 +17,11 @@ easter/mario/
 ├── mario-objects.js         # Power-ups et objets collectibles
 ├── mario-ui.js              # Interface utilisateur et HUD
 ├── mario-input.js           # Gestion des contrôles
-├── mario-audio.js           # Système audio 8-bit
-└── README.md               # Cette documentation
+├── mario-audio.js           # Synthèse audio 8-bit
+├── mario-save.js            # Système de sauvegarde et scores
+├── test.html               # Page de tests et validation
+├── CORRECTIONS.md          # Documentation des corrections
+└── README.md               # Documentation complète
 ```
 
 ## 🚀 Caractéristiques principales
@@ -35,6 +38,7 @@ easter/mario/
 - **Koopa Troopa** : Tortue avec carapace qui peut être lancée
 - **Piranha Plant** : Plante qui sort des tuyaux
 - **Spiny** : Hérisson impossible à écraser
+- **Bowser** : Boss de fin avec attaques multiples (corps à corps, saut, boules de feu)
 
 ### 🎁 Power-ups
 - **Super Champignon** : Mario devient grand
@@ -42,15 +46,30 @@ easter/mario/
 - **Étoile** : Invincibilité temporaire
 - **1UP** : Vie bonus
 
-### 🎵 Audio
-- **Sons 8-bit** générés en temps réel avec Web Audio API
-- **Musiques de fond** : Monde extérieur, souterrain, étoile, château
-- **Effets sonores** : Saut, pièces, power-ups, ennemis, etc.
+### 🎵 Audio et Ambiance
+- **Musique thématique** : différente selon le type de niveau (overworld, underground, castle)
+- **Effets sonores 8-bit** : saut, collecte, ennemis, tuyaux, checkpoints
+- **Synthèse audio** en temps réel pour une authenticité parfaite
+- **Contrôles audio** : volume réglable, activation/désactivation
 
 ### 🎮 Contrôles
 - **Clavier** : Flèches/WASD pour mouvement, Espace/Z pour saut
 - **Mobile** : Contrôles tactiles automatiques
 - **Manette** : Support prévu pour l'avenir
+
+### 🏰 Niveaux et Exploration
+- **Niveaux extérieurs** classiques avec plateformes et obstacles
+- **Niveaux souterrains** accessibles via tuyaux (coins et power-ups bonus)
+- **Transitions fluides** entre les mondes via les tuyaux interactifs
+- **Système de checkpoints** pour sauvegarder la progression
+- **Boss Bowser** en fin de niveau avec IA avancée et système de santé
+
+### 💾 Système de Sauvegarde Moderne
+- **Sauvegarde automatique** de la progression toutes les 2 minutes
+- **High scores** avec classement des 10 meilleurs scores
+- **Export/Import** des sauvegardes vers fichiers JSON
+- **Statistiques détaillées** : parties jouées, meilleur niveau, etc.
+- **Persistance** des données entre les sessions de jeu
 
 ## 🏗️ Architecture technique
 

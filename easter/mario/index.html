@@ -208,6 +208,7 @@
     
     <!-- Chargement de tous les modules Mario -->
     <script src="mario-audio.js"></script>
+    <script src="mario-save.js"></script>
     <script src="mario-input.js"></script>
     <script src="mario-ui.js"></script>
     <script src="mario-entities.js"></script>
@@ -407,6 +408,48 @@
                 marioGame.audioSystem.audioContext.resume();
             }
         }, { once: true });
+        
+        // Démarrer le jeu
+        window.game = new MarioGame();
+        
+        // Fonction pour importer une sauvegarde
+        function importSaveFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const success = game.saveSystem.importSave(e.target.result);
+                        if (success) {
+                            alert('Sauvegarde importée avec succès !');
+                            game.resetGame(); // Recharger le jeu
+                        } else {
+                            alert('Erreur lors de l\'importation de la sauvegarde.');
+                        }
+                    } catch (error) {
+                        alert('Fichier de sauvegarde invalide.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
     </script>
+    
+    <!-- Interface de contrôle -->
+    <div id="gameControls" style="margin-top: 20px; text-align: center;">
+        <button onclick="game.resetGame()" style="margin: 5px; padding: 10px 20px; font-size: 16px;">
+            Nouveau Jeu
+        </button>
+        <button onclick="game.gameState = 'highScores'" style="margin: 5px; padding: 10px 20px; font-size: 16px;">
+            High Scores
+        </button>
+        <button onclick="game.saveSystem.exportSave()" style="margin: 5px; padding: 10px 20px; font-size: 16px;">
+            Exporter Sauvegarde
+        </button>
+        <input type="file" id="importSave" accept=".json" style="display: none;" onchange="importSaveFile(event)">
+        <button onclick="document.getElementById('importSave').click()" style="margin: 5px; padding: 10px 20px; font-size: 16px;">
+            Importer Sauvegarde
+        </button>
+    </div>
 </body>
 </html>
