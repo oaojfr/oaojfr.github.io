@@ -2003,22 +2003,9 @@
             } else {
                 console.error("La fonction startSnakeGame n'est pas disponible");
             }
-        }
-          function showMarioGame() {
-            if (typeof MarioGame === 'function') {
-                // Vérifier si l'overlay existe déjà
-                let marioOverlay = document.getElementById('mario-overlay');
-                if (marioOverlay) {
-                    marioOverlay.style.display = 'flex';
-                    // Créer une nouvelle instance ou redémarrer l'existante
-                    if (!window.marioGameInstance || !window.marioGameInstance.gameRunning) {
-                        window.marioGameInstance = new MarioGame();
-                        window.marioGameInstance.init();
-                    }
-                }
-            } else {
-                console.error("La classe MarioGame n'est pas disponible");
-            }
+        }          function showMarioGame() {
+            // Rediriger vers la nouvelle version complète de Mario
+            window.open('easter/mario/index.html', '_blank');
         }
         
         // Initialize on page load

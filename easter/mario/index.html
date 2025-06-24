@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Mario Bros - Nouvelle Version</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .game-container {
+            background: #000;
+            border: 4px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        #marioCanvas {
+            display: block;
+            background: #5C94FC;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .control-group {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-group label {
+            font-weight: bold;
+            min-width: 120px;
+        }
+        
+        .slider {
+            width: 200px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #1976D2;
+        }
+        
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 600px;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 5px 0;
+        }
+        
+        .key {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            border: 1px solid #ccc;
+        }
+        
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .controls { width: 100%; }
+            .control-group { flex-direction: column; align-items: stretch; }
+            .control-group label { min-width: auto; }
+            .slider { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🍄 Super Mario Bros - Version Complète 🍄</h1>
+    
+    <div class="game-container">
+        <canvas id="marioCanvas" width="800" height="600"></canvas>
+    </div>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label>Vitesse du jeu:</label>
+            <input type="range" id="speedSlider" class="slider" min="0.1" max="3" step="0.1" value="1">
+            <span id="speedValue">1.0x</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Volume principal:</label>
+            <input type="range" id="volumeSlider" class="slider" min="0" max="1" step="0.1" value="0.3">
+            <span id="volumeValue">30%</span>
+        </div>
+        
+        <div class="control-group buttons">
+            <button id="startBtn" class="btn-primary">▶️ Démarrer</button>
+            <button id="pauseBtn" class="btn-secondary">⏸️ Pause</button>
+            <button id="stopBtn" class="btn-danger">⏹️ Arrêter</button>
+            <button id="restartBtn" class="btn-secondary">🔄 Redémarrer</button>
+            <button id="debugBtn" class="btn-secondary">🐛 Debug</button>
+            <button id="audioBtn" class="btn-secondary">🔊 Audio</button>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h3>🎮 Comment jouer</h3>
+        <ul>
+            <li><span class="key">←</span> <span class="key">→</span> ou <span class="key">A</span> <span class="key">D</span> : Se déplacer</li>
+            <li><span class="key">Espace</span> ou <span class="key">Z</span> : Sauter</li>
+            <li><span class="key">X</span> ou <span class="key">C</span> : Lancer des boules de feu (Mario Feu)</li>
+            <li><span class="key">Shift</span> : Courir plus vite</li>
+            <li><span class="key">↓</span> ou <span class="key">S</span> : S'accroupir / Entrer dans les tuyaux</li>
+            <li><span class="key">P</span> : Pause</li>
+            <li><span class="key">R</span> : Redémarrer (si Game Over)</li>
+        </ul>
+        
+        <h3>🎯 Objectifs</h3>
+        <ul>
+            <li>Collectez les pièces (○) pour gagner des points et des vies</li>
+            <li>Frappez les blocs (?) pour obtenir des power-ups</li>
+            <li>Écrasez les ennemis en sautant dessus</li>
+            <li>Atteignez le drapeau à la fin de chaque niveau</li>
+            <li>Évitez de tomber dans les trous !</li>
+        </ul>
+        
+        <h3>⭐ Power-ups</h3>
+        <ul>
+            <li>🍄 <strong>Super Champignon</strong> : Mario devient grand</li>
+            <li>🌸 <strong>Fleur de Feu</strong> : Mario peut lancer des boules de feu</li>
+            <li>⭐ <strong>Étoile</strong> : Mario devient invincible temporairement</li>
+            <li>👆 <strong>1UP</strong> : Vie bonus</li>
+        </ul>
+        
+        <h3>🎵 Caractéristiques</h3>
+        <ul>
+            <li>Sons et musiques 8-bit authentiques générés en temps réel</li>
+            <li>Physique réaliste avec gravité, friction et collisions précises</li>
+            <li>Ennemis variés : Goomba, Koopa, Piranha Plant, Spiny</li>
+            <li>Système de niveaux avec génération procédurale</li>
+            <li>Contrôles tactiles sur mobile</li>
+            <li>Mode debug pour les développeurs</li>
+        </ul>
+    </div>
+    
+    <!-- Chargement de tous les modules Mario -->
+    <script src="mario-audio.js"></script>
+    <script src="mario-input.js"></script>
+    <script src="mario-ui.js"></script>
+    <script src="mario-entities.js"></script>
+    <script src="mario-objects.js"></script>
+    <script src="mario-enemies.js"></script>
+    <script src="mario-player.js"></script>
+    <script src="mario-levels.js"></script>
+    <script src="mario-main.js"></script>
+    
+    <script>
+        // Variables globales
+        let marioGame = null;
+        let canvas = null;
+        let ctx = null;
+        
+        // Initialisation du jeu
+        function initGame() {
+            canvas = document.getElementById('marioCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Créer l'instance du jeu
+            marioGame = new MarioGame(canvas, ctx);
+            
+            console.log('Super Mario Bros initialisé !');
+            setupControls();
+        }
+        
+        // Configuration des contrôles UI
+        function setupControls() {
+            // Boutons principaux
+            document.getElementById('startBtn').addEventListener('click', () => {
+                marioGame.start();
+                updateButtonStates();
+            });
+            
+            document.getElementById('pauseBtn').addEventListener('click', () => {
+                marioGame.pause();
+                updateButtonStates();
+            });
+            
+            document.getElementById('stopBtn').addEventListener('click', () => {
+                marioGame.stop();
+                updateButtonStates();
+            });
+            
+            document.getElementById('restartBtn').addEventListener('click', () => {
+                marioGame.stop();
+                marioGame = new MarioGame(canvas, ctx);
+                marioGame.start();
+                updateButtonStates();
+            });
+            
+            document.getElementById('debugBtn').addEventListener('click', () => {
+                if (marioGame.uiManager) {
+                    marioGame.uiManager.toggleDebug();
+                }
+            });
+            
+            document.getElementById('audioBtn').addEventListener('click', () => {
+                if (marioGame.audioSystem) {
+                    const enabled = marioGame.audioSystem.toggleEnabled();
+                    document.getElementById('audioBtn').textContent = enabled ? '🔊 Audio' : '🔇 Audio';
+                }
+            });
+            
+            // Slider de vitesse
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            
+            speedSlider.addEventListener('input', (e) => {
+                const speed = parseFloat(e.target.value);
+                speedValue.textContent = speed.toFixed(1) + 'x';
+                if (marioGame) {
+                    marioGame.setSpeedMultiplier(speed);
+                }
+            });
+            
+            // Slider de volume
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumeValue = document.getElementById('volumeValue');
+            
+            volumeSlider.addEventListener('input', (e) => {
+                const volume = parseFloat(e.target.value);
+                volumeValue.textContent = Math.round(volume * 100) + '%';
+                if (marioGame && marioGame.audioSystem) {
+                    marioGame.audioSystem.setMasterVolume(volume);
+                }
+            });
+        }
+        
+        function updateButtonStates() {
+            const isRunning = marioGame && marioGame.gameRunning;
+            const isPaused = marioGame && marioGame.gameState === 'paused';
+            
+            document.getElementById('startBtn').disabled = isRunning && !isPaused;
+            document.getElementById('pauseBtn').disabled = !isRunning;
+            document.getElementById('stopBtn').disabled = !isRunning;
+        }
+        
+        // Gestion du redimensionnement
+        function handleResize() {
+            const container = document.querySelector('.game-container');
+            const maxWidth = window.innerWidth - 40;
+            const maxHeight = window.innerHeight - 200;
+            
+            if (canvas) {
+                const aspectRatio = 800 / 600;
+                let newWidth = Math.min(800, maxWidth);
+                let newHeight = newWidth / aspectRatio;
+                
+                if (newHeight > maxHeight) {
+                    newHeight = maxHeight;
+                    newWidth = newHeight * aspectRatio;
+                }
+                
+                canvas.style.width = newWidth + 'px';
+                canvas.style.height = newHeight + 'px';
+            }
+        }
+        
+        // Gestion des raccourcis clavier globaux
+        function setupGlobalControls() {
+            document.addEventListener('keydown', (e) => {
+                // Empêcher les actions par défaut pour les touches de jeu
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+                    e.preventDefault();
+                }
+                
+                // Raccourcis spéciaux
+                switch (e.code) {
+                    case 'F1':
+                        e.preventDefault();
+                        if (marioGame && marioGame.uiManager) {
+                            marioGame.uiManager.toggleDebug();
+                        }
+                        break;
+                    case 'F2':
+                        e.preventDefault();
+                        if (marioGame && marioGame.uiManager) {
+                            marioGame.uiManager.toggleFPS();
+                        }
+                        break;
+                }
+            });
+        }
+        
+        // Messages d'erreur et de statut
+        function showStatus(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            
+            // Afficher dans l'UI du jeu si disponible
+            if (marioGame && marioGame.uiManager) {
+                marioGame.uiManager.showMessage(message, 2000);
+            }
+        }
+        
+        // Gestion des erreurs
+        window.addEventListener('error', (e) => {
+            console.error('Erreur Mario:', e.error);
+            showStatus('Erreur détectée - vérifiez la console', 'error');
+        });
+        
+        // Initialisation au chargement de la page
+        window.addEventListener('load', () => {
+            try {
+                initGame();
+                handleResize();
+                setupGlobalControls();
+                updateButtonStates();
+                showStatus('Super Mario Bros chargé avec succès !', 'success');
+            } catch (error) {
+                console.error('Erreur d\'initialisation:', error);
+                showStatus('Erreur d\'initialisation du jeu', 'error');
+            }
+        });
+        
+        // Redimensionnement responsive
+        window.addEventListener('resize', handleResize);
+        
+        // Sauvegarde avant fermeture
+        window.addEventListener('beforeunload', () => {
+            if (marioGame && marioGame.gameRunning) {
+                marioGame.stop();
+            }
+        });
+        
+        // Touch pour mobile - permet de reprendre l'audio
+        document.addEventListener('touchstart', () => {
+            if (marioGame && marioGame.audioSystem && marioGame.audioSystem.audioContext) {
+                marioGame.audioSystem.audioContext.resume();
+            }
+        }, { once: true });
+        
+        // Click pour ordinateur - permet de reprendre l'audio
+        document.addEventListener('click', () => {
+            if (marioGame && marioGame.audioSystem && marioGame.audioSystem.audioContext) {
+                marioGame.audioSystem.audioContext.resume();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
