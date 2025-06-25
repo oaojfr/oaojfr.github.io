@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Jeux - João - Développeur & Créateur d'Expériences Numériques</title>
+    <meta name="description" content="Collection de jeux rétro créés par João - Pong, Snake, Breakout, Super Mario et plus encore.">
+    <meta name="keywords" content="João, jeux rétro, pong, snake, breakout, super mario, jeux javascript, jeux en ligne">
+    <meta name="author" content="João">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="fr">
+    <link rel="canonical" href="https://oaojfr.github.io/games.html">
+    
+    <!-- Alternate language versions -->
+    <link rel="alternate" href="https://oaojfr.github.io/games.html" hreflang="fr">
+    <link rel="alternate" href="https://oaojfr.github.io/games.html" hreflang="en">
+    <link rel="alternate" href="https://oaojfr.github.io/games.html" hreflang="pt">
+    <link rel="alternate" href="https://oaojfr.github.io/games.html" hreflang="x-default">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://oaojfr.github.io/games.html">
+    <meta property="og:title" content="Jeux - João - Développeur & Créateur d'Expériences Numériques">
+    <meta property="og:description" content="Collection de jeux rétro créés par João - Pong, Snake, Breakout, Super Mario et plus encore.">
+    <meta property="og:image" content="https://oaojfr.github.io/preview.jpg">
+    <meta property="og:site_name" content="João Portfolio">
+    <meta property="og:locale" content="fr_FR">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://oaojfr.github.io/games.html">
+    <meta property="twitter:title" content="Jeux - João - Développeur & Créateur d'Expériences Numériques">
+    <meta property="twitter:description" content="Collection de jeux rétro créés par João - Pong, Snake, Breakout, Super Mario et plus encore.">
+    <meta property="twitter:image" content="https://oaojfr.github.io/preview.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --bg-color: #fff;
+            --bg-secondary: #f8f9fa;
+            --card-bg: #fff;
+            --navbar-bg: rgba(102, 126, 234, 0.1);
+            --navbar-bg-scroll: rgba(102, 126, 234, 0.2);
+            --footer-bg: #2c3e50;
+        }
+
+        [data-theme="dark"] {
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --bg-secondary: #1e1e1e;
+            --card-bg: #2d2d2d;
+            --navbar-bg: rgba(45, 45, 45, 0.9);
+            --navbar-bg-scroll: rgba(45, 45, 45, 0.95);
+            --footer-bg: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .navbar {
+            background-color: var(--navbar-bg);
+            backdrop-filter: blur(10px);
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background-color: var(--navbar-bg-scroll);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+        }
+
+        .game-card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-card-image {
+            aspect-ratio: 16/9;
+            overflow: hidden;
+        }
+
+        .game-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .game-card:hover .game-card-image img {
+            transform: scale(1.05);
+        }
+
+        .game-card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-color);
+        }
+
+        .game-card-description {
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .btn-play {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            align-self: flex-start;
+        }
+
+        .btn-play:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .footer {
+            background-color: var(--footer-bg);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer a {
+            color: #fff;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+            text-decoration: none;
+        }
+
+        .theme-switch {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-switch:hover {
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Menu -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html" data-translate="nav.brand">João</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html" data-translate="nav.home">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#about" data-translate="nav.about">À propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#projects" data-translate="nav.projects">Projets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="games.html" data-translate="nav.games">Jeux</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tools.html" data-translate="nav.tools">Outils</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#contact" data-translate="nav.contact">Contact</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Games Section Header -->
+    <div class="container mt-5 pt-5">
+        <h1 class="section-title pt-5" data-translate="games.title">Jeux Rétro</h1>
+        <p class="text-center mb-5" data-translate="games.description">
+            Découvrez ma collection de jeux rétro créés en JavaScript. Amusez-vous avec ces classiques revisités !
+        </p>
+
+        <!-- Games Grid -->
+        <div class="row g-4">
+            <!-- Pong Game Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card">
+                    <div class="game-card-image">
+                        <img src="https://via.placeholder.com/640x360.png?text=Pong+Game" alt="Jeu Pong">
+                    </div>
+                    <div class="game-card-content">
+                        <h2 class="game-card-title" data-translate="games.pong.name">🎮 Pong Game</h2>
+                        <p class="game-card-description" data-translate="games.pong.description">
+                            Le classique jeu Pong, où deux joueurs s'affrontent dans une partie de tennis de table virtuelle. Utilisez les touches W/S et flèches directionnelles pour contrôler les raquettes.
+                        </p>
+                        <a href="games/pong/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Snake Game Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card">
+                    <div class="game-card-image">
+                        <img src="https://via.placeholder.com/640x360.png?text=Snake+Game" alt="Jeu Snake">
+                    </div>
+                    <div class="game-card-content">
+                        <h2 class="game-card-title" data-translate="games.snake.name">🐍 Snake Game</h2>
+                        <p class="game-card-description" data-translate="games.snake.description">
+                            Dirigez le serpent pour manger des pommes et grandir sans toucher les murs ou votre propre queue. Utilisez les touches directionnelles pour vous déplacer.
+                        </p>
+                        <a href="games/snake/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breakout Game Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card">
+                    <div class="game-card-image">
+                        <img src="https://via.placeholder.com/640x360.png?text=Breakout+Game" alt="Jeu Breakout">
+                    </div>
+                    <div class="game-card-content">
+                        <h2 class="game-card-title" data-translate="games.breakout.name">🧱 Breakout Game</h2>
+                        <p class="game-card-description" data-translate="games.breakout.description">
+                            Cassez toutes les briques avec votre balle en la gardant en mouvement avec votre palette. Utilisez la souris ou les touches directionnelles pour contrôler la palette.
+                        </p>
+                        <a href="games/breakout/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mario Game Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card">
+                    <div class="game-card-image">
+                        <img src="https://via.placeholder.com/640x360.png?text=Super+Mario" alt="Jeu Super Mario">
+                    </div>
+                    <div class="game-card-content">
+                        <h2 class="game-card-title" data-translate="games.mario.name">🍄 Super Mario</h2>
+                        <p class="game-card-description" data-translate="games.mario.description">
+                            Une version simplifiée du célèbre jeu Super Mario. Évitez les ennemis, collectez des pièces et traversez les niveaux générés aléatoirement. Utilisez les flèches et la barre d'espace pour vous déplacer.
+                        </p>
+                        <a href="games/mario/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hexagon Game Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card">
+                    <div class="game-card-image">
+                        <img src="https://via.placeholder.com/640x360.png?text=Hexagon+Game" alt="Jeu Hexagon">
+                    </div>
+                    <div class="game-card-content">
+                        <h2 class="game-card-title" data-translate="games.hexagon.name">⬢ Hexagon Game</h2>
+                        <p class="game-card-description" data-translate="games.hexagon.description">
+                            Un jeu de réflexes où vous devez naviguer à travers un labyrinthe en rotation d'hexagones. Testez vos réflexes et votre coordination.
+                        </p>
+                        <a href="games/hexagon/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto">
+        <div class="container text-center">
+            <p data-translate="footer.copyright">© 2025 João. Tous droits réservés. Fait avec <i class="bi bi-heart-fill text-danger"></i> <span data-translate="footer.made">et Bootstrap.</span></p>
+        </div>
+    </footer>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-switch" id="themeToggle">
+        <i class="bi bi-moon-fill" id="themeIcon"></i>
+    </button>
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        function updateThemeIcon() {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                themeIcon.classList.remove('bi-moon-fill');
+                themeIcon.classList.add('bi-sun-fill');
+            } else {
+                themeIcon.classList.remove('bi-sun-fill');
+                themeIcon.classList.add('bi-moon-fill');
+            }
+        }
+        
+        // Check saved theme preference or system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon();
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            updateThemeIcon();
+        }
+        
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Translation functionality
+        const translations = {
+            fr: {
+                'nav.brand': 'João',
+                'nav.home': 'Accueil',
+                'nav.about': 'À propos',
+                'nav.projects': 'Projets',
+                'nav.games': 'Jeux',
+                'nav.tools': 'Outils',
+                'nav.contact': 'Contact',
+                'games.title': 'Jeux Rétro',
+                'games.description': 'Découvrez ma collection de jeux rétro créés en JavaScript. Amusez-vous avec ces classiques revisités !',
+                'games.pong.name': '🎮 Pong Game',
+                'games.pong.description': 'Le classique jeu Pong, où deux joueurs s\'affrontent dans une partie de tennis de table virtuelle. Utilisez les touches W/S et flèches directionnelles pour contrôler les raquettes.',
+                'games.snake.name': '🐍 Snake Game',
+                'games.snake.description': 'Dirigez le serpent pour manger des pommes et grandir sans toucher les murs ou votre propre queue. Utilisez les touches directionnelles pour vous déplacer.',
+                'games.breakout.name': '🧱 Breakout Game',
+                'games.breakout.description': 'Cassez toutes les briques avec votre balle en la gardant en mouvement avec votre palette. Utilisez la souris ou les touches directionnelles pour contrôler la palette.',
+                'games.mario.name': '🍄 Super Mario',
+                'games.mario.description': 'Une version simplifiée du célèbre jeu Super Mario. Évitez les ennemis, collectez des pièces et traversez les niveaux générés aléatoirement. Utilisez les flèches et la barre d\'espace pour vous déplacer.',
+                'games.hexagon.name': '⬢ Hexagon Game',
+                'games.hexagon.description': 'Un jeu de réflexes où vous devez naviguer à travers un labyrinthe en rotation d\'hexagones. Testez vos réflexes et votre coordination.',
+                'games.play': 'Jouer',
+                'footer.copyright': '© 2025 João. Tous droits réservés. Fait avec',
+                'footer.made': 'et Bootstrap.'
+            },
+            en: {
+                'nav.brand': 'João',
+                'nav.home': 'Home',
+                'nav.about': 'About',
+                'nav.projects': 'Projects',
+                'nav.games': 'Games',
+                'nav.tools': 'Tools',
+                'nav.contact': 'Contact',
+                'games.title': 'Retro Games',
+                'games.description': 'Discover my collection of retro games created in JavaScript. Have fun with these revisited classics!',
+                'games.pong.name': '🎮 Pong Game',
+                'games.pong.description': 'The classic Pong game, where two players compete in a virtual table tennis match. Use W/S keys and arrow keys to control the paddles.',
+                'games.snake.name': '🐍 Snake Game',
+                'games.snake.description': 'Guide the snake to eat apples and grow without hitting walls or your own tail. Use arrow keys to move.',
+                'games.breakout.name': '🧱 Breakout Game',
+                'games.breakout.description': 'Break all the bricks with your ball by keeping it moving with your paddle. Use the mouse or arrow keys to control the paddle.',
+                'games.mario.name': '🍄 Super Mario',
+                'games.mario.description': 'A simplified version of the famous Super Mario game. Avoid enemies, collect coins and traverse randomly generated levels. Use arrows and space bar to move.',
+                'games.hexagon.name': '⬢ Hexagon Game',
+                'games.hexagon.description': 'A reflex game where you navigate through a rotating hexagon maze. Test your reflexes and coordination.',
+                'games.play': 'Play',
+                'footer.copyright': '© 2025 João. All rights reserved. Made with',
+                'footer.made': 'and Bootstrap.'
+            },
+            pt: {
+                'nav.brand': 'João',
+                'nav.home': 'Início',
+                'nav.about': 'Sobre',
+                'nav.projects': 'Projetos',
+                'nav.games': 'Jogos',
+                'nav.tools': 'Ferramentas',
+                'nav.contact': 'Contato',
+                'games.title': 'Jogos Retrô',
+                'games.description': 'Descubra minha coleção de jogos retrô criados em JavaScript. Divirta-se com esses clássicos revisitados!',
+                'games.pong.name': '🎮 Jogo de Pong',
+                'games.pong.description': 'O clássico jogo Pong, onde dois jogadores competem em uma partida virtual de tênis de mesa. Use as teclas W/S e teclas de seta para controlar as raquetes.',
+                'games.snake.name': '🐍 Jogo da Cobra',
+                'games.snake.description': 'Guie a cobra para comer maçãs e crescer sem atingir paredes ou sua própria cauda. Use as teclas de seta para mover.',
+                'games.breakout.name': '🧱 Jogo Breakout',
+                'games.breakout.description': 'Quebre todos os tijolos com sua bola mantendo-a em movimento com sua paleta. Use o mouse ou as teclas de seta para controlar a paleta.',
+                'games.mario.name': '🍄 Super Mario',
+                'games.mario.description': 'Uma versão simplificada do famoso jogo Super Mario. Evite inimigos, colete moedas e atravesse níveis gerados aleatoriamente. Use as setas e barra de espaço para se movimentar.',
+                'games.hexagon.name': '⬢ Jogo Hexágono',
+                'games.hexagon.description': 'Um jogo de reflexos onde você navega por um labirinto rotativo de hexágonos. Teste seus reflexos e coordenação.',
+                'games.play': 'Jogar',
+                'footer.copyright': '© 2025 João. Todos os direitos reservados. Feito com',
+                'footer.made': 'e Bootstrap.'
+            }
+        };
+
+        // Apply translations based on saved language
+        function applyTranslations(lang) {
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    if (key.includes('footer.copyright')) {
+                        // Preserve the heart icon
+                        element.innerHTML = translations[lang][key] + ' <i class="bi bi-heart-fill text-danger"></i> ' + translations[lang]['footer.made'];
+                    } else {
+                        element.innerHTML = translations[lang][key];
+                    }
+                }
+            });
+        }
+
+        // Change language
+        function changeLanguage(lang) {
+            localStorage.setItem('language', lang);
+            applyTranslations(lang);
+        }
+
+        // Initialize with saved language or default to French
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLang = localStorage.getItem('language') || 'fr';
+            applyTranslations(savedLang);
+        });
+    </script>
+</body>
+</html>

@@ -499,3 +499,46 @@ class MarioGame {
 
 // Export pour utilisation dans d'autres modules
 window.MarioGame = MarioGame;
+
+// Fonction pour démarrer le jeu (appelée au chargement de la page)
+document.addEventListener('DOMContentLoaded', function() {
+    const marioCanvas = document.getElementById('gameCanvas');
+    const marioCtx = marioCanvas.getContext('2d');
+    
+    // Créer et initialiser le jeu
+    window.marioGame = new MarioGame(marioCanvas, marioCtx);
+    
+    // Mettre à jour l'affichage du score et des pièces
+    window.marioGame.ui = {
+        updateScore: (score) => {
+            document.getElementById('score').textContent = score;
+        },
+        updateCoins: (coins) => {
+            document.getElementById('coins').textContent = coins;
+        },
+        updateLives: (lives) => {
+            document.getElementById('lives').textContent = lives;
+        },
+        showGameOver: (score, coins) => {
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalCoins').textContent = coins;
+            document.getElementById('gameMessage').style.display = 'block';
+        },
+        hideGameOver: () => {
+            document.getElementById('gameMessage').style.display = 'none';
+        },
+        showMessage: (message, duration) => {
+            console.log("Message: " + message);
+            // On pourrait implémenter un système d'affichage de messages
+        }
+    };
+    
+    // Initialiser le jeu
+    window.marioGame.init();
+    
+    // Ajout d'un gestionnaire pour le bouton de redémarrage
+    document.getElementById('restartBtn').addEventListener('click', function() {
+        document.getElementById('gameMessage').style.display = 'none';
+        window.marioGame.restart();
+    });
+});

@@ -418,33 +418,7 @@
             backdrop-filter: blur(20px) !important;
             -webkit-backdrop-filter: blur(20px) !important;
         }
-        
-        /* Matrix Effect */
-        #matrix-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 10000;
-            display: none;
-        }
-        
-        #matrix-canvas {
-            display: block;
-        }
-        
-        #matrix-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: #0f0;
-            font-size: 2rem;
-            cursor: pointer;
-            z-index: 10001;
-            text-shadow: 0 0 10px #0f0;
-        }
+  
 
         [data-theme="dark"] .github-stats {
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -492,112 +466,8 @@
             color: #ff6b6b;
             transform: translateY(-3px);
         }
-        
-        /* Easter Egg Pong Game Styles */
-        #pong-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        #pong-canvas {
-            border: 2px solid #667eea;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
-        }
-        
-        #pong-instructions {
-            color: white;
-            text-align: center;
-            margin-bottom: 20px;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        #pong-score {
-            color: white;
-            font-size: 1.5rem;
-            margin-top: 20px;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        #pong-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        
-        #pong-close:hover {
-            color: #ff6b6b;
-        }
-        
-        #pong-winner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(102, 126, 234, 0.95);
-            color: white;
-            padding: 30px 50px;
-            border-radius: 15px;
-            font-size: 1.5rem;
-            font-weight: 600;
-            text-align: center;
-            display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        
-        #pong-winner button {
-            background: #ff6b6b;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        #pong-winner button:hover {
-            background: #ff5252;
-            transform: translateY(-2px);
-        }
-        
-        /* Easter Egg Mario Game Styles */
-        #mario-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        #mario-canvas {
-            border: 2px solid #ff6b6b;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
-            border-radius: 10px;
-        }
-        
-        #mario-instructions {
-            color: white;
-            text-align: center;
+  
+  
             margin-bottom: 20px;
             font-family: 'Poppins', sans-serif;
         }
@@ -952,8 +822,7 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+            <div class="collapse navbar-collapse" id="navbarNav">                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="#home" data-translate="nav.home">Accueil</a>
                     </li>
@@ -965,6 +834,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="tools.html" data-translate="nav.tools">Outils</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="games.html" data-translate="nav.games">Jeux</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#contact" data-translate="nav.contact">Contact</a>
@@ -1118,10 +990,9 @@
                         <div class="project-image">
                             <i class="bi bi-controller"></i>
                         </div>
-                        <div class="project-content">
-                            <h3 class="project-title" data-translate="projects.games.title">Portfolio Gaming Easter Eggs</h3>
+                        <div class="project-content">                            <h3 class="project-title" data-translate="projects.games.title">Jeux Rétro</h3>
                             <p class="project-description" data-translate="projects.games.description">
-                                Collection de mini-jeux rétro intégrés directement dans ce portfolio ! 
+                                Collection de mini-jeux rétro disponibles dans la section Jeux de ce portfolio ! 
                                 Une approche créative pour rendre l'expérience utilisateur plus interactive et amusante.
                             </p>
                             <div class="project-tech">
@@ -1133,19 +1004,19 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <strong data-translate="projects.games.hidden">4 jeux cachés + effet Matrix :</strong>
+                                    <strong data-translate="projects.games.collection">Collection de jeux classiques :</strong>
                                     <ul class="mt-2 mb-0" style="font-size: 0.9rem;">
-                                        <li><strong>Pong</strong> - <span data-translate="projects.games.pong">Tapez "pong" pour jouer</span></li>
-                                        <li><strong>Snake</strong> - <span data-translate="projects.games.snake">Tapez "snake" pour jouer</span></li>
-                                        <li><strong>Mario</strong> - <span data-translate="projects.games.mario">Tapez "mario" pour jouer</span></li>
-                                        <li><strong>Breakout</strong> - <span data-translate="projects.games.breakout">Tapez "break" pour jouer</span></li>
-                                        <li><strong>Matrix</strong> - <span data-translate="projects.games.matrix">Tapez "matrix" ou "neo"</span></li>
+                                        <li><strong>Pong</strong> - <span data-translate="projects.games.pong.desc">Tennis de table virtuel</span></li>
+                                        <li><strong>Snake</strong> - <span data-translate="projects.games.snake.desc">Dirigez le serpent pour manger des pommes</span></li>
+                                        <li><strong>Mario</strong> - <span data-translate="projects.games.mario.desc">Plateforme avec niveaux procéduraux</span></li>
+                                        <li><strong>Breakout</strong> - <span data-translate="projects.games.breakout.desc">Cassez toutes les briques</span></li>
+                                        <li><strong>Hexagon</strong> - <span data-translate="projects.games.hexagon.desc">Labyrinthe d'hexagones</span></li>
                                     </ul>
                                 </div>
                                 <div class="text-end">
-                                    <span class="btn btn-outline-success btn-sm" style="cursor: help;" data-translate-title="projects.games.tooltip">
-                                        <i class="bi bi-joystick me-1"></i><span data-translate="projects.games.discover">Découvrir</span>
-                                    </span>
+                                    <a href="games.html" class="btn btn-outline-success btn-sm">
+                                        <i class="bi bi-joystick me-1"></i><span data-translate="projects.games.play">Jouer</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -1333,98 +1204,7 @@
                 <span data-translate="footer.copyright">&copy; 2025 João. Tous droits réservés. Fait avec</span> <i class="bi bi-heart-fill text-danger" aria-hidden="true"></i> <span data-translate="footer.made">et Bootstrap.</span>
             </p>
         </div>
-    </footer>
-
-    <!-- Matrix Effect Overlay -->
-    <div id="matrix-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none;">
-        <canvas id="matrix-canvas"></canvas>
-        <div id="matrix-close" style="position: absolute; top: 20px; right: 30px; color: #0f0; font-size: 2rem; cursor: pointer; z-index: 10001;">&times;</div>
-    </div>    <!-- Easter Egg: Pong Game -->
-    <div id="pong-overlay">
-        <div id="pong-close">&times;</div>
-        <div id="pong-instructions">
-            <h3 data-translate="games.pong.title">🎮 Easter Egg: Pong Game!</h3>
-            <p data-translate="games.pong.controls">Utilisez W/S pour le joueur gauche, ↑/↓ pour le joueur droit</p>
-            <p data-translate="games.pong.goal">Premier à 5 points gagne!</p>
-        </div>
-        <div id="pong-controls" style="margin: 10px 0; text-align: center;">
-            <label for="pong-speed-slider" style="color: white; margin-right: 10px;">Vitesse de jeu:</label>
-            <input type="range" id="pong-speed-slider" min="1" max="5" value="3" step="0.5" style="width: 200px;">
-            <span id="pong-speed-value" style="color: white; margin-left: 10px;">Normal</span>
-        </div>
-        <canvas id="pong-canvas" width="800" height="400"></canvas>
-        <div id="pong-score"><span data-translate="games.pong.player1">Joueur 1</span>: <span id="score1">0</span> | <span data-translate="games.pong.player2">Joueur 2</span>: <span id="score2">0</span></div>
-        <div id="pong-winner">
-            <div id="winner-text" data-translate="games.pong.winner">🎉 Joueur 1 gagne!</div>
-            <button onclick="closePongGame()" data-translate="games.pong.newgame">Nouvelle partie</button>
-        </div>
-    </div><!-- Easter Egg: Mario Game -->
-    <div id="mario-overlay">
-        <div id="mario-close">&times;</div>
-        <div id="mario-instructions">
-            <h3 data-translate="games.mario.title">🍄 Easter Egg: Super Mario Platformer!</h3>
-            <p data-translate="games.mario.controls">←/→ ou A/D pour bouger, ESPACE pour sauter</p>
-            <p data-translate="games.mario.goal">Évitez les ennemis, collectez les pièces, terminez les niveaux!</p>
-            <p data-translate="games.mario.random">Chaque niveau est généré aléatoirement</p>
-        </div>
-        <div id="mario-controls" style="margin: 10px 0; text-align: center;">
-            <label for="mario-speed-slider" style="color: white; margin-right: 10px;">Vitesse de jeu:</label>
-            <input type="range" id="mario-speed-slider" min="30" max="120" value="60" step="15" style="width: 200px;">
-            <span id="mario-speed-value" style="color: white; margin-left: 10px;">Normal</span>
-        </div>
-        <canvas id="mario-canvas" width="800" height="400"></canvas>
-        <div id="mario-score"><span data-translate="games.mario.score">Score</span>: <span id="mario-score-value">0</span> | <span data-translate="games.mario.coins">Pièces</span>: <span id="mario-coins-value">0</span> | <span data-translate="games.mario.lives">Vies</span>: <span id="mario-lives-value">3</span></div>
-        <div id="mario-game-over">
-            <div data-translate="games.mario.gameover">Game Over!</div>
-            <div style="margin: 10px 0; font-size: 1.2rem;"><span data-translate="games.mario.finalscore">Score final</span>: <span id="final-score">0</span></div>
-            <button onclick="restartMarioGame()" data-translate="games.mario.restart">Rejouer</button>
-            <button onclick="closeMarioGame()" data-translate="games.mario.close">Fermer</button>
-        </div>
-    </div>
-
-    <!-- Easter Egg: Snake Game -->    <div id="snake-overlay">
-        <div id="snake-close">&times;</div>
-        <div id="snake-instructions">
-            <h3 data-translate="games.snake.title">🐍 Easter Egg: Snake Game!</h3>
-            <p data-translate="games.snake.controls">Utilisez les flèches directionnelles pour diriger le serpent</p>
-            <p data-translate="games.snake.goal">Mangez les pommes pour grandir, évitez les murs et votre queue!</p>
-        </div>
-        <div id="snake-controls" style="margin: 10px 0; text-align: center;">
-            <label for="snake-speed-slider" style="color: white; margin-right: 10px;">Vitesse:</label>
-            <input type="range" id="snake-speed-slider" min="100" max="500" value="250" step="50" style="width: 200px;">
-            <span id="snake-speed-value" style="color: white; margin-left: 10px;">Normal</span>
-        </div>
-        <canvas id="snake-canvas" width="800" height="400"></canvas>
-        <div id="snake-score"><span data-translate="games.snake.score">Score</span>: <span id="snake-score-value">0</span></div>
-        <div id="snake-game-over">
-            <div data-translate="games.snake.gameover">Game Over!</div>
-            <div style="margin: 10px 0; font-size: 1.2rem;"><span data-translate="games.snake.finalscore">Score final</span>: <span id="snake-final-score">0</span></div>
-            <button onclick="restartSnakeGame()" data-translate="games.snake.restart">Rejouer</button>
-            <button onclick="closeSnakeGame()" data-translate="games.snake.close">Fermer</button>
-        </div>
-    </div>
-
-    <!-- Easter Egg: Breakout Game -->
-    <div id="breakout-overlay">
-        <div id="breakout-close">&times;</div>        <div id="breakout-instructions">
-            <h3 data-translate="games.breakout.title">🧱 Easter Egg: Breakout Game!</h3>
-            <p data-translate="games.breakout.controls">Souris pour contrôler la palette, ou ←/→ ou A/D</p>
-            <p data-translate="games.breakout.goal">Cassez toutes les briques pour gagner!</p>
-        </div>
-        <div id="breakout-controls" style="margin: 10px 0; text-align: center;">
-            <label for="breakout-speed-slider" style="color: white; margin-right: 10px;">Vitesse de jeu:</label>
-            <input type="range" id="breakout-speed-slider" min="0.5" max="3" value="1.5" step="0.25" style="width: 200px;">
-            <span id="breakout-speed-value" style="color: white; margin-left: 10px;">Normal</span>
-        </div>
-        <canvas id="breakout-canvas" width="800" height="400"></canvas>
-        <div id="breakout-score"><span data-translate="games.breakout.score">Score</span>: <span id="breakout-score-value">0</span></div>
-        <div id="breakout-game-over">
-            <div data-translate="games.breakout.gameover">Game Over!</div>
-            <div style="margin: 10px 0; font-size: 1.2rem;"><span data-translate="games.breakout.finalscore">Score final</span>: <span id="breakout-final-score">0</span></div>
-            <button onclick="restartBreakoutGame()" data-translate="games.breakout.restart">Rejouer</button>
-            <button onclick="closeBreakoutGame()" data-translate="games.breakout.close">Fermer</button>
-        </div>
-    </div>
+    </footer>    <!-- Tous les jeux sont maintenant accessibles via la page games.html -->
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1458,17 +1238,16 @@
                 'projects.morealerts.feature1': 'Alertes tickets non résolus, en attente, priorité élevée',
                 'projects.morealerts.feature2': 'Contrôle qualité CMDB (doublons, incohérences)',
                 'projects.morealerts.feature3': 'Alertes matériel (garantie, maintenance, inventaire)',
-                'projects.morealerts.feature4': 'Gestion multi-entités et notifications personnalisables',
-                'projects.games.title': 'Portfolio Gaming Easter Eggs',
-                'projects.games.description': 'Collection de mini-jeux rétro intégrés directement dans ce portfolio ! Une approche créative pour rendre l\'expérience utilisateur plus interactive et amusante.',
-                'projects.games.hidden': '4 jeux cachés + effet Matrix :',
-                'projects.games.pong': 'Tapez "pong" pour jouer',
-                'projects.games.snake': 'Tapez "snake" pour jouer',
-                'projects.games.mario': 'Tapez "mario" pour jouer',
-                'projects.games.breakout': 'Tapez "break" pour jouer',
-                'projects.games.matrix': 'Tapez "matrix" ou "neo"',
-                'projects.games.discover': 'Découvrir',
-                'projects.games.tooltip': 'Essayez de taper \'pong\', \'snake\', \'mario\' ou \'break\' !',
+                'projects.morealerts.feature4': 'Gestion multi-entités et notifications personnalisables',                'projects.games.title': 'Jeux Rétro',
+                'projects.games.description': 'Collection de mini-jeux rétro disponibles dans la section Jeux de ce portfolio ! Une approche créative pour rendre l\'expérience utilisateur plus interactive et amusante.',
+                'projects.games.collection': 'Collection de jeux classiques :',
+                'projects.games.pong.desc': 'Tennis de table virtuel',
+                'projects.games.snake.desc': 'Dirigez le serpent pour manger des pommes',
+                'projects.games.mario.desc': 'Plateforme avec niveaux procéduraux',
+                'projects.games.breakout.desc': 'Cassez toutes les briques',
+                'projects.games.hexagon.desc': 'Labyrinthe d\'hexagones',
+                'projects.games.play': 'Jouer',
+                'nav.games': 'Jeux',
                 'projects.ptitconvert.description': 'Convertisseur de fichiers avancé (v1.0) avec interface graphique moderne, mode sombre, historique des conversions et CLI complète. Support étendu de 20+ formats : images, documents, tableurs, archives, audio et vidéo.',
                 'projects.ptitconvert.features': 'Fonctionnalités clés :',
                 'projects.ptitconvert.feature1': 'Support 20+ formats (EPUB, ODT, archives, audio/vidéo)',
@@ -1554,17 +1333,16 @@
                 'projects.morealerts.feature1': 'Unresolved, pending, high priority ticket alerts',
                 'projects.morealerts.feature2': 'CMDB quality control (duplicates, inconsistencies)',
                 'projects.morealerts.feature3': 'Equipment alerts (warranty, maintenance, inventory)',
-                'projects.morealerts.feature4': 'Multi-entity management and customizable notifications',
-                'projects.games.title': 'Portfolio Gaming Easter Eggs',
-                'projects.games.description': 'Collection of retro mini-games integrated directly into this portfolio! A creative approach to make the user experience more interactive and fun.',
-                'projects.games.hidden': '4 hidden games + Matrix effect:',
-                'projects.games.pong': 'Type "pong" to play',
-                'projects.games.snake': 'Type "snake" to play',
-                'projects.games.mario': 'Type "mario" to play',
-                'projects.games.breakout': 'Type "break" to play',
-                'projects.games.matrix': 'Type "matrix" or "neo"',
-                'projects.games.discover': 'Discover',
-                'projects.games.tooltip': 'Try typing \'pong\', \'snake\', \'mario\' or \'break\'!',
+                'projects.morealerts.feature4': 'Multi-entity management and customizable notifications',                'projects.games.title': 'Retro Games',
+                'projects.games.description': 'Collection of retro mini-games available in the Games section of this portfolio! A creative approach to make the user experience more interactive and fun.',
+                'projects.games.collection': 'Collection of classic games:',
+                'projects.games.pong.desc': 'Virtual table tennis',
+                'projects.games.snake.desc': 'Guide the snake to eat apples',
+                'projects.games.mario.desc': 'Platform game with procedural levels',
+                'projects.games.breakout.desc': 'Break all the bricks',
+                'projects.games.hexagon.desc': 'Hexagon maze',
+                'projects.games.play': 'Play',
+                'nav.games': 'Games',
                 'projects.ptitconvert.description': 'Advanced file converter (v1.0) with modern GUI, dark mode, conversion history and complete CLI. Extended support for 20+ formats: images, documents, spreadsheets, archives, audio and video.',
                 'projects.ptitconvert.features': 'Key features:',
                 'projects.ptitconvert.feature1': 'Support for 20+ formats (EPUB, ODT, archives, audio/video)',
@@ -1650,17 +1428,16 @@
                 'projects.morealerts.feature1': 'Alertas de tickets não resolvidos, pendentes, alta prioridade',
                 'projects.morealerts.feature2': 'Controle de qualidade CMDB (duplicatas, incoerências)',
                 'projects.morealerts.feature3': 'Alertas de equipamentos (garantia, manutenção, inventário)',
-                'projects.morealerts.feature4': 'Gestão multi-entidades e notificações personalizáveis',
-                'projects.games.title': 'Portfolio Gaming Easter Eggs',
-                'projects.games.description': 'Coleção de mini-jogos retrô integrados diretamente neste portfólio! Uma abordagem criativa para tornar a experiência do usuário mais interativa e divertida.',
-                'projects.games.hidden': '4 jogos ocultos + efeito Matrix:',
-                'projects.games.pong': 'Digite "pong" para jogar',
-                'projects.games.snake': 'Digite "snake" para jogar',
-                'projects.games.mario': 'Digite "mario" para jogar',
-                'projects.games.breakout': 'Digite "break" para jogar',
-                'projects.games.matrix': 'Digite "matrix" ou "neo"',
-                'projects.games.discover': 'Descobrir',
-                'projects.games.tooltip': 'Tente digitar \'pong\', \'snake\', \'mario\' ou \'break\'!',
+                'projects.morealerts.feature4': 'Gestão multi-entidades e notificações personalizáveis',                'projects.games.title': 'Jogos Retrô',
+                'projects.games.description': 'Coleção de mini-jogos retrô disponíveis na seção Jogos deste portfólio! Uma abordagem criativa para tornar a experiência do usuário mais interativa e divertida.',
+                'projects.games.collection': 'Coleção de jogos clássicos:',
+                'projects.games.pong.desc': 'Tênis de mesa virtual',
+                'projects.games.snake.desc': 'Guie a cobra para comer maçãs',
+                'projects.games.mario.desc': 'Jogo de plataforma com níveis procedurais',
+                'projects.games.breakout.desc': 'Quebre todos os tijolos',
+                'projects.games.hexagon.desc': 'Labirinto de hexágonos',
+                'projects.games.play': 'Jogar',
+                'nav.games': 'Jogos',
                 'projects.ptitconvert.description': 'Conversor de arquivos avançado (v1.0) com interface gráfica moderna, modo escuro, histórico de conversões e CLI completa. Suporte estendido para 20+ formatos: imagens, documentos, planilhas, arquivos, áudio e vídeo.',
                 'projects.ptitconvert.features': 'Funcionalidades principais:',
                 'projects.ptitconvert.feature1': 'Suporte para 20+ formatos (EPUB, ODT, arquivos, áudio/vídeo)',
@@ -1913,100 +1690,8 @@
                 }
             }
         }
-
-        // Matrix effect
-        let matrixAnimation;
         
-        function startMatrixEffect() {
-            console.log('Starting Matrix effect...'); // Debug log
-            const overlay = document.getElementById('matrix-overlay');
-            const canvas = document.getElementById('matrix-canvas');
-            
-            if (!overlay || !canvas) {
-                console.error('Matrix elements not found!');
-                return;
-            }
-            
-            const ctx = canvas.getContext('2d');
-            
-            overlay.style.display = 'block';
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            console.log(`Canvas size: ${canvas.width}x${canvas.height}`); // Debug log
-            
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
-            const fontSize = 14;
-            const columns = canvas.width / fontSize;
-            const drops = Array(Math.floor(columns)).fill(1);
-            
-            function draw() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                ctx.fillStyle = '#0f0';
-                ctx.font = fontSize + 'px monospace';
-                
-                for (let i = 0; i < drops.length; i++) {
-                    const text = chars[Math.floor(Math.random() * chars.length)];
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                    
-                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                        drops[i] = 0;
-                    }
-                    drops[i]++;
-                }
-            }
-            
-            // Clear any existing animation
-            if (matrixAnimation) {
-                clearInterval(matrixAnimation);
-            }
-            
-            matrixAnimation = setInterval(draw, 33);
-            
-            // Auto close after 10 seconds
-            setTimeout(() => {
-                closeMatrixEffect();
-            }, 10000);
-        }
-        
-        function closeMatrixEffect() {
-            const overlay = document.getElementById('matrix-overlay');
-            overlay.style.display = 'none';
-            clearInterval(matrixAnimation);
-        }
-
-        // Fonction pour redémarrer le jeu Mario
-        function restartMarioGame() {
-            if (window.marioGameInstance) {
-                window.marioGameInstance.resetGame();
-                window.marioGameInstance.generateProceduralLevel();
-                document.getElementById('mario-game-over').style.display = 'none';
-                window.marioGameInstance.gameRunning = true;
-                window.marioGameInstance.lastTime = performance.now();
-                window.marioGameInstance.gameLoop(window.marioGameInstance.lastTime);
-            }
-        }
-        
-        // Fonction pour fermer le jeu Mario
-        function closeMarioGame() {
-            if (window.marioGameInstance) {
-                window.marioGameInstance.close();
-            }
-        }
-        
-        // Ajout des fonctions manquantes pour afficher les jeux
-        function showSnakeGame() {
-            if (typeof initSnakeGame === 'function') {
-                startSnakeGame();
-            } else {
-                console.error("La fonction startSnakeGame n'est pas disponible");
-            }
-        }          function showMarioGame() {
-            // Rediriger vers la nouvelle version complète de Mario
-            window.open('easter/mario/index.html', '_blank');
-        }
+        // Les jeux Mario, Snake, Pong, etc. sont maintenant accessibles via la page games.html
         
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -2022,21 +1707,7 @@
                 switchLanguage(savedLanguage);
             }
             
-            // Load GitHub stats
-            loadGitHubStats();
-            
-            // Matrix close button
-            document.getElementById('matrix-close').addEventListener('click', closeMatrixEffect);
-            
-            // Close overlays on Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    // Only Matrix overlay can be closed with Escape now
-                    if (document.getElementById('matrix-overlay').style.display === 'block') {
-                        closeMatrixEffect();
-                    }
-                }
-            });
+            // Load GitHub stats            loadGitHubStats();
         });
 
         // Existing code for smooth scrolling and animations
@@ -2086,147 +1757,10 @@
             card.style.transform = 'translateY(50px)';
             card.style.transition = 'all 0.6s ease';
             observer.observe(card);
-        });
-
-        // Enhanced easter egg detection
-        let keySequence = '';
-        let sequenceTimeout;
-        let lastKeyTime = 0;
-        let isNavigating = false;
-        let pageJustLoaded = true;
-
-        // Disable easter eggs for the first 3 seconds after page load
-        setTimeout(() => {
-            pageJustLoaded = false;
-        }, 3000);
-
-        // Track navigation events to disable easter eggs during navigation
-        document.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A' || e.target.closest('a')) {
-                isNavigating = true;
-                keySequence = '';
-                // Longer delay for navigation
-                setTimeout(() => {
-                    isNavigating = false;
-                }, 3000);
-            }
-        });
-
-        // Track page visibility changes
-        document.addEventListener('visibilitychange', function() {
-            keySequence = '';
-            isNavigating = true;
-            setTimeout(() => {
-                isNavigating = false;
-            }, 5000);
-        });
-
-        // Reset on any page interaction that might indicate navigation
-        window.addEventListener('beforeunload', function() {
-            isNavigating = true;
-            keySequence = '';
-        });
-
-        window.addEventListener('popstate', function() {
-            isNavigating = true;
-            keySequence = '';
-            setTimeout(() => {
-                isNavigating = false;
-            }, 3000);
-        });
-
-        document.addEventListener('keypress', function(e) {
-            // Only count letters and numbers
-            if (!/[a-zA-Z0-9]/.test(e.key)) {
-                return;
-            }
-            
-            // Ignore if user is likely typing in an input field
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
-                return;
-            }
-
-            keySequence += e.key.toLowerCase();
-            console.log('Current key sequence:', keySequence); // Debug log
-            
-            clearTimeout(sequenceTimeout);
-            sequenceTimeout = setTimeout(() => {
-                keySequence = '';
-            }, 3000);
-
-            // Check for Matrix effect first (always available - no navigation blocking)
-            if (keySequence.includes('matrix')) {
-                console.log('Matrix triggered with "matrix" sequence:', keySequence); // Debug
-                keySequence = '';
-                startMatrixEffect();
-                return;
-            } else if (keySequence.includes('neo')) {
-                console.log('Matrix triggered with "neo" sequence:', keySequence); // Debug
-                keySequence = '';
-                startMatrixEffect();
-                return;
-            }
-            
-            // Then check for games (only if not navigating/loading)
-            if (!isNavigating && !pageJustLoaded) {
-                const currentTime = Date.now();
-                const timeSinceLastKey = currentTime - lastKeyTime;
-                
-                // Only trigger games if keys are pressed intentionally (fast typing)
-                if (keySequence.length >= 4 && timeSinceLastKey < 500) {
-                    if (keySequence.includes('pong')) {
-                        keySequence = '';
-                        showPongGame();
-                        return;
-                    } else if (keySequence.includes('snake')) {
-                        keySequence = '';
-                        showSnakeGame();
-                        return;
-                    } else if (keySequence.includes('mario')) {
-                        keySequence = '';
-                        showMarioGame();
-                        return;
-                    } else if (keySequence.includes('break')) {
-                        keySequence = '';
-                        showBreakoutGame();
-                        return;
-                    }
-                }
-            }
-            
-            lastKeyTime = Date.now();
-            
-            // Prevent sequence from getting too long
-            if (keySequence.length > 15) {
-                keySequence = keySequence.slice(-10);
-            }
-        });
-
-        // Reset sequence on page focus/blur to prevent accidental triggers
-        window.addEventListener('focus', function() {
-            keySequence = '';
-            isNavigating = false;
-        });
-
-        window.addEventListener('blur', function() {
-            keySequence = '';
-            isNavigating = true;
-        });
-
-        // Reset on page load
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                keySequence = '';
-                isNavigating = false;
-            }, 2000);
+        });        window.addEventListener('popstate', function() {
+            // Gestion des changements d'historique du navigateur
         });
     </script>
-    
-    <!-- Game Scripts -->    <script src="easter/pong-game.js"></script>
-    <script src="easter/snake-game.js"></script>
-    <script src="easter/breakout-game.js"></script>
-    <script src="easter/mario-game.js"></script>
-    <script src="easter/borat-easter-egg.js"></script>
-    <script src="easter/hexagon-game.js"></script>
+      <!-- Les jeux sont maintenant accessibles via la page games.html -->
 </body>
 </html>
