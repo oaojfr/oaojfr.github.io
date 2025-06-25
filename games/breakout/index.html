@@ -169,6 +169,22 @@
             background: rgba(0, 0, 0, 0.7);
         }
     </style>
+    
+    <script>
+        // Initialisation explicite du jeu Breakout
+        document.addEventListener('DOMContentLoaded', function() {
+            // On s'assure que les éléments du DOM sont chargés avant d'initialiser le jeu
+            if (typeof initGame === 'function') {
+                initGame();
+            } else {
+                window.addEventListener('load', function() {
+                    if (typeof initGame === 'function') {
+                        initGame();
+                    }
+                });
+            }
+        });
+    </script>
 </head>
 <body>
     <a href="../../games.html" class="back-button">

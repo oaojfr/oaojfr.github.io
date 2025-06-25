@@ -175,6 +175,17 @@
             background: rgba(0, 0, 0, 0.7);
         }
     </style>
+    
+    <script>
+        // Initialisation du jeu Mario
+        document.addEventListener('DOMContentLoaded', function() {
+            window.marioGame = new MarioGame(
+                document.getElementById('gameCanvas'),
+                document.getElementById('gameCanvas').getContext('2d')
+            );
+            window.marioGame.init();
+        });
+    </script>
 </head>
 <body>
     <a href="../../games.html" class="back-button">

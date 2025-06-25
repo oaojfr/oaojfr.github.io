@@ -536,9 +536,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialiser le jeu
     window.marioGame.init();
     
-    // Ajout d'un gestionnaire pour le bouton de redémarrage
-    document.getElementById('restartBtn').addEventListener('click', function() {
+    // Ajout d'un gestionnaire pour le bouton de redémarrage    document.getElementById('restartBtn').addEventListener('click', function() {
         document.getElementById('gameMessage').style.display = 'none';
         window.marioGame.restart();
     });
-});
+}
