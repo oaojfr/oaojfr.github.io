@@ -175,17 +175,6 @@
             background: rgba(0, 0, 0, 0.7);
         }
     </style>
-    
-    <script>
-        // Initialisation du jeu Mario
-        document.addEventListener('DOMContentLoaded', function() {
-            window.marioGame = new MarioGame(
-                document.getElementById('gameCanvas'),
-                document.getElementById('gameCanvas').getContext('2d')
-            );
-            window.marioGame.init();
-        });
-    </script>
 </head>
 <body>
     <a href="../../games.html" class="back-button">
@@ -264,15 +253,7 @@
         });
     </script>
 
-    <!-- Load game scripts in the correct order -->
-    <script src="mario-audio.js"></script>
-    <script src="mario-input.js"></script>
-    <script src="mario-entities.js"></script>
-    <script src="mario-objects.js"></script>
-    <script src="mario-enemies.js"></script>
-    <script src="mario-levels.js"></script>
-    <script src="mario-player.js"></script>
-    <script src="mario-save.js"></script>
-    <script src="mario-main.js"></script>
+    <!-- Load the complete Mario game script -->
+    <script src="mario-complete.js"></script>
 </body>
 </html>
