@@ -14,7 +14,8 @@ const tileCountY = Math.floor(canvas.height / gridSize);
 // Game variables
 let snake, food, direction, score;
 let gameSpeed = 150; // Milliseconds between updates
-let gameRunning = true;
+let gameRunning = false; // Commencer en pause
+let gameStarted = false; // État pour savoir si le jeu a démarré
 let gameLoop;
 
 // Game colors
@@ -92,10 +93,24 @@ function initGame() {
     scoreElement.textContent = score;
     generateFood();
     
-    // Démarrer la boucle de jeu
-    if (gameLoop) clearInterval(gameLoop);
-    gameLoop = setInterval(update, gameSpeed);
-    gameRunning = true;
+    // Ne pas démarrer automatiquement
+    gameRunning = false;
+    gameStarted = false;
+    
+    // Afficher le message de démarrage
+    drawGame();
+}
+
+// Démarrer le jeu
+function startGame() {
+    if (!gameStarted && !gameRunning) {
+        gameStarted = true;
+        gameRunning = true;
+        
+        // Démarrer la boucle de jeu
+        if (gameLoop) clearInterval(gameLoop);
+        gameLoop = setInterval(update, gameSpeed);
+    }
 }
 
 // Générer de la nourriture
@@ -273,6 +288,23 @@ function draw() {
             ctx.fill();
         }
     });
+    
+    // Message de démarrage
+    if (!gameStarted) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('SNAKE', canvas.width/2, canvas.height/2 - 50);
+        
+        ctx.font = '20px Arial';
+        ctx.fillText('Cliquez ou appuyez sur ESPACE pour commencer', canvas.width/2, canvas.height/2);
+        
+        ctx.font = '16px Arial';
+        ctx.fillText('Utilisez les flèches pour diriger le serpent', canvas.width/2, canvas.height/2 + 30);
+    }
 }
 
 // Gérer le game over
@@ -287,11 +319,21 @@ function gameOver() {
 // Redémarrer le jeu
 function restartGame() {
     gameMessage.style.display = 'none';
+    clearInterval(gameLoop);
+    gameStarted = false;
+    gameRunning = false;
     initGame();
 }
 
 // Contrôles du clavier
 document.addEventListener('keydown', function(e) {
+    // Démarrer le jeu avec ESPACE
+    if (e.key === ' ' && !gameStarted) {
+        e.preventDefault();
+        startGame();
+        return;
+    }
+    
     if (!gameRunning) return;
     
     switch(e.key) {
@@ -328,6 +370,13 @@ document.addEventListener('keydown', function(e) {
 
 // Bouton de redémarrage
 restartBtn.addEventListener('click', restartGame);
+
+// Clic pour démarrer le jeu
+canvas.addEventListener('click', function() {
+    if (!gameStarted) {
+        startGame();
+    }
+});
 
 // Initialiser le jeu au chargement
 window.addEventListener('load', initGame);

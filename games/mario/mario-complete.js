@@ -196,8 +196,8 @@ class SuperMarioGame {
                 y: y * this.TILE_SIZE,
                 type: 'question',
                 solid: true,
-                hasItem: Math.random() < 0.7,
-                itemType: Math.random() < 0.3 ? 'mushroom' : 'coin'
+                hasItem: Math.random() < 0.8,
+                itemType: Math.random() < 0.6 ? 'mushroom' : 'coin'
             });
         }
     }
@@ -550,13 +550,11 @@ class SuperMarioGame {
                         this.breakBrick(tile);
                     }
                 }
-                // Collision latérale
-                else if (this.player.dx > 0) {
+                // Collision latérale - permettre le glissement
+                else if (this.player.dx > 0 && this.player.x < tile.x) {
                     this.player.x = tile.x - this.player.width;
-                    this.player.dx = 0;
-                } else if (this.player.dx < 0) {
+                } else if (this.player.dx < 0 && this.player.x > tile.x) {
                     this.player.x = tile.x + this.TILE_SIZE;
-                    this.player.dx = 0;
                 }
             }
         }
@@ -919,34 +917,102 @@ class SuperMarioGame {
         for (let enemy of this.enemies) {
             if (!enemy.alive) continue;
             
-            this.ctx.fillStyle = this.getEnemyColor(enemy.type);
-            this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            const x = enemy.x;
+            const y = enemy.y;
+            const w = enemy.width;
+            const h = enemy.height;
+            
+            switch (enemy.type) {
+                case 'goomba':
+                    // Corps brun
+                    this.ctx.fillStyle = '#8B4513';
+                    this.ctx.fillRect(x, y + h * 0.3, w, h * 0.7);
+                    
+                    // Tête
+                    this.ctx.fillStyle = '#D2691E';
+                    this.ctx.fillRect(x + 2, y, w - 4, h * 0.6);
+                    
+                    // Yeux méchants
+                    this.ctx.fillStyle = '#FFF';
+                    this.ctx.fillRect(x + 4, y + 8, 4, 3);
+                    this.ctx.fillRect(x + w - 8, y + 8, 4, 3);
+                    this.ctx.fillStyle = '#000';
+                    this.ctx.fillRect(x + 5, y + 8, 2, 3);
+                    this.ctx.fillRect(x + w - 7, y + 8, 2, 3);
+                    
+                    // Sourcils froncés
+                    this.ctx.fillStyle = '#8B4513';
+                    this.ctx.fillRect(x + 3, y + 6, 6, 2);
+                    this.ctx.fillRect(x + w - 9, y + 6, 6, 2);
+                    
+                    // Crocs
+                    this.ctx.fillStyle = '#FFF';
+                    this.ctx.fillRect(x + 6, y + 16, 2, 3);
+                    this.ctx.fillRect(x + w - 8, y + 16, 2, 3);
+                    break;
+                    
+                case 'koopa':
+                    // Carapace verte
+                    this.ctx.fillStyle = '#228B22';
+                    this.ctx.fillRect(x, y + h * 0.4, w, h * 0.6);
+                    
+                    // Motif carapace
+                    this.ctx.fillStyle = '#006400';
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 2; j++) {
+                            this.ctx.fillRect(x + 3 + i * 6, y + h * 0.5 + j * 6, 4, 4);
+                        }
+                    }
+                    
+                    // Tête
+                    this.ctx.fillStyle = '#FFD700';
+                    this.ctx.fillRect(x + 4, y, w - 8, h * 0.5);
+                    
+                    // Yeux
+                    this.ctx.fillStyle = '#FFF';
+                    this.ctx.fillRect(x + 6, y + 6, 3, 3);
+                    this.ctx.fillRect(x + w - 9, y + 6, 3, 3);
+                    this.ctx.fillStyle = '#000';
+                    this.ctx.fillRect(x + 7, y + 7, 1, 1);
+                    this.ctx.fillRect(x + w - 8, y + 7, 1, 1);
+                    
+                    // Bec
+                    this.ctx.fillStyle = '#FFA500';
+                    this.ctx.fillRect(x + w/2 - 1, y + 10, 2, 3);
+                    break;
+                    
+                case 'piranha':
+                    // Tige
+                    this.ctx.fillStyle = '#228B22';
+                    this.ctx.fillRect(x + w/2 - 2, y + h * 0.7, 4, h * 0.3);
+                    
+                    // Corps de la plante
+                    this.ctx.fillStyle = '#DC143C';
+                    this.ctx.fillRect(x, y, w, h * 0.8);
+                    
+                    // Taches
+                    this.ctx.fillStyle = '#8B0000';
+                    this.ctx.fillRect(x + 3, y + 5, 4, 3);
+                    this.ctx.fillRect(x + w - 7, y + 8, 4, 3);
+                    this.ctx.fillRect(x + 2, y + 12, 3, 2);
+                    
+                    // Bouche ouverte
+                    this.ctx.fillStyle = '#000';
+                    this.ctx.fillRect(x + 4, y + h * 0.4, w - 8, h * 0.2);
+                    
+                    // Dents
+                    this.ctx.fillStyle = '#FFF';
+                    for (let i = 0; i < 3; i++) {
+                        this.ctx.fillRect(x + 6 + i * 4, y + h * 0.35, 2, 4);
+                        this.ctx.fillRect(x + 6 + i * 4, y + h * 0.55, 2, 4);
+                    }
+                    break;
+            }
             
             // Bordure
             this.ctx.strokeStyle = '#000';
             this.ctx.lineWidth = 1;
-            this.ctx.strokeRect(enemy.x, enemy.y, enemy.width, enemy.height);
-            
-            // Détails spécifiques aux ennemis
-            this.renderEnemyDetails(enemy);
-        }
-    }
-    
-    renderEnemyDetails(enemy) {
-        this.ctx.fillStyle = '#FFF';
-        this.ctx.font = '12px Arial';
-        this.ctx.textAlign = 'center';
-        
-        switch (enemy.type) {
-            case 'goomba':
-                this.ctx.fillText('G', enemy.x + enemy.width/2, enemy.y + enemy.height/2 + 4);
-                break;
-            case 'koopa':
-                this.ctx.fillText('K', enemy.x + enemy.width/2, enemy.y + enemy.height/2 + 4);
-                break;
-            case 'piranha':
-                this.ctx.fillText('P', enemy.x + enemy.width/2, enemy.y + enemy.height/2 + 4);
-                break;
+            this.ctx.strokeRect(x, y, w, h);
         }
     }
     
@@ -972,34 +1038,90 @@ class SuperMarioGame {
         if (this.player.invulnerable && Math.floor(this.player.invulnTime / 5) % 2 === 0) {
             return;
         }
+
+        const x = this.player.x;
+        const y = this.player.y;
+        const w = this.player.width;
+        const h = this.player.height;
         
-        this.ctx.fillStyle = this.getPlayerColor();
-        this.ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+        // Corps de Mario avec dégradé
+        const gradient = this.ctx.createLinearGradient(x, y, x, y + h);
+        if (this.powerState === 0) {
+            gradient.addColorStop(0, '#FF6B6B');
+            gradient.addColorStop(1, '#DC143C');
+        } else if (this.powerState === 1) {
+            gradient.addColorStop(0, '#FF6B6B');
+            gradient.addColorStop(0.5, '#4169E1');
+            gradient.addColorStop(1, '#DC143C');
+        } else {
+            gradient.addColorStop(0, '#FFD700');
+            gradient.addColorStop(0.5, '#FF6B6B');
+            gradient.addColorStop(1, '#DC143C');
+        }
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(x, y, w, h);
+        
+        // Casquette
+        this.ctx.fillStyle = '#8B0000';
+        this.ctx.fillRect(x + 2, y, w - 4, h * 0.3);
+        
+        // Logo M sur la casquette
+        this.ctx.fillStyle = '#FFF';
+        this.ctx.font = 'bold 10px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('M', x + w/2, y + h * 0.2);
+        
+        // Yeux
+        const eyeSize = 2;
+        const eyeY = y + h * 0.35;
+        this.ctx.fillStyle = '#FFF';
+        this.ctx.fillRect(x + 4, eyeY, eyeSize * 2, eyeSize);
+        this.ctx.fillRect(x + w - 6 - eyeSize, eyeY, eyeSize * 2, eyeSize);
+        
+        // Pupilles (direction)
+        this.ctx.fillStyle = '#000';
+        const pupilX1 = this.player.facingRight ? x + 5 : x + 4;
+        const pupilX2 = this.player.facingRight ? x + w - 5 : x + w - 6;
+        this.ctx.fillRect(pupilX1, eyeY, eyeSize, eyeSize);
+        this.ctx.fillRect(pupilX2, eyeY, eyeSize, eyeSize);
+        
+        // Nez
+        this.ctx.fillStyle = '#FFB6C1';
+        this.ctx.fillRect(x + w/2 - 1, y + h * 0.45, 2, 3);
+        
+        // Moustache
+        this.ctx.fillStyle = '#8B4513';
+        this.ctx.fillRect(x + 3, y + h * 0.55, w - 6, 2);
+        
+        // Salopette (si grand Mario)
+        if (this.powerState > 0) {
+            this.ctx.fillStyle = '#0000FF';
+            this.ctx.fillRect(x + 2, y + h * 0.7, w - 4, h * 0.3);
+            
+            // Boutons
+            this.ctx.fillStyle = '#FFD700';
+            this.ctx.fillRect(x + 4, y + h * 0.75, 2, 2);
+            this.ctx.fillRect(x + w - 6, y + h * 0.75, 2, 2);
+        }
         
         // Bordure
         this.ctx.strokeStyle = '#000';
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height);
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x, y, w, h);
         
-        // Détails du joueur
-        this.renderPlayerDetails();
-    }
-    
-    renderPlayerDetails() {
-        this.ctx.fillStyle = '#FFF';
-        this.ctx.font = 'bold 14px Arial';
-        this.ctx.textAlign = 'center';
-        
-        let symbol = 'M';
-        if (this.powerState === 1) symbol = 'M+';
-        if (this.powerState === 2) symbol = 'M🔥';
-        
-        this.ctx.fillText(symbol, this.player.x + this.player.width/2, this.player.y + this.player.height/2 + 5);
-        
-        // Direction
-        const eyeX = this.player.facingRight ? this.player.x + this.player.width - 5 : this.player.x + 5;
-        this.ctx.fillStyle = '#000';
-        this.ctx.fillRect(eyeX, this.player.y + 5, 3, 3);
+        // Effet de puissance feu
+        if (this.powerState === 2) {
+            this.ctx.save();
+            this.ctx.globalAlpha = 0.3;
+            this.ctx.fillStyle = '#FF4500';
+            for (let i = 0; i < 3; i++) {
+                const flameX = x + Math.random() * w;
+                const flameY = y + Math.random() * h;
+                this.ctx.fillRect(flameX, flameY, 2, 2);
+            }
+            this.ctx.restore();
+        }
     }
     
     renderParticles() {

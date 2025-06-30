@@ -39,7 +39,8 @@ let colors;
 let colorScheme = 0;
 let pulse = 0;
 let pulseDirection = 1;
-let gameRunning = true;
+let gameRunning = false; // Commencer en pause
+let gameStarted = false; // État pour savoir si le jeu a démarré
 
 // Audio system
 let audio = {
@@ -121,35 +122,69 @@ function initGame() {
     
     // Démarrer la génération des murs
     gameStartTime = Date.now();
-    spawnWall();
     
-    // Démarrer la boucle de jeu
-    gameRunning = true;
-    gameLoop();
-    
-    // Son de démarrage
-    playSound('gameStart');
+    // Ne pas démarrer automatiquement
+    gameRunning = false;
+    gameStarted = false;
     
     // Initialiser les contrôles
     setupControls();
     
     // Mettre à jour le score affiché
     scoreElement.textContent = score;
+    
+    // Afficher le message de démarrage
+    draw();
+}
+
+// Démarrer le jeu
+function startGame() {
+    if (!gameStarted && !gameRunning) {
+        gameStarted = true;
+        gameRunning = true;
+        
+        // Première apparition d'un mur
+        spawnWall();
+        
+        // Démarrer la boucle de jeu
+        gameLoop();
+        
+        // Son de démarrage
+        playSound('gameStart');
+    }
 }
 
 // Configurer les contrôles
 function setupControls() {
     // Contrôles clavier
     document.addEventListener('keydown', function(e) {
+        // Démarrer le jeu avec ESPACE
+        if (e.key === ' ' && !gameStarted) {
+            e.preventDefault();
+            startGame();
+            return;
+        }
+        
         if (!gameRunning) return;
         
         switch(e.key) {
             case 'ArrowLeft':
+            case 'a':
+            case 'A':
                 player.angle -= HEX_CONFIG.playerRotationSpeed;
                 break;
             case 'ArrowRight':
+            case 'd':
+            case 'D':
                 player.angle += HEX_CONFIG.playerRotationSpeed;
                 break;
+        }
+    });
+    
+    // Clic pour démarrer le jeu
+    canvas.addEventListener('click', function() {
+        if (!gameStarted) {
+            startGame();
         }
     });
 }
@@ -274,6 +309,23 @@ function draw() {
     
     // Dessiner les informations de jeu
     drawGameInfo();
+    
+    // Message de démarrage
+    if (!gameStarted) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 36px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('HEXAGON', canvas.width/2, canvas.height/2 - 50);
+        
+        ctx.font = '20px Arial';
+        ctx.fillText('Cliquez ou appuyez sur ESPACE pour commencer', canvas.width/2, canvas.height/2);
+        
+        ctx.font = '16px Arial';
+        ctx.fillText('Utilisez les flèches ou A/D pour tourner', canvas.width/2, canvas.height/2 + 30);
+    }
 }
 
 // Dessiner l'arrière-plan
@@ -435,6 +487,8 @@ function restartGame() {
         cancelAnimationFrame(animationFrame);
     }
     gameMessage.style.display = 'none';
+    gameStarted = false;
+    gameRunning = false;
     initGame();
 }
 
