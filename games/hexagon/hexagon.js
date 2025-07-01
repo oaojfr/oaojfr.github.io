@@ -33,7 +33,7 @@ class SuperHexagon {
             angle: 0,
             targetAngle: 0,
             position: 0, // Position discrète (0-5) pour la détection de collision
-            radius: this.HEX_RADIUS + 35,
+            radius: this.HEX_RADIUS + 1, // Rapproché du centre (était +35)
             size: this.PLAYER_SIZE,
             smoothing: 0.15, // Facteur de lissage pour l'interpolation
             rotationSpeed: 0.08 // Vitesse de rotation fluide
@@ -59,6 +59,12 @@ class SuperHexagon {
         this.pulseIntensity = 0;
         this.screenShake = { x: 0, y: 0, intensity: 0 };
         this.backgroundLines = [];
+        
+        // Système audio
+        this.audioContext = null;
+        this.musicEnabled = localStorage.getItem('hexagonMusicEnabled') !== 'false'; // Par défaut activé
+        this.currentTrack = null;
+        this.musicVolume = 0.3;
         
         // Paramètres de difficulté (comme l'original)
         this.difficultySettings = {
@@ -121,6 +127,7 @@ class SuperHexagon {
         this.resizeCanvas();
         this.updateBestTimeDisplay();
         this.generateBackgroundLines();
+        this.initializeAudio();
         window.addEventListener('resize', () => this.resizeCanvas());
         this.gameLoop();
     }
@@ -135,7 +142,7 @@ class SuperHexagon {
         
         this.CENTER_X = this.canvas.width / 2;
         this.CENTER_Y = this.canvas.height / 2;
-        this.player.radius = this.HEX_RADIUS + 35;
+        this.player.radius = this.HEX_RADIUS + 25; // Maintenir la distance rapprochée
     }
     
     setupEventListeners() {
@@ -158,6 +165,12 @@ class SuperHexagon {
                 // Redémarrer
                 if (e.key.toLowerCase() === 'r') {
                     this.restartGame();
+                    e.preventDefault();
+                }
+                
+                // Toggle musique
+                if (e.key.toLowerCase() === 'm') {
+                    this.toggleMusic();
                     e.preventDefault();
                 }
             }
@@ -232,18 +245,36 @@ class SuperHexagon {
         this.leftPressed = false;
         this.rightPressed = false;
         
+        // Démarrer la musique
+        if (this.musicEnabled) {
+            // Reprendre le contexte audio si nécessaire
+            if (this.audioContext && this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+            this.startMusic();
+        }
+        
         this.hideAllOverlays();
         this.updateDisplay();
+        
+        // Démarrer la musique
+        this.startMusic();
     }
     
     pauseGame() {
         this.gameState = 'paused';
+        this.stopMusic();
         document.getElementById('pauseOverlay').style.display = 'flex';
     }
     
     resumeGame() {
         this.gameState = 'playing';
         this.hideAllOverlays();
+        
+        // Reprendre la musique
+        if (this.musicEnabled) {
+            this.startMusic();
+        }
     }
     
     restartGame() {
@@ -266,6 +297,7 @@ class SuperHexagon {
     
     gameOver() {
         this.gameState = 'gameOver';
+        this.stopMusic();
         
         // Vérifier nouveau record
         let isNewRecord = false;
@@ -289,6 +321,252 @@ class SuperHexagon {
         this.createDeathEffect();
         this.shakeScreen(30);
         this.updateBestTimeDisplay();
+        
+        // Arrêter la musique
+        this.stopMusic();
+    }
+    
+    initializeAudio() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (error) {
+            console.log('Web Audio API non supportée');
+            this.musicEnabled = false;
+        }
+    }
+    
+    startMusic() {
+        if (!this.musicEnabled || !this.audioContext) return;
+        
+        // Arrêter la musique précédente
+        this.stopMusic();
+        
+        // Créer une nouvelle track selon la difficulté
+        this.currentTrack = this.createCyberpunkTrack();
+        this.currentTrack.start();
+    }
+    
+    stopMusic() {
+        if (this.currentTrack) {
+            this.currentTrack.stop();
+            this.currentTrack = null;
+        }
+    }
+    
+    createCyberpunkTrack() {
+        const settings = this.difficultySettings[this.difficulty];
+        const bpm = 120 + (Object.keys(this.difficultySettings).indexOf(this.difficulty) * 20);
+        
+        // Créer les oscillateurs pour une musique électronique
+        const kick = this.createKickDrum(bpm);
+        const bass = this.createBassline(bpm);
+        const lead = this.createLeadSynth(bpm);
+        const pad = this.createPad(bpm);
+        
+        return {
+            start: () => {
+                kick.start();
+                bass.start();
+                lead.start();
+                pad.start();
+            },
+            stop: () => {
+                kick.stop();
+                bass.stop();
+                lead.stop();
+                pad.stop();
+            }
+        };
+    }
+    
+    createKickDrum(bpm) {
+        const interval = 60 / bpm; // Intervalle en secondes
+        let nextTime = this.audioContext.currentTime;
+        
+        const schedule = () => {
+            if (this.gameState !== 'playing') return;
+            
+            // Créer un kick drum
+            const osc = this.audioContext.createOscillator();
+            const gain = this.audioContext.createGain();
+            const filter = this.audioContext.createBiquadFilter();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(60, nextTime);
+            osc.frequency.exponentialRampToValueAtTime(20, nextTime + 0.1);
+            
+            filter.type = 'lowpass';
+            filter.frequency.value = 200;
+            
+            gain.gain.setValueAtTime(this.musicVolume * 0.8, nextTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, nextTime + 0.3);
+            
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.audioContext.destination);
+            
+            osc.start(nextTime);
+            osc.stop(nextTime + 0.3);
+            
+            nextTime += interval;
+            setTimeout(schedule, (interval * 1000) / 2);
+        };
+        
+        return {
+            start: schedule,
+            stop: () => {}
+        };
+    }
+    
+    createBassline(bpm) {
+        const interval = 60 / bpm / 2; // Double vitesse pour la bassline
+        let nextTime = this.audioContext.currentTime;
+        const notes = [55, 65, 73, 82]; // Notes de basse
+        let noteIndex = 0;
+        
+        const schedule = () => {
+            if (this.gameState !== 'playing') return;
+            
+            const osc = this.audioContext.createOscillator();
+            const gain = this.audioContext.createGain();
+            const filter = this.audioContext.createBiquadFilter();
+            
+            osc.type = 'sawtooth';
+            osc.frequency.value = notes[noteIndex % notes.length];
+            
+            filter.type = 'lowpass';
+            filter.frequency.value = 300;
+            filter.Q.value = 10;
+            
+            gain.gain.setValueAtTime(this.musicVolume * 0.3, nextTime);
+            gain.gain.setValueAtTime(this.musicVolume * 0.3, nextTime + interval * 0.9);
+            gain.gain.exponentialRampToValueAtTime(0.001, nextTime + interval);
+            
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.audioContext.destination);
+            
+            osc.start(nextTime);
+            osc.stop(nextTime + interval);
+            
+            noteIndex++;
+            nextTime += interval;
+            setTimeout(schedule, interval * 1000);
+        };
+        
+        return {
+            start: schedule,
+            stop: () => {}
+        };
+    }
+    
+    createLeadSynth(bpm) {
+        const interval = 60 / bpm / 4; // Mélodie rapide
+        let nextTime = this.audioContext.currentTime;
+        const melody = [220, 246, 277, 311, 277, 246]; // Mélodie cyberpunk
+        let noteIndex = 0;
+        
+        const schedule = () => {
+            if (this.gameState !== 'playing') return;
+            
+            // Jouer une note de temps en temps
+            if (Math.random() > 0.3) {
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+                
+                osc.type = 'square';
+                osc.frequency.value = melody[noteIndex % melody.length];
+                
+                filter.type = 'bandpass';
+                filter.frequency.value = 1000;
+                filter.Q.value = 5;
+                
+                gain.gain.setValueAtTime(0, nextTime);
+                gain.gain.linearRampToValueAtTime(this.musicVolume * 0.2, nextTime + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, nextTime + interval * 2);
+                
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.audioContext.destination);
+                
+                osc.start(nextTime);
+                osc.stop(nextTime + interval * 2);
+            }
+            
+            noteIndex++;
+            nextTime += interval;
+            setTimeout(schedule, interval * 1000);
+        };
+        
+        return {
+            start: schedule,
+            stop: () => {}
+        };
+    }
+    
+    createPad(bpm) {
+        const interval = 60 / bpm * 4; // Accord long
+        let nextTime = this.audioContext.currentTime;
+        const chords = [
+            [220, 277, 330], // Accord Am
+            [196, 246, 294], // Accord G
+            [174, 220, 261], // Accord F
+            [196, 246, 294]  // Accord G
+        ];
+        let chordIndex = 0;
+        
+        const schedule = () => {
+            if (this.gameState !== 'playing') return;
+            
+            const chord = chords[chordIndex % chords.length];
+            
+            chord.forEach((freq, i) => {
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
+                
+                osc.type = 'sawtooth';
+                osc.frequency.value = freq;
+                
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+                
+                gain.gain.setValueAtTime(0, nextTime);
+                gain.gain.linearRampToValueAtTime(this.musicVolume * 0.1, nextTime + 0.5);
+                gain.gain.setValueAtTime(this.musicVolume * 0.1, nextTime + interval - 0.5);
+                gain.gain.linearRampToValueAtTime(0, nextTime + interval);
+                
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.audioContext.destination);
+                
+                osc.start(nextTime);
+                osc.stop(nextTime + interval);
+            });
+            
+            chordIndex++;
+            nextTime += interval;
+            setTimeout(schedule, interval * 1000);
+        };
+        
+        return {
+            start: schedule,
+            stop: () => {}
+        };
+    }
+    
+    toggleMusic() {
+        this.musicEnabled = !this.musicEnabled;
+        
+        if (!this.musicEnabled) {
+            this.stopMusic();
+        } else if (this.gameState === 'playing') {
+            this.startMusic();
+        }
+        
+        // Sauvegarder la préférence
+        localStorage.setItem('hexagonMusicEnabled', this.musicEnabled.toString());
     }
     
     update() {
