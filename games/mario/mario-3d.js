@@ -45,7 +45,10 @@ class SuperMario3D {
             antialias: true,
             alpha: true
         });
-        this.renderer.setSize(1024, 576);
+        
+        // Utiliser la taille du canvas définie dans le CSS
+        const rect = this.canvas.getBoundingClientRect();
+        this.renderer.setSize(rect.width, rect.height);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -54,7 +57,7 @@ class SuperMario3D {
         this.renderer.toneMappingExposure = 1.2;
         
         // Camera
-        this.camera = new THREE.PerspectiveCamera(75, 1024/576, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(75, rect.width/rect.height, 0.1, 1000);
         this.camera.position.set(0, 8, 15);
         this.cameraTarget = new THREE.Vector3(0, 0, 0);
         
@@ -77,6 +80,13 @@ class SuperMario3D {
         
         // Player
         this.createPlayer();
+        
+        // Cube de test pour vérifier que le rendu fonctionne
+        const testGeometry = new THREE.BoxGeometry(2, 2, 2);
+        const testMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+        const testCube = new THREE.Mesh(testGeometry, testMaterial);
+        testCube.position.set(0, 0, 0);
+        this.scene.add(testCube);
         
         // Event listeners
         this.setupEventListeners();
@@ -437,6 +447,14 @@ class SuperMario3D {
         document.addEventListener('mousemove', (e) => {
             this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+        
+        // Redimensionnement
+        window.addEventListener('resize', () => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.renderer.setSize(rect.width, rect.height);
+            this.camera.aspect = rect.width / rect.height;
+            this.camera.updateProjectionMatrix();
         });
     }
     
@@ -864,4 +882,5 @@ let game;
 
 document.addEventListener('DOMContentLoaded', () => {
     game = new SuperMario3D();
+    window.gameInstance = game;
 });

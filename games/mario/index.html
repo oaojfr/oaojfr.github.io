@@ -314,14 +314,14 @@
         <div class="game-canvas-container">
             <canvas id="gameCanvas"></canvas>
             
-            <div class="game-ui">
-                <div class="score-display">Score: <span id="scoreValue">0</span></div>
-                <div class="lives-display">
-                    Vies: <span id="livesValue">3</span> 
-                    <span style="color: #ff6b6b;">❤️</span>
-                </div>
-                <div style="font-size: 0.8rem; margin-top: 5px; opacity: 0.8;">
-                    Niveau: <span id="levelValue">1</span>
+            <div class="game-ui" id="hud">
+                <div class="score-display" style="display: flex; gap: 20px; padding: 10px 20px; background: rgba(0, 0, 0, 0.7); border-radius: 10px;">
+                    <span>Score: <span id="score">0</span></span>
+                    <span>Pièces: <span id="coins">0</span></span>
+                    <span>Monde: <span id="world">1-1</span></span>
+                    <span>Temps: <span id="time">400</span></span>
+                    <span>Vies: <span id="lives">3</span> ❤️</span>
+                    <span>Power: <span id="power">Small</span></span>
                 </div>
             </div>
             
@@ -349,17 +349,17 @@
                 </div>
             </div>
             
-            <div class="loading-screen" id="loadingScreen">
+            <div class="loading-screen" id="loading">
                 <div class="loading-spinner"></div>
                 <div class="loading-text">Chargement de Mario 3D...</div>
                 <div class="loading-progress" id="loadingProgress">Initialisation des graphismes 3D...</div>
             </div>
             
-            <div class="game-over-screen" id="gameOverScreen">
-                <div class="game-over-content">
-                    <div class="game-over-title" id="gameOverTitle">Game Over!</div>
-                    <div class="final-score">Score Final: <span id="finalScore">0</span></div>
-                    <button class="restart-btn" onclick="restartGame()">
+            <div class="game-over-screen" id="gameOverScreen" style="display: none;">
+                <div class="game-over-content" id="gameMessage">
+                    <div class="game-over-title" id="messageTitle">Game Over!</div>
+                    <div class="final-score" id="messageText">Score Final: <span id="finalScore">0</span></div>
+                    <button class="restart-btn" id="restartBtn" onclick="restartGame()">
                         <i class="bi bi-arrow-clockwise"></i> Rejouer
                     </button>
                 </div>
