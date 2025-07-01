@@ -597,6 +597,9 @@ class ModernBreakout {
         const indicator = document.getElementById('powerupIndicator');
         const text = document.getElementById('powerupText');
         
+        // Vérifier que les éléments existent
+        if (!indicator || !text) return;
+        
         const names = {
             bigPaddle: 'RAQUETTE GÉANTE',
             multiball: 'MULTI-BALLE',
@@ -610,7 +613,10 @@ class ModernBreakout {
     }
     
     hidePowerUpIndicator() {
-        document.getElementById('powerupIndicator').classList.remove('active');
+        const indicator = document.getElementById('powerupIndicator');
+        if (indicator) {
+            indicator.classList.remove('active');
+        }
     }
     
     createImpactParticles(x, y, color) {
@@ -899,10 +905,14 @@ class ModernBreakout {
     }
     
     updateUI() {
-        document.getElementById('scoreValue').textContent = this.score;
-        document.getElementById('levelValue').textContent = this.level;
-        document.getElementById('livesValue').textContent = this.lives;
-        document.getElementById('bricksValue').textContent = this.bricksRemaining;
+        // Mettre à jour les affichages si les éléments existent
+        const scoreEl = document.getElementById('scoreDisplay');
+        const levelEl = document.getElementById('levelDisplay');
+        const livesEl = document.getElementById('livesDisplay');
+        
+        if (scoreEl) scoreEl.textContent = this.score;
+        if (levelEl) levelEl.textContent = this.level;
+        if (livesEl) livesEl.textContent = this.lives;
     }
     
     pauseGame() {

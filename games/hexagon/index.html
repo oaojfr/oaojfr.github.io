@@ -10,6 +10,12 @@
     <meta name="keywords" content="hexagon, jeu, cyberpunk, neon, reflexes, javascript">
     <meta name="author" content="João">
     
+    <!-- Alternate language versions -->
+    <link rel="alternate" href="../../games/hexagon/index.html" hreflang="fr">
+    <link rel="alternate" href="../../games/hexagon/index.html" hreflang="en">
+    <link rel="alternate" href="../../games/hexagon/index.html" hreflang="pt">
+    <link rel="alternate" href="../../games/hexagon/index.html" hreflang="x-default">
+    
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⬡</text></svg>">
     
@@ -104,50 +110,87 @@
         .stat-label {
             font-size: 0.8rem;
             opacity: 0.8;
-            color: var(--neon-orange);
         }
 
         .stat-value {
             color: var(--neon-yellow);
             text-shadow: 0 0 15px var(--neon-yellow);
-            font-size: 1.5rem;
         }
 
-        .menu-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+        .game-footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            z-index: 100;
+            border-top: 2px solid var(--neon-cyan);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 9999;
         }
 
-        .menu-title {
-            font-size: 4rem;
-            font-weight: 900;
-            margin-bottom: 2rem;
-            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple), var(--neon-yellow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite alternate;
+        .home-button {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px 15px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
         }
 
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 5px var(--neon-cyan)); }
-            to { filter: drop-shadow(0 0 20px var(--neon-purple)); }
+        .home-button:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 25px var(--neon-cyan);
+            text-decoration: none;
+        }
+
+        .language-selector {
+            z-index: 9999;
+        }
+
+        .dropdown-menu {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+        }
+
+        .dropdown-item {
+            color: var(--neon-cyan);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+        }
+
+        .dropdown-toggle {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle:focus {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            border-color: var(--neon-cyan);
         }
 
         .btn-neon {
             background: transparent;
             border: 2px solid var(--neon-cyan);
             color: var(--neon-cyan);
-            padding: 15px 40px;
+            padding: 12px 30px;
+            border-radius: 50px;
             font-size: 1.2rem;
             font-weight: 700;
             font-family: 'Orbitron', monospace;
@@ -196,160 +239,173 @@
             text-align: center;
         }
 
-        .pause-overlay {
+        .menu-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 50;
+            flex-direction: column;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
-        .pause-content {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 40px;
-            border-radius: 15px;
-            border: 2px solid var(--neon-cyan);
-        }
-
-        .game-over-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-        }
-
-        .game-over-content {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 50px;
-            border-radius: 20px;
-            border: 3px solid var(--neon-orange);
-            box-shadow: 0 0 50px var(--neon-orange);
-        }
-
-        .game-over-title {
-            font-size: 3rem;
+        .menu-title {
+            font-size: 4rem;
             font-weight: 900;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--neon-orange), var(--neon-cyan));
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple), var(--neon-yellow));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 30px var(--neon-cyan);
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
         }
 
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            z-index: 1000;
+        .menu-description {
+            font-size: 1.3rem;
+            color: var(--neon-yellow);
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.6;
         }
 
-        .back-button:hover {
-            background: var(--neon-cyan);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-cyan);
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
-        .difficulty-selector {
-            display: flex;
-            gap: 15px;
-            margin: 20px 0;
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px var(--neon-cyan); }
+            50% { text-shadow: 0 0 40px var(--neon-cyan), 0 0 60px var(--neon-purple); }
         }
 
-        .difficulty-btn {
-            background: transparent;
-            border: 2px solid var(--neon-purple);
-            color: var(--neon-purple);
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: 'Orbitron', monospace;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .game-title {
+            animation: glow 3s infinite;
         }
 
-        .difficulty-btn.active,
-        .difficulty-btn:hover {
-            background: var(--neon-purple);
-            color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-purple);
-        }
-
-        /* Responsive */
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .game-title { font-size: 1.5rem; }
-            .game-stats { font-size: 1rem; gap: 20px; }
-            .menu-title { font-size: 2.5rem; }
-            .btn-neon { padding: 12px 30px; font-size: 1rem; }
+            .game-header {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .game-stats {
+                gap: 20px;
+                font-size: 1rem;
+            }
+
+            .menu-title {
+                font-size: 2.5rem;
+            }
+
+            .menu-description {
+                font-size: 1rem;
+                padding: 0 20px;
+            }
+
+            #gameCanvas {
+                max-width: 90vw;
+                height: auto;
+            }
+
+            .game-footer {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .home-button {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
+
+            .dropdown-toggle {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid h-100 d-flex flex-column">
-        <!-- Navbar -->
-        <nav class="navbar">
-            <div class="container-fluid">
-                <div class="navbar-brand d-flex align-items-center">
-                    <a href="../../index.html" class="text-decoration-none me-3" title="Retour à l'accueil">
-                        <i class="bi bi-house-fill fs-4"></i>
-                    </a>
-                    <span data-translate="game.title">⬡ Super Hexagon</span>
-                </div>
-                
-                <!-- Language Selector -->
-                <div class="dropdown me-3">
-                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
-                    </ul>
-                </div>
+    <!-- Game Header -->
+    <div class="game-header">
+        <div class="game-title" data-translate="game.title">⬡ SUPER HEXAGON</div>
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.score">Score</div>
+                <div class="stat-value" id="scoreDisplay">0</div>
             </div>
-        </nav>
-
-        <!-- Game Info -->
-        <div class="game-info text-center p-3">
-            <h1 class="game-title mb-2" data-translate="game.title">⬡ Super Hexagon</h1>
-            <p class="game-description" data-translate="game.description">Évitez les murs qui se rapprochent ! Un jeu de réflexes extrême.</p>
-            <div class="controls-info mb-3">
-                <small data-translate="game.controls">Utilisez ← → ou A D pour tourner, ESPACE pour commencer</small>
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.time">Temps</div>
+                <div class="stat-value" id="timeDisplay">0.00s</div>
             </div>
-            <div class="score-display mb-2">
-                <span data-translate="game.score">Score: </span><span id="score">0</span> | 
-                <span data-translate="game.time">Temps: </span><span id="time">0.00s</span>
-            </div>
-            <button id="startButton" class="btn btn-neon me-2" data-translate="game.start">Commencer</button>
-            <button id="restartButton" class="btn btn-neon" data-translate="game.restart">Redémarrer</button>
         </div>
+    </div>
 
-        <!-- Game Canvas -->
-        <div class="game-container">
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <!-- Game Container -->
+    <div class="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <!-- Menu Overlay -->
+        <div class="menu-overlay" id="menuOverlay">
+            <div class="menu-title" data-translate="game.title">⬡ SUPER HEXAGON</div>
+            <div class="menu-description" data-translate="game.description">
+                Évitez les murs qui se rapprochent ! Un jeu de réflexes extrême.
+            </div>
+            <button class="btn-neon" onclick="game.startGame()" data-translate="game.start">Commencer</button>
+        </div>
+        
+        <!-- Game Over Overlay -->
+        <div class="menu-overlay" id="gameOverOverlay" style="display: none;">
+            <div class="menu-title" data-translate="game.gameover">GAME OVER</div>
+            <div class="menu-description">
+                <span data-translate="game.finalTime">Temps final: </span><span id="finalTime">0.00s</span><br>
+                <div id="newRecordDisplay" style="display: none; margin-top: 20px;">
+                    <span data-translate="game.newRecord" style="color: var(--neon-yellow); font-weight: bold;">🏆 NOUVEAU RECORD ! 🏆</span>
+                </div>
+            </div>
+            <button class="btn-neon" onclick="game.restartGame()" data-translate="game.restart">Redémarrer</button>
+            <button class="btn-neon" onclick="game.showMenu()" data-translate="game.menu">Menu</button>
+        </div>
+        
+        <!-- Controls Info -->
+        <div class="controls-info" data-translate="game.controls">
+            ← → ou A D pour tourner • ESPACE pour commencer
+        </div>
+    </div>
+
+    <!-- Game Footer -->
+    <div class="game-footer">
+        <!-- Home Button -->
+        <a href="../../games.html" class="home-button">
+            <i class="bi bi-arrow-left-circle-fill"></i>
+            <span data-translate="nav.games">Jeux</span>
+        </a>
+
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-globe"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -360,17 +416,20 @@
     <script>
         const translations = {
             fr: {
-                'game.title': '⬡ Super Hexagon',
-                'game.description': 'Évitez les murs qui se rapprochent ! Un jeu de réflexes extrême.',
-                'game.controls': 'Utilisez ← → ou A D pour tourner, ESPACE pour commencer',
-                'game.score': 'Score: ',
-                'game.time': 'Temps: ',
+                'nav.home': 'Retour',
+                'nav.games': 'Jeux',
+                'game.title': '⬡ SUPER HEXAGON',
+                'game.description': 'Évitez les murs qui se rapprochent. Survivez le plus longtemps possible.',
+                'game.controls': '← → ou A D pour tourner • ESPACE pour commencer',
+                'game.score': 'Score',
+                'game.time': 'Temps',
                 'game.start': 'Commencer',
                 'game.restart': 'Redémarrer',
-                'game.gameover': 'Jeu Terminé !',
+                'game.menu': 'Menu',
+                'game.gameover': 'JEU TERMINÉ',
                 'game.finalScore': 'Score final: ',
                 'game.finalTime': 'Temps final: ',
-                'game.newRecord': 'Nouveau record !',
+                'game.newRecord': '🏆 NOUVEAU RECORD ! 🏆',
                 'game.difficulty.begin': 'Commencer',
                 'game.difficulty.hard': 'Difficile', 
                 'game.difficulty.harder': 'Plus Difficile',
@@ -378,17 +437,20 @@
                 'game.difficulty.hardestCongrats': 'Félicitations ! Niveau maximum atteint !'
             },
             en: {
-                'game.title': '⬡ Super Hexagon',
-                'game.description': 'Avoid the approaching walls! An extreme reflex game.',
-                'game.controls': 'Use ← → or A D to rotate, SPACE to start',
-                'game.score': 'Score: ',
-                'game.time': 'Time: ',
+                'nav.home': 'Back',
+                'nav.games': 'Games',
+                'game.title': '⬡ SUPER HEXAGON',
+                'game.description': 'Avoid the approaching walls. Survive as long as possible.',
+                'game.controls': '← → or A D to rotate • SPACE to start',
+                'game.score': 'Score',
+                'game.time': 'Time',
                 'game.start': 'Start',
                 'game.restart': 'Restart',
-                'game.gameover': 'Game Over!',
+                'game.menu': 'Menu',
+                'game.gameover': 'GAME OVER',
                 'game.finalScore': 'Final score: ',
                 'game.finalTime': 'Final time: ',
-                'game.newRecord': 'New record!',
+                'game.newRecord': '🏆 NEW RECORD! 🏆',
                 'game.difficulty.begin': 'Begin',
                 'game.difficulty.hard': 'Hard',
                 'game.difficulty.harder': 'Harder',
@@ -396,17 +458,20 @@
                 'game.difficulty.hardestCongrats': 'Congratulations! Maximum level reached!'
             },
             pt: {
-                'game.title': '⬡ Super Hexagon',
-                'game.description': 'Evite as paredes que se aproximam! Um jogo de reflexos extremo.',
-                'game.controls': 'Use ← → ou A D para girar, ESPAÇO para começar',
-                'game.score': 'Pontuação: ',
-                'game.time': 'Tempo: ',
+                'nav.home': 'Voltar',
+                'nav.games': 'Jogos',
+                'game.title': '⬡ SUPER HEXAGON',
+                'game.description': 'Evite as paredes que se aproximam. Sobreviva o máximo possível.',
+                'game.controls': '← → ou A D para girar • ESPAÇO para começar',
+                'game.score': 'Pontuação',
+                'game.time': 'Tempo',
                 'game.start': 'Começar',
                 'game.restart': 'Reiniciar',
-                'game.gameover': 'Fim de Jogo!',
+                'game.menu': 'Menu',
+                'game.gameover': 'FIM DE JOGO',
                 'game.finalScore': 'Pontuação final: ',
                 'game.finalTime': 'Tempo final: ',
-                'game.newRecord': 'Novo recorde!',
+                'game.newRecord': '🏆 NOVO RECORDE! 🏆',
                 'game.difficulty.begin': 'Começar',
                 'game.difficulty.hard': 'Difícil',
                 'game.difficulty.harder': 'Mais Difícil',

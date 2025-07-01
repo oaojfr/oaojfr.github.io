@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Breakout Modern - João</title>
-    <meta name="description" content="Jeu Breakout moderne avec effets visuels et power-ups">
+    <title>Breakout - João</title>
+    <meta name="description" content="Jeu Breakout avec effets visuels et power-ups">
     <meta name="keywords" content="breakout, jeu arcade, briques, power-ups, javascript">
     <meta name="author" content="João">
     <meta name="robots" content="index, follow">
@@ -100,53 +100,62 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            padding: 20px;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 102, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(153, 51, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 255, 0, 0.05) 0%, transparent 50%);
         }
 
         #gameCanvas {
             border: 3px solid var(--neon-orange);
             border-radius: 15px;
             box-shadow: 
-                0 0 30px var(--neon-orange),
-                inset 0 0 30px rgba(255, 102, 0, 0.1);
-            background: rgba(0, 0, 0, 0.5);
+                0 0 50px var(--neon-orange),
+                inset 0 0 50px rgba(255, 102, 0, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
         }
 
-        .menu-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+        .game-footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            z-index: 100;
+            border-top: 2px solid var(--neon-orange);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 9999;
         }
 
-        .menu-title {
-            font-size: 4rem;
-            font-weight: 900;
-            margin-bottom: 2rem;
-            background: linear-gradient(45deg, var(--neon-orange), var(--neon-purple), var(--neon-yellow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite alternate;
+        .home-button {
+            background: transparent;
+            border: 2px solid var(--neon-orange);
+            color: var(--neon-orange);
+            padding: 10px 15px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
         }
 
-        @keyframes glow {
-            from { filter: drop-shadow(0 0 5px var(--neon-orange)); }
-            to { filter: drop-shadow(0 0 20px var(--neon-purple)); }
+        .home-button:hover {
+            background: var(--neon-orange);
+            color: var(--dark-bg);
+            box-shadow: 0 0 25px var(--neon-orange);
+            text-decoration: none;
         }
 
         .btn-neon {
             background: transparent;
             border: 2px solid var(--neon-orange);
             color: var(--neon-orange);
-            padding: 15px 40px;
+            padding: 12px 30px;
+            border-radius: 50px;
             font-size: 1.2rem;
             font-weight: 700;
             font-family: 'Orbitron', monospace;
@@ -205,148 +214,209 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 50;
+            flex-direction: column;
+            z-index: 1000;
         }
 
-        .pause-content {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 40px;
-            border-radius: 15px;
-            border: 2px solid var(--neon-orange);
-        }
-
-        .game-over-overlay {
+        .menu-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 200;
+            flex-direction: column;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
-        .game-over-content {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 50px;
-            border-radius: 20px;
-            border: 3px solid var(--neon-purple);
-            box-shadow: 0 0 50px var(--neon-purple);
-        }
-
-        .result-text {
-            font-size: 3rem;
+        .menu-title {
+            font-size: 4rem;
             font-weight: 900;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-yellow));
+            background: linear-gradient(45deg, var(--neon-orange), var(--neon-purple), var(--neon-yellow));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 30px var(--neon-orange);
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
         }
 
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--neon-orange);
+        .menu-description {
+            font-size: 1.3rem;
+            color: var(--neon-yellow);
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .language-selector {
+            z-index: 9999;
+        }
+
+        .dropdown-menu {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--neon-orange);
+            border-radius: 10px;
+        }
+
+        .dropdown-item {
             color: var(--neon-orange);
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
             transition: all 0.3s ease;
-            z-index: 1000;
         }
 
-        .back-btn:hover {
+        .dropdown-item:hover {
             background: var(--neon-orange);
             color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-orange);
         }
 
-        .powerup-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px 15px;
-            border-radius: 10px;
-            border: 1px solid var(--neon-purple);
-            font-size: 0.9rem;
-            opacity: 0;
+        .dropdown-toggle {
+            background: transparent;
+            border: 2px solid var(--neon-orange);
+            color: var(--neon-orange);
             transition: all 0.3s ease;
         }
 
-        .powerup-indicator.active {
-            opacity: 1;
-            animation: pulse 1s ease-in-out infinite;
+        .dropdown-toggle:hover,
+        .dropdown-toggle:focus {
+            background: var(--neon-orange);
+            color: var(--dark-bg);
+            border-color: var(--neon-orange);
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px var(--neon-orange); }
+            50% { text-shadow: 0 0 40px var(--neon-orange), 0 0 60px var(--neon-purple); }
+        }
+
+        .game-title {
+            animation: glow 3s infinite;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .game-title { font-size: 1.5rem; }
-            .game-stats { font-size: 1rem; gap: 20px; }
-            .menu-title { font-size: 2.5rem; }
-            .btn-neon { padding: 12px 30px; font-size: 1rem; }
+            .game-header {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .game-footer {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .game-stats {
+                gap: 20px;
+                font-size: 1rem;
+            }
+
+            .menu-title {
+                font-size: 2.5rem;
+            }
+
+            .menu-description {
+                font-size: 1rem;
+                padding: 0 20px;
+            }
+
+            #gameCanvas {
+                max-width: 90vw;
+                height: auto;
+            }
+
+            .home-button {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
+
+            .dropdown-toggle {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid h-100 d-flex flex-column">
-        <!-- Navbar -->
-        <nav class="navbar">
-            <div class="container-fluid">
-                <div class="navbar-brand d-flex align-items-center">
-                    <a href="../../index.html" class="text-decoration-none me-3" title="Retour à l'accueil">
-                        <i class="bi bi-house-fill fs-4"></i>
-                    </a>
-                    <span data-translate="game.title">🧱 Breakout Moderne</span>
-                </div>
-                
-                <!-- Language Selector -->
-                <div class="dropdown me-3">
-                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-globe"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
-                    </ul>
-                </div>
+    <!-- Game Header -->
+    <div class="game-header">
+        <div class="game-title" data-translate="game.title">🧱 BREAKOUT</div>
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.score">Score</div>
+                <div class="stat-value" id="scoreDisplay">0</div>
             </div>
-        </nav>
-
-        <!-- Game Info -->
-        <div class="game-info text-center p-3">
-            <h1 class="game-title mb-2" data-translate="game.title">🧱 Breakout Moderne</h1>
-            <p class="game-description" data-translate="game.description">Cassez toutes les briques pour gagner ! Collectez les power-ups pour des bonus spéciaux.</p>
-            <div class="controls-info mb-3">
-                <small data-translate="game.controls">Utilisez votre souris pour déplacer la raquette ou les touches ← → ou A D</small>
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.level">Niveau</div>
+                <div class="stat-value" id="levelDisplay">1</div>
             </div>
-            <div class="score-display mb-2">
-                <span data-translate="game.score">Score: </span><span id="score">0</span> | 
-                <span data-translate="game.lives">Vies: </span><span id="lives">3</span> | 
-                <span data-translate="game.level">Niveau: </span><span id="level">1</span>
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.lives">Vies</div>
+                <div class="stat-value" id="livesDisplay">3</div>
             </div>
-            <button id="startButton" class="btn btn-neon me-2" data-translate="game.start">Démarrer</button>
-            <button id="pauseButton" class="btn btn-neon" data-translate="game.pause">Pause</button>
         </div>
+    </div>
 
-        <!-- Game Canvas -->
-        <div class="game-container">
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <!-- Game Container -->
+    <div class="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <!-- Menu Overlay -->
+        <div class="menu-overlay" id="menuOverlay">
+            <div class="menu-title" data-translate="game.title">🧱 BREAKOUT</div>
+            <div class="menu-description" data-translate="game.description">
+                Cassez toutes les briques avec la balle. Récupérez les bonus qui tombent.
+            </div>
+            <button class="btn-neon" onclick="game.startGame()" data-translate="game.start">Démarrer</button>
+        </div>
+        
+        <!-- Pause Overlay -->
+        <div class="pause-overlay" id="pauseOverlay">
+            <div class="menu-title" data-translate="game.paused">PAUSE</div>
+            <button class="btn-neon" onclick="game.resumeGame()" data-translate="game.resume">Reprendre</button>
+            <button class="btn-neon" onclick="game.restartGame()" data-translate="game.restart">Redémarrer</button>
+        </div>
+        
+        <!-- Controls Info -->
+        <div class="controls-info" data-translate="game.controls">
+            Souris pour déplacer la raquette • ESPACE pour pause • R pour redémarrer
+        </div>
+    </div>
+
+    <!-- Game Footer -->
+    <div class="game-footer">
+        <!-- Home Button -->
+        <a href="../../games.html" class="home-button">
+            <i class="bi bi-arrow-left-circle-fill"></i>
+            <span data-translate="nav.games">Jeux</span>
+        </a>
+
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-globe"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -357,19 +427,23 @@
     <script>
         const translations = {
             fr: {
-                'game.title': '🧱 Breakout Moderne',
-                'game.description': 'Cassez toutes les briques pour gagner ! Collectez les power-ups pour des bonus spéciaux.',
-                'game.controls': 'Utilisez votre souris pour déplacer la raquette ou les touches ← → ou A D',
-                'game.score': 'Score: ',
-                'game.lives': 'Vies: ',
-                'game.level': 'Niveau: ',
+                'nav.home': 'Retour',
+                'nav.games': 'Jeux',
+                'game.title': '🧱 BREAKOUT',
+                'game.description': 'Cassez toutes les briques avec la balle. Récupérez les bonus qui tombent.',
+                'game.controls': 'Souris pour déplacer la raquette • ESPACE pour pause • R pour redémarrer',
+                'game.score': 'Score',
+                'game.lives': 'Vies',
+                'game.level': 'Niveau',
                 'game.start': 'Démarrer',
                 'game.pause': 'Pause',
+                'game.paused': 'PAUSE',
                 'game.resume': 'Reprendre',
                 'game.restart': 'Redémarrer',
                 'game.gameover': 'Jeu Terminé !',
                 'game.victory': 'Victoire !',
                 'game.finalScore': 'Score final: ',
+                'game.newRecord': 'Nouveau record !',
                 'game.powerups.title': 'Power-ups disponibles:',
                 'game.powerups.wider': 'Raquette Plus Large',
                 'game.powerups.faster': 'Balle Plus Rapide',
@@ -377,19 +451,23 @@
                 'game.powerups.points': 'Points Bonus'
             },
             en: {
-                'game.title': '🧱 Modern Breakout',
-                'game.description': 'Break all the bricks to win! Collect power-ups for special bonuses.',
-                'game.controls': 'Use your mouse to move the paddle or ← → or A D keys',
-                'game.score': 'Score: ',
-                'game.lives': 'Lives: ',
-                'game.level': 'Level: ',
+                'nav.home': 'Back',
+                'nav.games': 'Games',
+                'game.title': '🧱 BREAKOUT',
+                'game.description': 'Break all the bricks with the ball. Catch the falling power-ups.',
+                'game.controls': 'Mouse to move paddle • SPACE to pause • R to restart',
+                'game.score': 'Score',
+                'game.lives': 'Lives',
+                'game.level': 'Level',
                 'game.start': 'Start',
                 'game.pause': 'Pause',
+                'game.paused': 'PAUSED',
                 'game.resume': 'Resume',
                 'game.restart': 'Restart',
                 'game.gameover': 'Game Over!',
                 'game.victory': 'Victory!',
                 'game.finalScore': 'Final score: ',
+                'game.newRecord': 'New record!',
                 'game.powerups.title': 'Available power-ups:',
                 'game.powerups.wider': 'Wider Paddle',
                 'game.powerups.faster': 'Faster Ball',
@@ -397,19 +475,23 @@
                 'game.powerups.points': 'Bonus Points'
             },
             pt: {
-                'game.title': '🧱 Breakout Moderno',
-                'game.description': 'Quebre todos os tijolos para ganhar! Colete power-ups para bônus especiais.',
-                'game.controls': 'Use o mouse para mover a raquete ou as teclas ← → ou A D',
-                'game.score': 'Pontuação: ',
-                'game.lives': 'Vidas: ',
-                'game.level': 'Nível: ',
+                'nav.home': 'Voltar',
+                'nav.games': 'Jogos',
+                'game.title': '🧱 BREAKOUT',
+                'game.description': 'Quebre todos os tijolos com a bola. Pegue os power-ups que caem.',
+                'game.controls': 'Mouse para mover a raquete • ESPAÇO para pausar • R para reiniciar',
+                'game.score': 'Pontuação',
+                'game.lives': 'Vidas',
+                'game.level': 'Nível',
                 'game.start': 'Iniciar',
                 'game.pause': 'Pausar',
+                'game.paused': 'PAUSADO',
                 'game.resume': 'Continuar',
                 'game.restart': 'Reiniciar',
                 'game.gameover': 'Fim de Jogo!',
                 'game.victory': 'Vitória!',
                 'game.finalScore': 'Pontuação final: ',
+                'game.newRecord': 'Novo recorde!',
                 'game.powerups.title': 'Power-ups disponíveis:',
                 'game.powerups.wider': 'Raquete Mais Larga',
                 'game.powerups.faster': 'Bola Mais Rápida',

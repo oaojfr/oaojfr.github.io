@@ -1077,6 +1077,12 @@ function restartGame() {
     }
 }
 
+function restart() {
+    if (window.game) {
+        window.game.restartGame();
+    }
+}
+
 function showMenu() {
     if (window.game) {
         window.game.showMenu();

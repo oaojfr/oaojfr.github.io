@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
-    <title>Pong Cyberpunk - João</title>
-    <meta name="description" content="Jeu Pong moderne avec style cyberpunk et IA avancée">
+    <title>Pong - João</title>
+    <meta name="description" content="Jeu Pong classique avec style cyberpunk">
     <meta name="keywords" content="pong, jeu rétro, cyberpunk, neon, javascript">
     <meta name="author" content="João">
     <meta name="robots" content="index, follow">
@@ -256,27 +256,72 @@
             background-clip: text;
         }
 
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--neon-cyan);
+        .game-footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid var(--neon-cyan);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 9999;
+        }
+
+        .home-button {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
             color: var(--neon-cyan);
             padding: 10px 15px;
-            border-radius: 5px;
+            border-radius: 50px;
             text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 10px;
-            transition: all 0.3s ease;
-            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
-        .back-button:hover {
+        .home-button:hover {
             background: var(--neon-cyan);
             color: var(--dark-bg);
-            box-shadow: 0 0 20px var(--neon-cyan);
+            box-shadow: 0 0 25px var(--neon-cyan);
+            text-decoration: none;
+        }
+
+        .language-selector {
+            z-index: 9999;
+        }
+
+        .dropdown-menu {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+        }
+
+        .dropdown-item {
+            color: var(--neon-cyan);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+        }
+
+        .dropdown-toggle {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-toggle:hover,
+        .dropdown-toggle:focus {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            border-color: var(--neon-cyan);
         }
 
         /* Responsive */
@@ -285,28 +330,26 @@
             .game-stats { font-size: 1.2rem; gap: 20px; }
             .menu-title { font-size: 2.5rem; }
             .btn-neon { padding: 12px 30px; font-size: 1rem; }
+            
+            .game-footer {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .home-button {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
+
+            .dropdown-toggle {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <a href="../../games.html" class="back-button">
-        <i class="bi bi-arrow-left"></i> <span data-translate="back">Retour</span>
-    </a>
-
-    <!-- Language Selector -->
-    <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
-        <div class="dropdown">
-            <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" style="background: rgba(0,0,0,0.7); border-color: var(--neon-cyan);">
-                <i class="bi bi-globe"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
-                <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
-                <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
-            </ul>
-        </div>
-    </div>
-
     <div class="game-header">
         <div class="game-title">🏓 PONG</div>
         <div class="game-stats">
@@ -333,9 +376,6 @@
                 </button>
                 <button class="btn-neon" onclick="startGame('human')">
                     <i class="bi bi-people"></i> <span data-translate="twoPlayers">2 JOUEURS</span>
-                </button>
-                <button class="btn-neon" onclick="window.location.href='../../games.html'">
-                    <i class="bi bi-arrow-left"></i> <span data-translate="backToGames">RETOUR AUX JEUX</span>
                 </button>
             </div>
         </div>
@@ -366,6 +406,29 @@
         </div>
     </div>
 
+    <!-- Game Footer -->
+    <div class="game-footer">
+        <!-- Home Button -->
+        <a href="../../games.html" class="home-button">
+            <i class="bi bi-arrow-left-circle-fill"></i>
+            <span data-translate="nav.games">Jeux</span>
+        </a>
+
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-globe"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -374,11 +437,11 @@
         const translations = {
             fr: {
                 'back': 'Retour',
+                'nav.games': 'Jeux',
                 'player1': 'JOUEUR 1',
                 'player2': 'JOUEUR 2',
                 'singlePlayer': '1 JOUEUR (vs IA)',
                 'twoPlayers': '2 JOUEURS',
-                'backToGames': 'RETOUR AUX JEUX',
                 'pause': 'PAUSE',
                 'resume': 'REPRENDRE',
                 'menu': 'MENU',
@@ -389,11 +452,11 @@
             },
             en: {
                 'back': 'Back',
+                'nav.games': 'Games',
                 'player1': 'PLAYER 1',
                 'player2': 'PLAYER 2',
                 'singlePlayer': '1 PLAYER (vs AI)',
                 'twoPlayers': '2 PLAYERS',
-                'backToGames': 'BACK TO GAMES',
                 'pause': 'PAUSE',
                 'resume': 'RESUME',
                 'menu': 'MENU',
@@ -404,11 +467,11 @@
             },
             pt: {
                 'back': 'Voltar',
+                'nav.games': 'Jogos',
                 'player1': 'JOGADOR 1',
                 'player2': 'JOGADOR 2',
                 'singlePlayer': '1 JOGADOR (vs IA)',
                 'twoPlayers': '2 JOGADORES',
-                'backToGames': 'VOLTAR AOS JOGOS',
                 'pause': 'PAUSAR',
                 'resume': 'CONTINUAR',
                 'menu': 'MENU',
