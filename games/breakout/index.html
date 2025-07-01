@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Breakout Modern - João</title>
     <meta name="description" content="Jeu Breakout moderne avec effets visuels et power-ups">
+    <meta name="keywords" content="breakout, jeu arcade, briques, power-ups, javascript">
+    <meta name="author" content="João">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="fr">
+    
+    <!-- Alternate language versions -->
+    <link rel="alternate" href="../../games/breakout/index.html" hreflang="fr">
+    <link rel="alternate" href="../../games/breakout/index.html" hreflang="en">
+    <link rel="alternate" href="../../games/breakout/index.html" hreflang="pt">
+    <link rel="alternate" href="../../games/breakout/index.html" hreflang="x-default">
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧱</text></svg>">
@@ -293,79 +303,149 @@
     </style>
 </head>
 <body>
-    <a href="../../games.html" class="back-btn">
-        <i class="bi bi-arrow-left"></i>
-        <span>Retour</span>
-    </a>
-
-    <div class="powerup-indicator" id="powerupIndicator">
-        <i class="bi bi-lightning"></i>
-        <span id="powerupText">POWER-UP ACTIF!</span>
-    </div>
-
-    <div class="game-header">
-        <div class="game-title">BREAKOUT</div>
-        <div class="game-stats">
-            <div class="stat-item">
-                <div class="stat-label">SCORE</div>
-                <div class="stat-value" id="scoreValue">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">NIVEAU</div>
-                <div class="stat-value" id="levelValue">1</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">VIES</div>
-                <div class="stat-value" id="livesValue">3</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">BRIQUES</div>
-                <div class="stat-value" id="bricksValue">0</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="game-container">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-
-        <!-- Menu Principal -->
-        <div class="menu-overlay" id="menuOverlay">
-            <div class="menu-title">BREAKOUT</div>
-            <div>
-                <button class="btn-neon" onclick="startGame()">
-                    <i class="bi bi-play-fill"></i> JOUER
-                </button>
-                <button class="btn-neon" onclick="showInstructions()">
-                    <i class="bi bi-question-circle"></i> INSTRUCTIONS
-                </button>
-            </div>
-        </div>
-
-        <!-- Pause -->
-        <div class="pause-overlay" id="pauseOverlay">
-            <div class="pause-content">
-                <h2 style="color: var(--neon-orange); margin-bottom: 20px;">PAUSE</h2>
-                <button class="btn-neon" onclick="resumeGame()">REPRENDRE</button>
-            </div>
-        </div>
-
-        <!-- Game Over -->
-        <div class="game-over-overlay" id="gameOverOverlay">
-            <div class="game-over-content">
-                <div class="result-text" id="resultText">GAME OVER!</div>
-                <p style="font-size: 1.2rem; margin-bottom: 30px; color: var(--neon-orange);" id="finalStatsText"></p>
-                <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn-neon" onclick="restartGame()">REJOUER</button>
-                    <button class="btn-neon" onclick="showMenu()">MENU</button>
+    <div class="container-fluid h-100 d-flex flex-column">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="container-fluid">
+                <div class="navbar-brand d-flex align-items-center">
+                    <a href="../../index.html" class="text-decoration-none me-3" title="Retour à l'accueil">
+                        <i class="bi bi-house-fill fs-4"></i>
+                    </a>
+                    <span data-translate="game.title">🧱 Breakout Moderne</span>
+                </div>
+                
+                <!-- Language Selector -->
+                <div class="dropdown me-3">
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-globe"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
+                    </ul>
                 </div>
             </div>
+        </nav>
+
+        <!-- Game Info -->
+        <div class="game-info text-center p-3">
+            <h1 class="game-title mb-2" data-translate="game.title">🧱 Breakout Moderne</h1>
+            <p class="game-description" data-translate="game.description">Cassez toutes les briques pour gagner ! Collectez les power-ups pour des bonus spéciaux.</p>
+            <div class="controls-info mb-3">
+                <small data-translate="game.controls">Utilisez votre souris pour déplacer la raquette ou les touches ← → ou A D</small>
+            </div>
+            <div class="score-display mb-2">
+                <span data-translate="game.score">Score: </span><span id="score">0</span> | 
+                <span data-translate="game.lives">Vies: </span><span id="lives">3</span> | 
+                <span data-translate="game.level">Niveau: </span><span id="level">1</span>
+            </div>
+            <button id="startButton" class="btn btn-neon me-2" data-translate="game.start">Démarrer</button>
+            <button id="pauseButton" class="btn btn-neon" data-translate="game.pause">Pause</button>
         </div>
 
-        <div class="controls-info">
-            <strong>Contrôles:</strong> Souris pour déplacer la raquette | ESPACE: Pause | Collectez les power-ups!
+        <!-- Game Canvas -->
+        <div class="game-container">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Translations -->
+    <script>
+        const translations = {
+            fr: {
+                'game.title': '🧱 Breakout Moderne',
+                'game.description': 'Cassez toutes les briques pour gagner ! Collectez les power-ups pour des bonus spéciaux.',
+                'game.controls': 'Utilisez votre souris pour déplacer la raquette ou les touches ← → ou A D',
+                'game.score': 'Score: ',
+                'game.lives': 'Vies: ',
+                'game.level': 'Niveau: ',
+                'game.start': 'Démarrer',
+                'game.pause': 'Pause',
+                'game.resume': 'Reprendre',
+                'game.restart': 'Redémarrer',
+                'game.gameover': 'Jeu Terminé !',
+                'game.victory': 'Victoire !',
+                'game.finalScore': 'Score final: ',
+                'game.powerups.title': 'Power-ups disponibles:',
+                'game.powerups.wider': 'Raquette Plus Large',
+                'game.powerups.faster': 'Balle Plus Rapide',
+                'game.powerups.multiball': 'Multi-Balle',
+                'game.powerups.points': 'Points Bonus'
+            },
+            en: {
+                'game.title': '🧱 Modern Breakout',
+                'game.description': 'Break all the bricks to win! Collect power-ups for special bonuses.',
+                'game.controls': 'Use your mouse to move the paddle or ← → or A D keys',
+                'game.score': 'Score: ',
+                'game.lives': 'Lives: ',
+                'game.level': 'Level: ',
+                'game.start': 'Start',
+                'game.pause': 'Pause',
+                'game.resume': 'Resume',
+                'game.restart': 'Restart',
+                'game.gameover': 'Game Over!',
+                'game.victory': 'Victory!',
+                'game.finalScore': 'Final score: ',
+                'game.powerups.title': 'Available power-ups:',
+                'game.powerups.wider': 'Wider Paddle',
+                'game.powerups.faster': 'Faster Ball',
+                'game.powerups.multiball': 'Multi-Ball',
+                'game.powerups.points': 'Bonus Points'
+            },
+            pt: {
+                'game.title': '🧱 Breakout Moderno',
+                'game.description': 'Quebre todos os tijolos para ganhar! Colete power-ups para bônus especiais.',
+                'game.controls': 'Use o mouse para mover a raquete ou as teclas ← → ou A D',
+                'game.score': 'Pontuação: ',
+                'game.lives': 'Vidas: ',
+                'game.level': 'Nível: ',
+                'game.start': 'Iniciar',
+                'game.pause': 'Pausar',
+                'game.resume': 'Continuar',
+                'game.restart': 'Reiniciar',
+                'game.gameover': 'Fim de Jogo!',
+                'game.victory': 'Vitória!',
+                'game.finalScore': 'Pontuação final: ',
+                'game.powerups.title': 'Power-ups disponíveis:',
+                'game.powerups.wider': 'Raquete Mais Larga',
+                'game.powerups.faster': 'Bola Mais Rápida',
+                'game.powerups.multiball': 'Multi-Bola',
+                'game.powerups.points': 'Pontos Bônus'
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('language') || 'fr';
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLanguage] && translations[currentLanguage][key]) {
+                    element.textContent = translations[currentLanguage][key];
+                }
+            });
+            
+            // Update document language
+            document.documentElement.lang = currentLanguage;
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+        });
+    </script>
+    
+    <!-- Game Script -->
     <script src="breakout.js"></script>
 </body>
 </html>
