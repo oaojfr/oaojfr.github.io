@@ -42,6 +42,20 @@ class Breakout3D {
         this.clock = new THREE.Clock();
         
         this.initThreeJS();
+        this.startGame();
+    }
+    
+    startGame() {
+        // Masquer l'écran de chargement et afficher le HUD
+        setTimeout(() => {
+            if (this.loading) {
+                this.loading.style.display = 'none';
+            }
+            if (this.hud) {
+                this.hud.style.display = 'block';
+            }
+            this.gameState = 'playing';
+        }, 1500);
     }
     
     initThreeJS() {

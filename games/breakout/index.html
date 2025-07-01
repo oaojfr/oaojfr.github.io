@@ -168,6 +168,34 @@
         .theme-switch:hover {
             background: rgba(0, 0, 0, 0.7);
         }
+        
+        #multiplier {
+            transition: all 0.3s ease;
+            transform: translateX(-50%) scale(0.8);
+        }
+        
+        #multiplier.show {
+            transform: translateX(-50%) scale(1.2);
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1.2); }
+            50% { transform: translateX(-50%) scale(1.4); }
+        }
+        
+        #loading {
+            background: linear-gradient(135deg, #000033, #000066);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            animation: loadingPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -180,17 +208,34 @@
     </button>
 
     <div class="game-container">
-        <canvas id="breakoutCanvas" width="800" height="600"></canvas>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
         
-        <div class="game-ui">
-            <div class="score-display">
-                Score: <span id="score">0</span>
+        <!-- Loading Screen -->
+        <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; text-align: center; display: block;">
+            <div style="font-size: 2em; margin-bottom: 20px;">🚀</div>
+            <div style="font-size: 1.5em; margin-bottom: 10px;">Chargement de Breakout 3D...</div>
+            <div style="font-size: 1em; opacity: 0.8;">Initialisation des graphismes AAA...</div>
+        </div>
+        
+        <!-- HUD -->
+        <div id="hud" class="game-ui" style="display: none;">
+            <div class="score-display" style="display: flex; gap: 20px; padding: 10px 20px;">
+                <span>Score: <span id="score">0</span></span>
+                <span>Niveau: <span id="level">1</span></span>
+                <span>Vies: <span id="lives">3</span></span>
+                <span>Combo: <span id="combo">0</span></span>
+                <span>Briques: <span id="bricks">0</span></span>
+            </div>
+            
+            <!-- Multiplicateur -->
+            <div id="multiplier" style="position: absolute; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(255, 215, 0, 0.9); color: black; padding: 5px 15px; border-radius: 15px; font-weight: bold; display: none;">
+                Multiplicateur x<span id="multiplierValue">1</span>
             </div>
         </div>
         
         <div class="game-message" id="gameMessage">
             <h2 id="messageTitle">Game Over !</h2>
-            <p>Score final: <span id="finalScore">0</span></p>
+            <p id="messageText">Score final: <span id="finalScore">0</span></p>
             <button id="restartBtn">Rejouer</button>
         </div>
         
