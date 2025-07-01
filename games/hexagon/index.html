@@ -340,17 +340,17 @@
                     Choisissez votre difficulté:
                 </div>
                 <div class="difficulty-selector">
-                    <button class="difficulty-btn active" onclick="selectDifficulty('easy')" id="easyBtn">
-                        FACILE
+                    <button class="difficulty-btn" data-difficulty="easy" onclick="selectDifficulty('easy')">
+                        HEXAGON
                     </button>
-                    <button class="difficulty-btn" onclick="selectDifficulty('normal')" id="normalBtn">
-                        NORMAL
+                    <button class="difficulty-btn active" data-difficulty="normal" onclick="selectDifficulty('normal')">
+                        HEXAGONER
                     </button>
-                    <button class="difficulty-btn" onclick="selectDifficulty('hard')" id="hardBtn">
-                        DIFFICILE
+                    <button class="difficulty-btn" data-difficulty="hard" onclick="selectDifficulty('hard')">
+                        HEXAGONEST
                     </button>
-                    <button class="difficulty-btn" onclick="selectDifficulty('insane')" id="insaneBtn">
-                        DÉMENT
+                    <button class="difficulty-btn" data-difficulty="insane" onclick="selectDifficulty('insane')">
+                        HYPER HEXAGONEST
                     </button>
                 </div>
                 <button class="btn-neon" onclick="startGame()">

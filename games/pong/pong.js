@@ -3,14 +3,22 @@
  * Modes 1 joueur (vs IA) et 2 joueurs avec design cyberpunk
  */
 
+console.log('Starting Pong script load...');
+
 class PongGame {
     constructor() {
+        console.log('Creating PongGame instance...');
         this.canvas = document.getElementById('gameCanvas');
+        if (!this.canvas) {
+            console.error('Canvas not found!');
+            return;
+        }
+        
         this.ctx = this.canvas.getContext('2d');
         
         // État du jeu
-        this.gameState = 'menu'; // menu, playing, paused, gameOver
-        this.gameMode = 'ai'; // ai ou human
+        this.gameState = 'menu';
+        this.gameMode = 'ai';
         this.score = { player1: 0, player2: 0 };
         this.winningScore = 5;
         
@@ -20,6 +28,10 @@ class PongGame {
         this.PADDLE_SPEED = 8;
         this.BALL_SIZE = 12;
         this.MAX_BALL_SPEED = 10;
+        
+        // Initialiser les dimensions
+        this.canvas.width = 800;
+        this.canvas.height = 500;
         
         // Joueurs
         this.player1 = {
@@ -34,7 +46,7 @@ class PongGame {
             y: this.canvas.height / 2 - this.PADDLE_HEIGHT / 2,
             dy: 0,
             name: 'JOUEUR 2',
-            aiDifficulty: 0.08 // Vitesse de l'IA
+            aiDifficulty: 0.08
         };
         
         // Balle
@@ -58,30 +70,10 @@ class PongGame {
     }
     
     initializeGame() {
-        console.log('Initializing Pong game...'); // Debug
+        console.log('Initializing game...');
         this.setupEventListeners();
-        this.resizeCanvas();
         this.updateScoreDisplay();
-        window.addEventListener('resize', () => this.resizeCanvas());
         this.gameLoop();
-        console.log('Pong game initialized successfully'); // Debug
-    }
-    
-    resizeCanvas() {
-        const container = this.canvas.parentElement;
-        const rect = container.getBoundingClientRect();
-        const maxWidth = Math.min(800, rect.width - 40);
-        const maxHeight = Math.min(500, rect.height - 40);
-        
-        this.canvas.width = maxWidth;
-        this.canvas.height = maxHeight;
-        
-        // Repositionner les éléments
-        this.player1.y = this.canvas.height / 2 - this.PADDLE_HEIGHT / 2;
-        this.player2.x = this.canvas.width - 30 - this.PADDLE_WIDTH;
-        this.player2.y = this.canvas.height / 2 - this.PADDLE_HEIGHT / 2;
-        this.ball.x = this.canvas.width / 2;
-        this.ball.y = this.canvas.height / 2;
     }
     
     setupEventListeners() {
@@ -96,13 +88,6 @@ class PongGame {
                     this.resumeGame();
                 }
             }
-            
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                if (this.gameState === 'playing') {
-                    this.pauseGame();
-                }
-            }
         });
         
         document.addEventListener('keyup', (e) => {
@@ -111,12 +96,11 @@ class PongGame {
     }
     
     startGame(mode) {
-        console.log('Starting game with mode:', mode); // Debug
+        console.log('Starting game with mode:', mode);
         this.gameMode = mode;
         this.gameState = 'playing';
         this.score = { player1: 0, player2: 0 };
         
-        // Mise à jour des noms
         this.player1.name = 'JOUEUR 1';
         this.player2.name = mode === 'ai' ? 'IA' : 'JOUEUR 2';
         
@@ -124,13 +108,11 @@ class PongGame {
         this.resetPaddles();
         this.hideAllOverlays();
         this.updateScoreDisplay();
-        
-        console.log('Game started successfully with mode:', mode); // Debug
     }
     
     pauseGame() {
         this.gameState = 'paused';
-        document.getElementById('pauseOverlay').style.display = 'flex';
+        this.showOverlay('pauseOverlay');
     }
     
     resumeGame() {
@@ -145,13 +127,24 @@ class PongGame {
     showMenu() {
         this.gameState = 'menu';
         this.hideAllOverlays();
-        document.getElementById('menuOverlay').style.display = 'flex';
+        this.showOverlay('menuOverlay');
+    }
+    
+    showOverlay(id) {
+        const overlay = document.getElementById(id);
+        if (overlay) {
+            overlay.style.display = 'flex';
+        }
     }
     
     hideAllOverlays() {
-        document.getElementById('menuOverlay').style.display = 'none';
-        document.getElementById('pauseOverlay').style.display = 'none';
-        document.getElementById('gameOverOverlay').style.display = 'none';
+        const overlays = ['menuOverlay', 'pauseOverlay', 'gameOverOverlay'];
+        overlays.forEach(id => {
+            const overlay = document.getElementById(id);
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        });
     }
     
     resetBall() {
@@ -173,14 +166,13 @@ class PongGame {
         this.gameState = 'gameOver';
         
         const winnerText = winner === 1 ? this.player1.name : this.player2.name;
-        document.getElementById('winnerText').textContent = `${winnerText} GAGNE!`;
-        document.getElementById('finalScoreText').textContent = 
-            `Score final: ${this.score.player1} - ${this.score.player2}`;
+        const winnerEl = document.getElementById('winnerText');
+        const scoreEl = document.getElementById('finalScoreText');
         
-        document.getElementById('gameOverOverlay').style.display = 'flex';
+        if (winnerEl) winnerEl.textContent = winnerText + ' GAGNE!';
+        if (scoreEl) scoreEl.textContent = 'Score final: ' + this.score.player1 + ' - ' + this.score.player2;
         
-        this.createWinEffect(winner);
-        this.shakeScreen(15);
+        this.showOverlay('gameOverOverlay');
     }
     
     update() {
@@ -189,24 +181,22 @@ class PongGame {
         this.updatePaddles();
         this.updateBall();
         this.updateParticles();
-        this.updateEffects();
         this.checkCollisions();
         this.updateScoreDisplay();
     }
     
     updatePaddles() {
-        // Joueur 1 (Gauche)
+        // Joueur 1
         if (this.keys['w'] || this.keys['arrowup']) {
             this.player1.dy = -this.PADDLE_SPEED;
         } else if (this.keys['s'] || this.keys['arrowdown']) {
             this.player1.dy = this.PADDLE_SPEED;
         } else {
-            this.player1.dy *= 0.8; // Friction
+            this.player1.dy *= 0.8;
         }
         
         // Joueur 2 / IA
         if (this.gameMode === 'human') {
-            // Contrôles joueur 2
             if (this.keys['o']) {
                 this.player2.dy = -this.PADDLE_SPEED;
             } else if (this.keys['l']) {
@@ -215,29 +205,24 @@ class PongGame {
                 this.player2.dy *= 0.8;
             }
         } else {
-            // IA
+            // IA simple
             const ballCenter = this.ball.y;
             const paddleCenter = this.player2.y + this.PADDLE_HEIGHT / 2;
             const diff = ballCenter - paddleCenter;
-            
             this.player2.dy = diff * this.player2.aiDifficulty;
-            
-            // Limiter la vitesse de l'IA
-            this.player2.dy = Math.max(-this.PADDLE_SPEED * 0.8, 
-                Math.min(this.PADDLE_SPEED * 0.8, this.player2.dy));
+            this.player2.dy = Math.max(-this.PADDLE_SPEED * 0.8, Math.min(this.PADDLE_SPEED * 0.8, this.player2.dy));
         }
         
-        // Appliquer le mouvement et limites
+        // Appliquer mouvement et limites
         this.player1.y += this.player1.dy;
         this.player2.y += this.player2.dy;
         
-        // Limites
         this.player1.y = Math.max(0, Math.min(this.canvas.height - this.PADDLE_HEIGHT, this.player1.y));
         this.player2.y = Math.max(0, Math.min(this.canvas.height - this.PADDLE_HEIGHT, this.player2.y));
     }
     
     updateBall() {
-        // Ajouter au trail
+        // Trail
         this.ball.trail.push({ x: this.ball.x, y: this.ball.y });
         if (this.ball.trail.length > 8) {
             this.ball.trail.shift();
@@ -247,17 +232,14 @@ class PongGame {
         this.ball.x += this.ball.dx;
         this.ball.y += this.ball.dy;
         
-        // Rebonds sur les murs haut/bas
+        // Rebonds verticaux
         if (this.ball.y <= this.BALL_SIZE/2 || this.ball.y >= this.canvas.height - this.BALL_SIZE/2) {
             this.ball.dy = -this.ball.dy;
-            this.createBounceEffect(this.ball.x, this.ball.y);
-            this.shakeScreen(5);
         }
         
-        // Vérifier les scores
+        // Score
         if (this.ball.x < 0) {
             this.score.player2++;
-            this.createScoreEffect('player2');
             if (this.score.player2 >= this.winningScore) {
                 this.gameOver(2);
             } else {
@@ -265,7 +247,6 @@ class PongGame {
             }
         } else if (this.ball.x > this.canvas.width) {
             this.score.player1++;
-            this.createScoreEffect('player1');
             if (this.score.player1 >= this.winningScore) {
                 this.gameOver(1);
             } else {
@@ -275,7 +256,7 @@ class PongGame {
     }
     
     checkCollisions() {
-        // Collision avec paddle 1
+        // Collision paddle 1
         if (this.ball.dx < 0 && 
             this.ball.x - this.BALL_SIZE/2 <= this.player1.x + this.PADDLE_WIDTH &&
             this.ball.x + this.BALL_SIZE/2 >= this.player1.x &&
@@ -285,15 +266,11 @@ class PongGame {
             this.ball.dx = -this.ball.dx;
             this.ball.x = this.player1.x + this.PADDLE_WIDTH + this.BALL_SIZE/2;
             
-            // Effet selon où la balle touche la palette
             const hitPos = (this.ball.y - this.player1.y) / this.PADDLE_HEIGHT - 0.5;
             this.ball.dy += hitPos * 3;
-            
-            this.increaseBallSpeed();
-            this.createPaddleHitEffect(this.player1.x + this.PADDLE_WIDTH, this.ball.y);
         }
         
-        // Collision avec paddle 2
+        // Collision paddle 2
         if (this.ball.dx > 0 && 
             this.ball.x + this.BALL_SIZE/2 >= this.player2.x &&
             this.ball.x - this.BALL_SIZE/2 <= this.player2.x + this.PADDLE_WIDTH &&
@@ -305,180 +282,55 @@ class PongGame {
             
             const hitPos = (this.ball.y - this.player2.y) / this.PADDLE_HEIGHT - 0.5;
             this.ball.dy += hitPos * 3;
-            
-            this.increaseBallSpeed();
-            this.createPaddleHitEffect(this.player2.x, this.ball.y);
-        }
-    }
-    
-    increaseBallSpeed() {
-        this.ball.dx *= 1.05;
-        this.ball.dy *= 1.05;
-        
-        // Limiter la vitesse maximale
-        const speed = Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy);
-        if (speed > this.MAX_BALL_SPEED) {
-            this.ball.dx = (this.ball.dx / speed) * this.MAX_BALL_SPEED;
-            this.ball.dy = (this.ball.dy / speed) * this.MAX_BALL_SPEED;
         }
     }
     
     updateParticles() {
         for (let i = this.particles.length - 1; i >= 0; i--) {
             const particle = this.particles[i];
-            
             particle.x += particle.dx;
             particle.y += particle.dy;
             particle.life--;
-            particle.size *= 0.98;
-            particle.alpha = particle.life / particle.maxLife;
             
-            if (particle.life <= 0 || particle.size < 0.5) {
+            if (particle.life <= 0) {
                 this.particles.splice(i, 1);
             }
         }
     }
     
-    updateEffects() {
-        this.glowIntensity = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;
-        
-        // Screen shake
-        if (this.screenShake.intensity > 0) {
-            this.screenShake.x = (Math.random() - 0.5) * this.screenShake.intensity;
-            this.screenShake.y = (Math.random() - 0.5) * this.screenShake.intensity;
-            this.screenShake.intensity *= 0.9;
-        }
-    }
-    
     updateScoreDisplay() {
-        document.getElementById('player1Name').textContent = this.player1.name;
-        document.getElementById('player2Name').textContent = this.player2.name;
-        document.getElementById('player1Score').textContent = this.score.player1;
-        document.getElementById('player2Score').textContent = this.score.player2;
-    }
-    
-    // Effets visuels
-    createBounceEffect(x, y) {
-        for (let i = 0; i < 10; i++) {
-            this.particles.push({
-                x: x,
-                y: y,
-                dx: (Math.random() - 0.5) * 8,
-                dy: (Math.random() - 0.5) * 8,
-                life: 30,
-                maxLife: 30,
-                size: Math.random() * 4 + 2,
-                color: '#00ffff',
-                alpha: 1
-            });
-        }
-    }
-    
-    createPaddleHitEffect(x, y) {
-        for (let i = 0; i < 15; i++) {
-            this.particles.push({
-                x: x,
-                y: y,
-                dx: (Math.random() - 0.5) * 12,
-                dy: (Math.random() - 0.5) * 12,
-                life: 40,
-                maxLife: 40,
-                size: Math.random() * 6 + 3,
-                color: '#ff6600',
-                alpha: 1
-            });
-        }
-    }
-    
-    createScoreEffect(player) {
-        const x = player === 'player1' ? this.canvas.width * 0.25 : this.canvas.width * 0.75;
-        const y = this.canvas.height / 2;
+        const p1Name = document.getElementById('player1Name');
+        const p2Name = document.getElementById('player2Name');
+        const p1Score = document.getElementById('player1Score');
+        const p2Score = document.getElementById('player2Score');
         
-        for (let i = 0; i < 25; i++) {
-            this.particles.push({
-                x: x,
-                y: y,
-                dx: (Math.random() - 0.5) * 15,
-                dy: (Math.random() - 0.5) * 15,
-                life: 60,
-                maxLife: 60,
-                size: Math.random() * 8 + 4,
-                color: '#39ff14',
-                alpha: 1
-            });
-        }
-    }
-    
-    createWinEffect(winner) {
-        const x = winner === 1 ? this.canvas.width * 0.25 : this.canvas.width * 0.75;
-        const y = this.canvas.height / 2;
-        
-        for (let i = 0; i < 50; i++) {
-            this.particles.push({
-                x: x,
-                y: y,
-                dx: (Math.random() - 0.5) * 20,
-                dy: (Math.random() - 0.5) * 20,
-                life: 90,
-                maxLife: 90,
-                size: Math.random() * 10 + 5,
-                color: ['#ffff00', '#ff6600', '#39ff14'][Math.floor(Math.random() * 3)],
-                alpha: 1
-            });
-        }
-    }
-    
-    shakeScreen(intensity) {
-        this.screenShake.intensity = Math.max(this.screenShake.intensity, intensity);
+        if (p1Name) p1Name.textContent = this.player1.name;
+        if (p2Name) p2Name.textContent = this.player2.name;
+        if (p1Score) p1Score.textContent = this.score.player1;
+        if (p2Score) p2Score.textContent = this.score.player2;
     }
     
     render() {
-        // Fond avec gradient cyberpunk
+        // Fond
         const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
         gradient.addColorStop(0, '#0a0a0a');
         gradient.addColorStop(1, '#050505');
         this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Appliquer screen shake
-        this.ctx.save();
-        this.ctx.translate(this.screenShake.x, this.screenShake.y);
-        
         if (this.gameState === 'playing' || this.gameState === 'paused') {
             this.renderBackground();
             this.renderPaddles();
             this.renderBall();
-            this.renderParticles();
             
             if (this.gameState === 'paused') {
-                this.renderPauseOverlay();
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             }
         }
-        
-        this.ctx.restore();
     }
     
     renderBackground() {
-        // Grille cyberpunk
-        this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
-        this.ctx.lineWidth = 1;
-        
-        // Lignes verticales
-        for (let x = 50; x < this.canvas.width; x += 50) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, this.canvas.height);
-            this.ctx.stroke();
-        }
-        
-        // Lignes horizontales
-        for (let y = 30; y < this.canvas.height; y += 30) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, y);
-            this.ctx.lineTo(this.canvas.width, y);
-            this.ctx.stroke();
-        }
-        
         // Ligne centrale
         this.ctx.strokeStyle = '#00ffff';
         this.ctx.lineWidth = 2;
@@ -488,26 +340,16 @@ class PongGame {
         this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
         this.ctx.stroke();
         this.ctx.setLineDash([]);
-        
-        // Ombre néon pour la ligne centrale
-        this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
-        this.ctx.lineWidth = 6;
-        this.ctx.setLineDash([10, 10]);
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.canvas.width / 2, 0);
-        this.ctx.lineTo(this.canvas.width / 2, this.canvas.height);
-        this.ctx.stroke();
-        this.ctx.setLineDash([]);
     }
     
     renderPaddles() {
-        // Paddle 1 (Gauche)
+        // Paddle 1
         this.ctx.fillStyle = '#00ffff';
         this.ctx.shadowColor = '#00ffff';
         this.ctx.shadowBlur = 15;
         this.ctx.fillRect(this.player1.x, this.player1.y, this.PADDLE_WIDTH, this.PADDLE_HEIGHT);
         
-        // Paddle 2 (Droite)
+        // Paddle 2
         this.ctx.fillStyle = '#ff007f';
         this.ctx.shadowColor = '#ff007f';
         this.ctx.shadowBlur = 15;
@@ -517,48 +359,25 @@ class PongGame {
     }
     
     renderBall() {
-        // Trail de la balle
+        // Trail
         for (let i = 0; i < this.ball.trail.length; i++) {
             const trail = this.ball.trail[i];
             const alpha = (i / this.ball.trail.length) * 0.5;
             
             this.ctx.globalAlpha = alpha;
             this.ctx.fillStyle = '#39ff14';
-            this.ctx.fillRect(trail.x - this.BALL_SIZE/2, trail.y - this.BALL_SIZE/2, 
-                this.BALL_SIZE, this.BALL_SIZE);
+            this.ctx.fillRect(trail.x - this.BALL_SIZE/2, trail.y - this.BALL_SIZE/2, this.BALL_SIZE, this.BALL_SIZE);
         }
         
         this.ctx.globalAlpha = 1;
         
-        // Balle principale
+        // Balle
         this.ctx.fillStyle = '#39ff14';
         this.ctx.shadowColor = '#39ff14';
-        this.ctx.shadowBlur = 20 + this.glowIntensity * 10;
-        this.ctx.fillRect(this.ball.x - this.BALL_SIZE/2, this.ball.y - this.BALL_SIZE/2, 
-            this.BALL_SIZE, this.BALL_SIZE);
+        this.ctx.shadowBlur = 20;
+        this.ctx.fillRect(this.ball.x - this.BALL_SIZE/2, this.ball.y - this.BALL_SIZE/2, this.BALL_SIZE, this.BALL_SIZE);
         
         this.ctx.shadowBlur = 0;
-    }
-    
-    renderParticles() {
-        for (const particle of this.particles) {
-            this.ctx.globalAlpha = particle.alpha;
-            this.ctx.fillStyle = particle.color;
-            this.ctx.shadowColor = particle.color;
-            this.ctx.shadowBlur = 10;
-            
-            this.ctx.beginPath();
-            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            this.ctx.fill();
-        }
-        
-        this.ctx.globalAlpha = 1;
-        this.ctx.shadowBlur = 0;
-    }
-    
-    renderPauseOverlay() {
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
     
     gameLoop() {
@@ -570,48 +389,44 @@ class PongGame {
 
 // Fonctions globales pour l'interface
 function startGame(mode) {
-    console.log('Global startGame called with mode:', mode); // Debug
+    console.log('Global startGame called with mode:', mode);
     if (window.game) {
         window.game.startGame(mode);
     } else {
-        console.error('Game not initialized yet!');
+        console.error('Game not initialized!');
     }
 }
 
 function resumeGame() {
-    console.log('Global resumeGame called'); // Debug
+    console.log('Global resumeGame called');
     if (window.game) {
         window.game.resumeGame();
-    } else {
-        console.error('Game not initialized yet!');
     }
 }
 
 function restartGame() {
-    console.log('Global restartGame called'); // Debug
+    console.log('Global restartGame called');
     if (window.game) {
         window.game.restartGame();
-    } else {
-        console.error('Game not initialized yet!');
     }
 }
 
 function showMenu() {
-    console.log('Global showMenu called'); // Debug
+    console.log('Global showMenu called');
     if (window.game) {
         window.game.showMenu();
-    } else {
-        console.error('Game not initialized yet!');
     }
 }
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing Pong game...'); // Debug
+    console.log('DOM loaded, creating Pong game...');
     try {
         window.game = new PongGame();
-        console.log('Pong game instance created:', window.game); // Debug
+        console.log('Pong game created successfully:', !!window.game);
     } catch (error) {
         console.error('Error creating Pong game:', error);
     }
 });
+
+console.log('Pong script loaded successfully');
