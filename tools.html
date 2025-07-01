@@ -19,17 +19,24 @@
         :root {
             --primary-color: #667eea;
             --secondary-color: #764ba2;
+            --accent-color: #ff6b6b;
             --text-color: #333;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
+            --bg-color: #fff;
+            --bg-secondary: #f8f9fa;
+            --card-bg: #fff;
             --navbar-bg: rgba(102, 126, 234, 0.1);
+            --navbar-bg-scroll: rgba(102, 126, 234, 0.2);
+            --footer-bg: #2c3e50;
         }
 
         [data-theme="dark"] {
             --text-color: #e0e0e0;
-            --bg-color: #1a1a1a;
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --navbar-bg: rgba(26, 26, 26, 0.9);
+            --bg-color: #121212;
+            --bg-secondary: #1e1e1e;
+            --card-bg: #2d2d2d;
+            --navbar-bg: rgba(45, 45, 45, 0.9);
+            --navbar-bg-scroll: rgba(45, 45, 45, 0.95);
+            --footer-bg: #1a1a1a;
         }
 
         * {
@@ -46,17 +53,94 @@
             transition: all 0.3s ease;
         }
 
-        /* Header */
-        .tools-header {
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--navbar-bg);
+            backdrop-filter: blur(10px);
+            transition: background-color 0.3s ease;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .navbar.scrolled {
+            background-color: var(--navbar-bg-scroll);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-color) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color) !important;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: linear-gradient(45deg, #555, #777);
+        }
+
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--bg-secondary);
+            color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Page Header */
+        .page-header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 100px 0 50px;
+            padding: 120px 0 80px; /* 120px top pour compenser la navbar fixed */
             text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        .tools-header::before {
+        .page-header::before {
             content: '';
             position: absolute;
             top: 0;
@@ -67,7 +151,7 @@
             opacity: 0.3;
         }
 
-        .tools-header h1 {
+        .page-header h1 {
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 20px;
@@ -75,84 +159,11 @@
             z-index: 2;
         }
 
-        .tools-header p {
+        .page-header p {
             font-size: 1.2rem;
             opacity: 0.9;
             position: relative;
             z-index: 2;
-        }
-
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 24px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            z-index: 3;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 3;
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Language Switcher */
-        .language-switcher {
-            position: absolute;
-            top: 20px;
-            right: 80px;
-            display: flex;
-            gap: 5px;
-            z-index: 3;
-        }
-
-        .lang-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .lang-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .lang-btn.active {
-            background: rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.6);
         }
 
         /* Tools Section */
@@ -591,22 +602,56 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="tools-header">
-        <a href="index.html" class="back-button">
-            <i class="bi bi-arrow-left me-2"></i><span data-translate="header.back">Retour au Portfolio</span>
-        </a>
-        
-        <!-- Language Switcher -->
-        <div class="language-switcher">
-            <button class="lang-btn active" onclick="switchLanguage('fr')" data-lang="fr">FR</button>
-            <button class="lang-btn" onclick="switchLanguage('en')" data-lang="en">EN</button>
-            <button class="lang-btn" onclick="switchLanguage('pt')" data-lang="pt">PT</button>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: var(--navbar-bg); border-bottom: 1px solid rgba(102, 126, 234, 0.2);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html" data-translate="nav.brand">João</a>
+            <div class="d-flex align-items-center order-lg-2">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle me-3" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="theme-icon"></i>
+                </button>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html" data-translate="nav.home">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#about" data-translate="nav.about">À propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#projects" data-translate="nav.projects">Projets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="tools.html" data-translate="nav.tools">Outils</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="games.html" data-translate="nav.games">Jeux</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#contact" data-translate="nav.contact">Contact</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
-        
-        <button class="theme-toggle" onclick="toggleTheme()">
-            <i class="bi bi-moon-fill" id="theme-icon"></i>
-        </button>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
         <div class="container">
             <h1><i class="bi bi-tools me-3"></i><span data-translate="header.title">Outils Utiles</span></h1>
             <p data-translate="header.description">Une collection d'outils pratiques pour faciliter votre travail quotidien</p>
@@ -980,6 +1025,13 @@
         // Translations
         const translations = {
             fr: {
+                'nav.brand': 'João',
+                'nav.home': 'Accueil',
+                'nav.about': 'À propos',
+                'nav.projects': 'Projets',
+                'nav.tools': 'Outils',
+                'nav.games': 'Jeux',
+                'nav.contact': 'Contact',
                 'header.back': 'Retour au Portfolio',
                 'header.title': 'Outils Utiles',
                 'header.description': 'Une collection d\'outils pratiques pour faciliter votre travail quotidien',
@@ -1053,6 +1105,13 @@
                 'units.convert': 'Convertir'
             },
             en: {
+                'nav.brand': 'João',
+                'nav.home': 'Home',
+                'nav.about': 'About',
+                'nav.projects': 'Projects',
+                'nav.tools': 'Tools',
+                'nav.games': 'Games',
+                'nav.contact': 'Contact',
                 'header.back': 'Back to Portfolio',
                 'header.title': 'Useful Tools',
                 'header.description': 'A collection of practical tools to make your daily work easier',
@@ -1126,8 +1185,15 @@
                 'units.convert': 'Convert'
             },
             pt: {
+                'nav.brand': 'João',
+                'nav.home': 'Início',
+                'nav.about': 'Sobre',
+                'nav.projects': 'Projetos',
+                'nav.tools': 'Ferramentas',
+                'nav.games': 'Jogos',
+                'nav.contact': 'Contato',
                 'header.back': 'Voltar ao Portfólio',
-                'header.title': 'Ferramentas Úteis',
+                'header.title': 'Ferramentas Útiles',
                 'header.description': 'Uma coleção de ferramentas práticas para facilitar seu trabalho diário',
                 'qr.title': 'Gerador QR Code',
                 'qr.description': 'Gere instantaneamente códigos QR para suas URLs, textos ou dados. Perfeito para compartilhar links ou informações rapidamente.',
@@ -1261,6 +1327,22 @@
             
             localStorage.setItem('preferred-theme', currentTheme);
         }
+
+        // Alias for compatibility with navbar
+        function changeLanguage(lang) {
+            localStorage.setItem('language', lang);
+            switchLanguage(lang);
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
 
         // Load saved preferences
         document.addEventListener('DOMContentLoaded', function() {

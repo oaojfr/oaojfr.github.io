@@ -89,6 +89,44 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-color) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color) !important;
+        }
+
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--bg-secondary);
+            color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
         .section-title {
             font-size: 2.5rem;
             font-weight: 600;
@@ -257,29 +295,7 @@
             text-decoration: none;
         }
 
-        .theme-switch {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            z-index: 1000;
-            transition: transform 0.3s ease;
-        }
 
-        .theme-switch:hover {
-            transform: translateY(-3px);
-        }
 
         /* Arcade/Retro Styling */
         .arcade-header {
@@ -330,6 +346,30 @@
             font-weight: bold;
         }
 
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.1);
+        }
+
+        [data-theme="dark"] .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         @media (max-width: 768px) {
             .section-title {
                 font-size: 2rem;
@@ -343,9 +383,15 @@
 </head>
 <body>
     <!-- Navigation Menu -->
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: var(--navbar-bg); border-bottom: 1px solid rgba(102, 126, 234, 0.2);">
         <div class="container">
-            <a class="navbar-brand" href="index.html" data-translate="nav.brand">João</a>
+            <a class="navbar-brand fw-bold" href="index.html" data-translate="nav.brand">João</a>
+            <div class="d-flex align-items-center order-lg-2">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle me-3" onclick="toggleTheme()">
+                    <i class="bi bi-moon-fill" id="theme-icon"></i>
+                </button>
+            </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -387,7 +433,7 @@
     <!-- Games Section Header -->
     <div class="container mt-5 pt-5">
         <div class="arcade-header">
-            <h1 class="arcade-title text-center" data-translate="games.title">RETRO ARCADE</h1>
+            <h1 class="arcade-title text-center" data-translate="games.title">SALLE DE JEUX</h1>
             <p class="text-center mb-0 text-light" data-translate="games.description">
                 DÉCOUVREZ MA COLLECTION DE JEUX RÉTRO CRÉÉS EN JAVASCRIPT
             </p>
@@ -439,7 +485,7 @@
                     <div class="game-card-content">
                         <h2 class="game-card-title pixel-font" data-translate="games.hexagon.name">⬢ HEXAGON</h2>
                         <p class="game-card-description" data-translate="games.hexagon.description">
-                            Un jeu de réflexes où vous devez naviguer à travers un labyrinthe en rotation d'hexagones.
+                            Un jeu de réflexes hyper intense.
                         </p>
                         <a href="games/hexagon/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
@@ -455,50 +501,12 @@
         </div>
     </footer>
 
-    <!-- Theme Toggle Button -->
-    <button class="theme-switch" id="themeToggle">
-        <i class="bi bi-moon-fill" id="themeIcon"></i>
-    </button>
+
     
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        
-        function updateThemeIcon() {
-            if (document.documentElement.getAttribute('data-theme') === 'dark') {
-                themeIcon.classList.remove('bi-moon-fill');
-                themeIcon.classList.add('bi-sun-fill');
-            } else {
-                themeIcon.classList.remove('bi-sun-fill');
-                themeIcon.classList.add('bi-moon-fill');
-            }
-        }
-        
-        // Check saved theme preference or system preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeIcon();
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            updateThemeIcon();
-        }
-        
-        // Toggle theme
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon();
-        });
-        
-        // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
@@ -518,14 +526,14 @@
                 'nav.games': 'Jeux',
                 'nav.tools': 'Outils',
                 'nav.contact': 'Contact',
-                'games.title': 'SALLE DE JEU',
-                'games.description': 'DÉCOUVREZ MA COLLECTION DE JEUX CRÉÉS EN JAVASCRIPT',
-                'games.breakout.name': '🧱 BREAKOUT',
-                'games.breakout.description': 'Cassez toutes les briques avec votre balle en la gardant en mouvement avec votre palette.',
-                'games.pong.name': '� PONG',
-                'games.pong.description': 'Le classique jeu de tennis de table en mode cyberpunk. Jouez contre l\'IA ou en mode 2 joueurs.',
-                'games.hexagon.name': '⬢ HEXAGON',
-                'games.hexagon.description': 'Un jeu de réflexes hyper intense.',
+                'games.title': 'SALLE DE JEUX',
+                'games.description': 'DÉCOUVREZ MA COLLECTION DE JEUX RÉTRO CRÉÉS EN JAVASCRIPT',
+                'games.breakout.name': '🧱 BREAKOUT MODERNE',
+                'games.breakout.description': 'Version moderne du classique Breakout avec power-ups, effets visuels époustouflants, niveaux progressifs et physique avancée.',
+                'games.pong.name': '🏓 PONG CYBERPUNK',
+                'games.pong.description': 'Pong futuriste avec design cyberpunk. Mode solo contre IA ou 2 joueurs local, effets néon et gameplay fluide.',
+                'games.hexagon.name': '⬢ SUPER HEXAGON',
+                'games.hexagon.description': 'Jeu de réflexes extrême inspiré du classique de Terry Cavanagh. Survivez dans un hexagone qui tourne avec 4 niveaux de difficulté.',
                 'games.play': 'JOUER',
                 'footer.copyright': '© 2025 João. Tous droits réservés. Fait avec',
                 'footer.made': 'et Bootstrap.'
@@ -538,14 +546,14 @@
                 'nav.games': 'Games',
                 'nav.tools': 'Tools',
                 'nav.contact': 'Contact',
-                'games.title': 'CYBER ARCADE',
-                'games.description': 'DISCOVER MY COLLECTION OF CYBERPUNK GAMES CREATED IN JAVASCRIPT',
-                'games.breakout.name': '🧱 BREAKOUT',
-                'games.breakout.description': 'Break all the bricks with your ball by keeping it moving with your paddle.',
-                'games.pong.name': '� PONG',
-                'games.pong.description': 'The classic table tennis game in cyberpunk mode. Play against AI or in 2-player mode.',
-                'games.hexagon.name': '⬢ HEXAGON',
-                'games.hexagon.description': 'An ultra-intense reflex game with addictive electronic music and stunning 3D visuals.',
+                'games.title': 'GAME ROOM',
+                'games.description': 'DISCOVER MY COLLECTION OF RETRO GAMES CREATED IN JAVASCRIPT',
+                'games.breakout.name': '🧱 MODERN BREAKOUT',
+                'games.breakout.description': 'Modern version of classic Breakout with power-ups, stunning visual effects, progressive levels and advanced physics.',
+                'games.pong.name': '🏓 CYBERPUNK PONG',
+                'games.pong.description': 'Futuristic Pong with cyberpunk design. Solo mode vs AI or local 2-player, neon effects and smooth gameplay.',
+                'games.hexagon.name': '⬢ SUPER HEXAGON',
+                'games.hexagon.description': 'Extreme reflex game inspired by Terry Cavanagh\'s classic. Survive in a rotating hexagon with 4 difficulty levels.',
                 'games.play': 'PLAY',
                 'footer.copyright': '© 2025 João. All rights reserved. Made with',
                 'footer.made': 'and Bootstrap.'
@@ -558,14 +566,14 @@
                 'nav.games': 'Jogos',
                 'nav.tools': 'Ferramentas',
                 'nav.contact': 'Contato',
-                'games.title': 'ARCADE CYBER',
-                'games.description': 'DESCUBRA MINHA COLEÇÃO DE JOGOS CYBERPUNK CRIADOS EM JAVASCRIPT',
-                'games.breakout.name': '🧱 BREAKOUT',
-                'games.breakout.description': 'Quebre todos os tijolos com sua bola mantendo-a em movimento com sua paleta.',
-                'games.pong.name': '� PONG',
-                'games.pong.description': 'O clássico jogo de tênis de mesa no modo cyberpunk. Jogue contra IA ou no modo 2 jogadores.',
-                'games.hexagon.name': '⬢ HEXÁGONO',
-                'games.hexagon.description': 'Um jogo de reflexos ultra intenso com música eletrônica viciante e visuais 3D impressionantes.',
+                'games.title': 'SALA DE JOGOS',
+                'games.description': 'DESCUBRA MINHA COLEÇÃO DE JOGOS RETRÔ CRIADOS EM JAVASCRIPT',
+                'games.breakout.name': '🧱 BREAKOUT MODERNO',
+                'games.breakout.description': 'Versão moderna do Breakout clássico com power-ups, efeitos visuais impressionantes, níveis progressivos e física avançada.',
+                'games.pong.name': '🏓 PONG CYBERPUNK',
+                'games.pong.description': 'Pong futurista com design cyberpunk. Modo solo vs IA ou 2 jogadores local, efeitos neon e gameplay suave.',
+                'games.hexagon.name': '⬢ SUPER HEXÁGONO',
+                'games.hexagon.description': 'Jogo de reflexos extremo inspirado no clássico de Terry Cavanagh. Sobreviva num hexágono que gira com 4 níveis de dificuldade.',
                 'games.play': 'JOGAR',
                 'footer.copyright': '© 2025 João. Todos os direitos reservados. Feito com',
                 'footer.made': 'e Bootstrap.'
@@ -596,6 +604,12 @@
         // Initialize with saved language or default to French
         document.addEventListener('DOMContentLoaded', function() {
             const savedLang = localStorage.getItem('language') || 'fr';
+            const savedTheme = localStorage.getItem('preferred-theme') || 'light';
+            
+            if (savedTheme === 'dark') {
+                toggleTheme();
+            }
+            
             applyTranslations(savedLang);
             
             // Initialize game previews
@@ -1012,6 +1026,28 @@
                 setInterval(drawHexagon, 16);
             }
         }
+
+        let currentTheme = 'light';
+
+        // Theme switching
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'bi bi-sun-fill';
+                currentTheme = 'dark';
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'bi bi-moon-fill';
+                currentTheme = 'light';
+            }
+            
+            localStorage.setItem('preferred-theme', currentTheme);
+        }
+
+        // Change language
     </script>
 </body>
 </html>
