@@ -136,6 +136,7 @@
             mask-composite: exclude;
             opacity: 0;
             transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
         .game-card:hover {
@@ -193,6 +194,7 @@
             filter: blur(20px);
             opacity: 0.3;
             z-index: 1;
+            pointer-events: none;
         }
 
         .game-card-content {
@@ -200,6 +202,8 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            position: relative;
+            z-index: 5;
         }
 
         .game-card-title {
@@ -225,6 +229,8 @@
             font-weight: 500;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             align-self: flex-start;
+            position: relative;
+            z-index: 10;
         }
 
         .btn-play:hover {
