@@ -110,7 +110,7 @@
         }
 
         .game-card {
-            background-color: var(--card-bg);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -118,27 +118,81 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            padding: 2px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .game-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .game-card-image {
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-preview {
             aspect-ratio: 16/9;
             overflow: hidden;
+            position: relative;
+            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .game-card-image img {
+        .game-canvas {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
+            display: block;
         }
 
-        .game-card:hover .game-card-image img {
-            transform: scale(1.05);
+        /* Scanlines effect */
+        .game-preview::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 0, 0.03) 2px,
+                rgba(0, 255, 0, 0.03) 4px
+            );
+            pointer-events: none;
+        }
+
+        /* Glow effect */
+        .game-preview .glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            filter: blur(20px);
+            opacity: 0.3;
+            z-index: 1;
         }
 
         .game-card-content {
@@ -221,9 +275,62 @@
             transform: translateY(-3px);
         }
 
+        /* Arcade/Retro Styling */
+        .arcade-header {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arcade-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(0, 255, 255, 0.03),
+                rgba(0, 255, 255, 0.03) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+        }
+
+        .arcade-title {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            letter-spacing: 2px;
+            animation: neonGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonGlow {
+            from {
+                text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+            }
+            to {
+                text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff;
+            }
+        }
+
+        .pixel-font {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
         @media (max-width: 768px) {
             .section-title {
                 font-size: 2rem;
+            }
+            
+            .arcade-title {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -273,25 +380,28 @@
 
     <!-- Games Section Header -->
     <div class="container mt-5 pt-5">
-        <h1 class="section-title pt-5" data-translate="games.title">Jeux Rétro</h1>
-        <p class="text-center mb-5" data-translate="games.description">
-            Découvrez ma collection de jeux rétro créés en JavaScript. Amusez-vous avec ces classiques revisités !
-        </p>
+        <div class="arcade-header">
+            <h1 class="arcade-title text-center" data-translate="games.title">RETRO ARCADE</h1>
+            <p class="text-center mb-0 text-light" data-translate="games.description">
+                DÉCOUVREZ MA COLLECTION DE JEUX RÉTRO CRÉÉS EN JAVASCRIPT
+            </p>
+        </div>
 
         <!-- Games Grid -->
         <div class="row g-4">
             <!-- Pong Game Card -->
             <div class="col-md-6 col-lg-4">
                 <div class="game-card">
-                    <div class="game-card-image">
-                        <img src="https://via.placeholder.com/640x360.png?text=Pong+Game" alt="Jeu Pong">
+                    <div class="game-preview">
+                        <canvas class="game-canvas" id="pongPreview"></canvas>
+                        <div class="glow" style="background: radial-gradient(circle, rgba(0,255,255,0.3), transparent);"></div>
                     </div>
                     <div class="game-card-content">
-                        <h2 class="game-card-title" data-translate="games.pong.name">🎮 Pong Game</h2>
+                        <h2 class="game-card-title pixel-font" data-translate="games.pong.name">🎮 PONG</h2>
                         <p class="game-card-description" data-translate="games.pong.description">
-                            Le classique jeu Pong, où deux joueurs s'affrontent dans une partie de tennis de table virtuelle. Utilisez les touches W/S et flèches directionnelles pour contrôler les raquettes.
+                            Le classique jeu Pong, où deux joueurs s'affrontent dans une partie de tennis de table virtuelle.
                         </p>
-                        <a href="games/pong/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                        <a href="games/pong/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
                 </div>
             </div>
@@ -299,15 +409,16 @@
             <!-- Snake Game Card -->
             <div class="col-md-6 col-lg-4">
                 <div class="game-card">
-                    <div class="game-card-image">
-                        <img src="https://via.placeholder.com/640x360.png?text=Snake+Game" alt="Jeu Snake">
+                    <div class="game-preview">
+                        <canvas class="game-canvas" id="snakePreview"></canvas>
+                        <div class="glow" style="background: radial-gradient(circle, rgba(0,255,0,0.3), transparent);"></div>
                     </div>
                     <div class="game-card-content">
-                        <h2 class="game-card-title" data-translate="games.snake.name">🐍 Snake Game</h2>
+                        <h2 class="game-card-title pixel-font" data-translate="games.snake.name">🐍 SNAKE</h2>
                         <p class="game-card-description" data-translate="games.snake.description">
-                            Dirigez le serpent pour manger des pommes et grandir sans toucher les murs ou votre propre queue. Utilisez les touches directionnelles pour vous déplacer.
+                            Dirigez le serpent pour manger des pommes et grandir sans toucher les murs ou votre propre queue.
                         </p>
-                        <a href="games/snake/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                        <a href="games/snake/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
                 </div>
             </div>
@@ -315,15 +426,16 @@
             <!-- Breakout Game Card -->
             <div class="col-md-6 col-lg-4">
                 <div class="game-card">
-                    <div class="game-card-image">
-                        <img src="https://via.placeholder.com/640x360.png?text=Breakout+Game" alt="Jeu Breakout">
+                    <div class="game-preview">
+                        <canvas class="game-canvas" id="breakoutPreview"></canvas>
+                        <div class="glow" style="background: radial-gradient(circle, rgba(255,165,0,0.3), transparent);"></div>
                     </div>
                     <div class="game-card-content">
-                        <h2 class="game-card-title" data-translate="games.breakout.name">🧱 Breakout Game</h2>
+                        <h2 class="game-card-title pixel-font" data-translate="games.breakout.name">🧱 BREAKOUT</h2>
                         <p class="game-card-description" data-translate="games.breakout.description">
-                            Cassez toutes les briques avec votre balle en la gardant en mouvement avec votre palette. Utilisez la souris ou les touches directionnelles pour contrôler la palette.
+                            Cassez toutes les briques avec votre balle en la gardant en mouvement avec votre palette.
                         </p>
-                        <a href="games/breakout/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                        <a href="games/breakout/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
                 </div>
             </div>
@@ -331,15 +443,16 @@
             <!-- Mario Game Card -->
             <div class="col-md-6 col-lg-4">
                 <div class="game-card">
-                    <div class="game-card-image">
-                        <img src="https://via.placeholder.com/640x360.png?text=Super+Mario" alt="Jeu Super Mario">
+                    <div class="game-preview">
+                        <canvas class="game-canvas" id="marioPreview"></canvas>
+                        <div class="glow" style="background: radial-gradient(circle, rgba(255,0,0,0.3), transparent);"></div>
                     </div>
                     <div class="game-card-content">
-                        <h2 class="game-card-title" data-translate="games.mario.name">🍄 Super Mario</h2>
+                        <h2 class="game-card-title pixel-font" data-translate="games.mario.name">🍄 MARIO</h2>
                         <p class="game-card-description" data-translate="games.mario.description">
-                            Une version simplifiée du célèbre jeu Super Mario. Évitez les ennemis, collectez des pièces et traversez les niveaux générés aléatoirement. Utilisez les flèches et la barre d'espace pour vous déplacer.
+                            Une version simplifiée du célèbre jeu Super Mario. Évitez les ennemis et collectez des pièces.
                         </p>
-                        <a href="games/mario/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                        <a href="games/mario/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
                 </div>
             </div>
@@ -347,15 +460,16 @@
             <!-- Hexagon Game Card -->
             <div class="col-md-6 col-lg-4">
                 <div class="game-card">
-                    <div class="game-card-image">
-                        <img src="https://via.placeholder.com/640x360.png?text=Hexagon+Game" alt="Jeu Hexagon">
+                    <div class="game-preview">
+                        <canvas class="game-canvas" id="hexagonPreview"></canvas>
+                        <div class="glow" style="background: radial-gradient(circle, rgba(255,0,255,0.3), transparent);"></div>
                     </div>
                     <div class="game-card-content">
-                        <h2 class="game-card-title" data-translate="games.hexagon.name">⬢ Hexagon Game</h2>
+                        <h2 class="game-card-title pixel-font" data-translate="games.hexagon.name">⬢ HEXAGON</h2>
                         <p class="game-card-description" data-translate="games.hexagon.description">
-                            Un jeu de réflexes où vous devez naviguer à travers un labyrinthe en rotation d'hexagones. Testez vos réflexes et votre coordination.
+                            Un jeu de réflexes où vous devez naviguer à travers un labyrinthe en rotation d'hexagones.
                         </p>
-                        <a href="games/hexagon/index.html" class="btn btn-play" data-translate="games.play">Jouer</a>
+                        <a href="games/hexagon/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
                 </div>
             </div>
@@ -432,19 +546,19 @@
                 'nav.games': 'Jeux',
                 'nav.tools': 'Outils',
                 'nav.contact': 'Contact',
-                'games.title': 'Jeux Rétro',
-                'games.description': 'Découvrez ma collection de jeux rétro créés en JavaScript. Amusez-vous avec ces classiques revisités !',
-                'games.pong.name': '🎮 Pong Game',
-                'games.pong.description': 'Le classique jeu Pong, où deux joueurs s\'affrontent dans une partie de tennis de table virtuelle. Utilisez les touches W/S et flèches directionnelles pour contrôler les raquettes.',
-                'games.snake.name': '🐍 Snake Game',
-                'games.snake.description': 'Dirigez le serpent pour manger des pommes et grandir sans toucher les murs ou votre propre queue. Utilisez les touches directionnelles pour vous déplacer.',
-                'games.breakout.name': '🧱 Breakout Game',
-                'games.breakout.description': 'Cassez toutes les briques avec votre balle en la gardant en mouvement avec votre palette. Utilisez la souris ou les touches directionnelles pour contrôler la palette.',
-                'games.mario.name': '🍄 Super Mario',
-                'games.mario.description': 'Une version simplifiée du célèbre jeu Super Mario. Évitez les ennemis, collectez des pièces et traversez les niveaux générés aléatoirement. Utilisez les flèches et la barre d\'espace pour vous déplacer.',
-                'games.hexagon.name': '⬢ Hexagon Game',
-                'games.hexagon.description': 'Un jeu de réflexes où vous devez naviguer à travers un labyrinthe en rotation d\'hexagones. Testez vos réflexes et votre coordination.',
-                'games.play': 'Jouer',
+                'games.title': 'RETRO ARCADE',
+                'games.description': 'DÉCOUVREZ MA COLLECTION DE JEUX RÉTRO CRÉÉS EN JAVASCRIPT',
+                'games.pong.name': '🎮 PONG',
+                'games.pong.description': 'Le classique jeu Pong, où deux joueurs s\'affrontent dans une partie de tennis de table virtuelle.',
+                'games.snake.name': '🐍 SNAKE',
+                'games.snake.description': 'Dirigez le serpent pour manger des pommes et grandir sans toucher les murs ou votre propre queue.',
+                'games.breakout.name': '🧱 BREAKOUT',
+                'games.breakout.description': 'Cassez toutes les briques avec votre balle en la gardant en mouvement avec votre palette.',
+                'games.mario.name': '🍄 MARIO',
+                'games.mario.description': 'Une version simplifiée du célèbre jeu Super Mario. Évitez les ennemis et collectez des pièces.',
+                'games.hexagon.name': '⬢ HEXAGON',
+                'games.hexagon.description': 'Un jeu de réflexes où vous devez naviguer à travers un labyrinthe en rotation d\'hexagones.',
+                'games.play': 'JOUER',
                 'footer.copyright': '© 2025 João. Tous droits réservés. Fait avec',
                 'footer.made': 'et Bootstrap.'
             },
@@ -456,19 +570,19 @@
                 'nav.games': 'Games',
                 'nav.tools': 'Tools',
                 'nav.contact': 'Contact',
-                'games.title': 'Retro Games',
-                'games.description': 'Discover my collection of retro games created in JavaScript. Have fun with these revisited classics!',
-                'games.pong.name': '🎮 Pong Game',
-                'games.pong.description': 'The classic Pong game, where two players compete in a virtual table tennis match. Use W/S keys and arrow keys to control the paddles.',
-                'games.snake.name': '🐍 Snake Game',
-                'games.snake.description': 'Guide the snake to eat apples and grow without hitting walls or your own tail. Use arrow keys to move.',
-                'games.breakout.name': '🧱 Breakout Game',
-                'games.breakout.description': 'Break all the bricks with your ball by keeping it moving with your paddle. Use the mouse or arrow keys to control the paddle.',
-                'games.mario.name': '🍄 Super Mario',
-                'games.mario.description': 'A simplified version of the famous Super Mario game. Avoid enemies, collect coins and traverse randomly generated levels. Use arrows and space bar to move.',
-                'games.hexagon.name': '⬢ Hexagon Game',
-                'games.hexagon.description': 'A reflex game where you navigate through a rotating hexagon maze. Test your reflexes and coordination.',
-                'games.play': 'Play',
+                'games.title': 'RETRO ARCADE',
+                'games.description': 'DISCOVER MY COLLECTION OF RETRO GAMES CREATED IN JAVASCRIPT',
+                'games.pong.name': '🎮 PONG',
+                'games.pong.description': 'The classic Pong game, where two players compete in a virtual table tennis match.',
+                'games.snake.name': '🐍 SNAKE',
+                'games.snake.description': 'Guide the snake to eat apples and grow without hitting walls or your own tail.',
+                'games.breakout.name': '🧱 BREAKOUT',
+                'games.breakout.description': 'Break all the bricks with your ball by keeping it moving with your paddle.',
+                'games.mario.name': '🍄 MARIO',
+                'games.mario.description': 'A simplified version of the famous Super Mario game. Avoid enemies and collect coins.',
+                'games.hexagon.name': '⬢ HEXAGON',
+                'games.hexagon.description': 'A reflex game where you navigate through a rotating hexagon maze.',
+                'games.play': 'PLAY',
                 'footer.copyright': '© 2025 João. All rights reserved. Made with',
                 'footer.made': 'and Bootstrap.'
             },
@@ -480,19 +594,19 @@
                 'nav.games': 'Jogos',
                 'nav.tools': 'Ferramentas',
                 'nav.contact': 'Contato',
-                'games.title': 'Jogos Retrô',
-                'games.description': 'Descubra minha coleção de jogos retrô criados em JavaScript. Divirta-se com esses clássicos revisitados!',
-                'games.pong.name': '🎮 Jogo de Pong',
-                'games.pong.description': 'O clássico jogo Pong, onde dois jogadores competem em uma partida virtual de tênis de mesa. Use as teclas W/S e teclas de seta para controlar as raquetes.',
-                'games.snake.name': '🐍 Jogo da Cobra',
-                'games.snake.description': 'Guie a cobra para comer maçãs e crescer sem atingir paredes ou sua própria cauda. Use as teclas de seta para mover.',
-                'games.breakout.name': '🧱 Jogo Breakout',
-                'games.breakout.description': 'Quebre todos os tijolos com sua bola mantendo-a em movimento com sua paleta. Use o mouse ou as teclas de seta para controlar a paleta.',
-                'games.mario.name': '🍄 Super Mario',
-                'games.mario.description': 'Uma versão simplificada do famoso jogo Super Mario. Evite inimigos, colete moedas e atravesse níveis gerados aleatoriamente. Use as setas e barra de espaço para se movimentar.',
-                'games.hexagon.name': '⬢ Jogo Hexágono',
-                'games.hexagon.description': 'Um jogo de reflexos onde você navega por um labirinto rotativo de hexágonos. Teste seus reflexos e coordenação.',
-                'games.play': 'Jogar',
+                'games.title': 'ARCADE RETRÔ',
+                'games.description': 'DESCUBRA MINHA COLEÇÃO DE JOGOS RETRÔ CRIADOS EM JAVASCRIPT',
+                'games.pong.name': '🎮 PONG',
+                'games.pong.description': 'O clássico jogo Pong, onde dois jogadores competem em uma partida virtual de tênis de mesa.',
+                'games.snake.name': '🐍 COBRA',
+                'games.snake.description': 'Guie a cobra para comer maçãs e crescer sem atingir paredes ou sua própria cauda.',
+                'games.breakout.name': '🧱 BREAKOUT',
+                'games.breakout.description': 'Quebre todos os tijolos com sua bola mantendo-a em movimento com sua paleta.',
+                'games.mario.name': '🍄 MARIO',
+                'games.mario.description': 'Uma versão simplificada do famoso jogo Super Mario. Evite inimigos e colete moedas.',
+                'games.hexagon.name': '⬢ HEXÁGONO',
+                'games.hexagon.description': 'Um jogo de reflexos onde você navega por um labirinto rotativo de hexágonos.',
+                'games.play': 'JOGAR',
                 'footer.copyright': '© 2025 João. Todos os direitos reservados. Feito com',
                 'footer.made': 'e Bootstrap.'
             }
@@ -523,7 +637,321 @@
         document.addEventListener('DOMContentLoaded', function() {
             const savedLang = localStorage.getItem('language') || 'fr';
             applyTranslations(savedLang);
+            
+            // Initialize game previews
+            initGamePreviews();
         });
+
+        // Game preview animations
+        function initGamePreviews() {
+            // Pong Preview
+            const pongCanvas = document.getElementById('pongPreview');
+            if (pongCanvas) {
+                const pongCtx = pongCanvas.getContext('2d');
+                pongCanvas.width = 400;
+                pongCanvas.height = 225;
+                
+                let pongBallX = 200, pongBallY = 112, pongBallVelX = 2, pongBallVelY = 1;
+                let pongPaddle1Y = 90, pongPaddle2Y = 90;
+                
+                function drawPong() {
+                    pongCtx.fillStyle = '#000';
+                    pongCtx.fillRect(0, 0, 400, 225);
+                    
+                    // Center line
+                    pongCtx.setLineDash([5, 5]);
+                    pongCtx.strokeStyle = '#00ffff';
+                    pongCtx.lineWidth = 2;
+                    pongCtx.beginPath();
+                    pongCtx.moveTo(200, 0);
+                    pongCtx.lineTo(200, 225);
+                    pongCtx.stroke();
+                    pongCtx.setLineDash([]);
+                    
+                    // Paddles
+                    pongCtx.fillStyle = '#00ffff';
+                    pongCtx.fillRect(10, pongPaddle1Y, 8, 45);
+                    pongCtx.fillRect(382, pongPaddle2Y, 8, 45);
+                    
+                    // Ball
+                    pongCtx.fillStyle = '#fff';
+                    pongCtx.fillRect(pongBallX - 4, pongBallY - 4, 8, 8);
+                    
+                    // Update ball position
+                    pongBallX += pongBallVelX;
+                    pongBallY += pongBallVelY;
+                    
+                    if (pongBallY <= 4 || pongBallY >= 221) pongBallVelY = -pongBallVelY;
+                    if (pongBallX <= 4 || pongBallX >= 396) {
+                        pongBallVelX = -pongBallVelX;
+                        pongBallX = 200;
+                        pongBallY = 112;
+                    }
+                    
+                    // Simple AI for paddles
+                    pongPaddle1Y += (pongBallY - pongPaddle1Y - 22) * 0.02;
+                    pongPaddle2Y += (pongBallY - pongPaddle2Y - 22) * 0.02;
+                }
+                
+                setInterval(drawPong, 16);
+            }
+
+            // Snake Preview
+            const snakeCanvas = document.getElementById('snakePreview');
+            if (snakeCanvas) {
+                const snakeCtx = snakeCanvas.getContext('2d');
+                snakeCanvas.width = 400;
+                snakeCanvas.height = 225;
+                
+                let snake = [{x: 200, y: 112}];
+                let food = {x: 300, y: 150};
+                let direction = {x: 10, y: 0};
+                
+                function drawSnake() {
+                    snakeCtx.fillStyle = '#001100';
+                    snakeCtx.fillRect(0, 0, 400, 225);
+                    
+                    // Grid pattern
+                    snakeCtx.strokeStyle = '#002200';
+                    snakeCtx.lineWidth = 0.5;
+                    for (let i = 0; i < 400; i += 10) {
+                        snakeCtx.beginPath();
+                        snakeCtx.moveTo(i, 0);
+                        snakeCtx.lineTo(i, 225);
+                        snakeCtx.stroke();
+                    }
+                    for (let i = 0; i < 225; i += 10) {
+                        snakeCtx.beginPath();
+                        snakeCtx.moveTo(0, i);
+                        snakeCtx.lineTo(400, i);
+                        snakeCtx.stroke();
+                    }
+                    
+                    // Food
+                    snakeCtx.fillStyle = '#ff0000';
+                    snakeCtx.fillRect(food.x, food.y, 8, 8);
+                    
+                    // Snake
+                    snake.forEach((segment, index) => {
+                        snakeCtx.fillStyle = index === 0 ? '#00ff00' : '#00aa00';
+                        snakeCtx.fillRect(segment.x, segment.y, 8, 8);
+                    });
+                    
+                    // Move snake
+                    const head = {x: snake[0].x + direction.x, y: snake[0].y + direction.y};
+                    
+                    if (head.x < 0 || head.x >= 400 || head.y < 0 || head.y >= 225) {
+                        snake = [{x: 200, y: 112}];
+                        direction = {x: 10, y: 0};
+                        return;
+                    }
+                    
+                    snake.unshift(head);
+                    
+                    if (Math.abs(head.x - food.x) < 10 && Math.abs(head.y - food.y) < 10) {
+                        food = {
+                            x: Math.floor(Math.random() * 39) * 10,
+                            y: Math.floor(Math.random() * 22) * 10
+                        };
+                    } else {
+                        snake.pop();
+                    }
+                    
+                    // Random direction change
+                    if (Math.random() < 0.02) {
+                        const directions = [{x: 10, y: 0}, {x: -10, y: 0}, {x: 0, y: 10}, {x: 0, y: -10}];
+                        direction = directions[Math.floor(Math.random() * 4)];
+                    }
+                }
+                
+                setInterval(drawSnake, 200);
+            }
+
+            // Breakout Preview
+            const breakoutCanvas = document.getElementById('breakoutPreview');
+            if (breakoutCanvas) {
+                const breakoutCtx = breakoutCanvas.getContext('2d');
+                breakoutCanvas.width = 400;
+                breakoutCanvas.height = 225;
+                
+                let ballX = 200, ballY = 180, ballVelX = 3, ballVelY = -3;
+                let paddleX = 175;
+                let bricks = [];
+                
+                // Initialize bricks
+                for (let row = 0; row < 5; row++) {
+                    for (let col = 0; col < 10; col++) {
+                        if (Math.random() > 0.3) {
+                            bricks.push({
+                                x: col * 40,
+                                y: row * 20 + 20,
+                                width: 38,
+                                height: 18,
+                                color: `hsl(${row * 60}, 70%, 50%)`
+                            });
+                        }
+                    }
+                }
+                
+                function drawBreakout() {
+                    breakoutCtx.fillStyle = '#000022';
+                    breakoutCtx.fillRect(0, 0, 400, 225);
+                    
+                    // Bricks
+                    bricks.forEach(brick => {
+                        breakoutCtx.fillStyle = brick.color;
+                        breakoutCtx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                        breakoutCtx.strokeStyle = '#fff';
+                        breakoutCtx.strokeRect(brick.x, brick.y, brick.width, brick.height);
+                    });
+                    
+                    // Paddle
+                    breakoutCtx.fillStyle = '#ffa500';
+                    breakoutCtx.fillRect(paddleX, 200, 50, 10);
+                    
+                    // Ball
+                    breakoutCtx.fillStyle = '#fff';
+                    breakoutCtx.beginPath();
+                    breakoutCtx.arc(ballX, ballY, 5, 0, Math.PI * 2);
+                    breakoutCtx.fill();
+                    
+                    // Update ball
+                    ballX += ballVelX;
+                    ballY += ballVelY;
+                    
+                    if (ballX <= 5 || ballX >= 395) ballVelX = -ballVelX;
+                    if (ballY <= 5) ballVelY = -ballVelY;
+                    if (ballY >= 195 && ballX > paddleX && ballX < paddleX + 50) ballVelY = -ballVelY;
+                    
+                    if (ballY > 225) {
+                        ballX = 200;
+                        ballY = 180;
+                        ballVelY = -3;
+                    }
+                    
+                    // Brick collision
+                    bricks = bricks.filter(brick => {
+                        if (ballX > brick.x && ballX < brick.x + brick.width &&
+                            ballY > brick.y && ballY < brick.y + brick.height) {
+                            ballVelY = -ballVelY;
+                            return false;
+                        }
+                        return true;
+                    });
+                    
+                    // Move paddle
+                    paddleX += Math.sin(Date.now() * 0.003) * 2;
+                    paddleX = Math.max(0, Math.min(350, paddleX));
+                }
+                
+                setInterval(drawBreakout, 16);
+            }
+
+            // Mario Preview
+            const marioCanvas = document.getElementById('marioPreview');
+            if (marioCanvas) {
+                const marioCtx = marioCanvas.getContext('2d');
+                marioCanvas.width = 400;
+                marioCanvas.height = 225;
+                
+                let marioX = 50, marioY = 180;
+                let coinX = 300, coinY = 160;
+                let coinRotation = 0;
+                
+                function drawMario() {
+                    // Sky gradient
+                    const gradient = marioCtx.createLinearGradient(0, 0, 0, 225);
+                    gradient.addColorStop(0, '#87CEEB');
+                    gradient.addColorStop(1, '#98FB98');
+                    marioCtx.fillStyle = gradient;
+                    marioCtx.fillRect(0, 0, 400, 225);
+                    
+                    // Ground
+                    marioCtx.fillStyle = '#8B4513';
+                    marioCtx.fillRect(0, 200, 400, 25);
+                    
+                    // Platforms
+                    marioCtx.fillStyle = '#654321';
+                    marioCtx.fillRect(150, 150, 100, 20);
+                    marioCtx.fillRect(280, 120, 80, 20);
+                    
+                    // Mario (simple character)
+                    marioCtx.fillStyle = '#ff0000';
+                    marioCtx.fillRect(marioX, marioY, 12, 8);
+                    marioCtx.fillStyle = '#ffdbac';
+                    marioCtx.fillRect(marioX + 2, marioY - 8, 8, 8);
+                    marioCtx.fillStyle = '#0000ff';
+                    marioCtx.fillRect(marioX, marioY + 8, 12, 12);
+                    
+                    // Coin
+                    marioCtx.save();
+                    marioCtx.translate(coinX + 6, coinY + 6);
+                    marioCtx.rotate(coinRotation);
+                    marioCtx.fillStyle = '#ffd700';
+                    marioCtx.fillRect(-6, -6, 12, 12);
+                    marioCtx.fillStyle = '#ffff00';
+                    marioCtx.fillRect(-4, -4, 8, 8);
+                    marioCtx.restore();
+                    
+                    // Update
+                    marioX += 1;
+                    if (marioX > 400) marioX = -20;
+                    
+                    coinRotation += 0.1;
+                    coinY += Math.sin(Date.now() * 0.005) * 0.5;
+                }
+                
+                setInterval(drawMario, 50);
+            }
+
+            // Hexagon Preview
+            const hexagonCanvas = document.getElementById('hexagonPreview');
+            if (hexagonCanvas) {
+                const hexagonCtx = hexagonCanvas.getContext('2d');
+                hexagonCanvas.width = 400;
+                hexagonCanvas.height = 225;
+                
+                let rotation = 0;
+                
+                function drawHexagon() {
+                    hexagonCtx.fillStyle = '#000';
+                    hexagonCtx.fillRect(0, 0, 400, 225);
+                    
+                    hexagonCtx.save();
+                    hexagonCtx.translate(200, 112);
+                    hexagonCtx.rotate(rotation);
+                    
+                    // Draw hexagons
+                    for (let i = 0; i < 3; i++) {
+                        const radius = 30 + i * 25;
+                        hexagonCtx.beginPath();
+                        for (let j = 0; j < 6; j++) {
+                            const angle = (j * Math.PI) / 3;
+                            const x = Math.cos(angle) * radius;
+                            const y = Math.sin(angle) * radius;
+                            if (j === 0) hexagonCtx.moveTo(x, y);
+                            else hexagonCtx.lineTo(x, y);
+                        }
+                        hexagonCtx.closePath();
+                        hexagonCtx.strokeStyle = `hsl(${280 + i * 30}, 70%, 50%)`;
+                        hexagonCtx.lineWidth = 3;
+                        hexagonCtx.stroke();
+                    }
+                    
+                    // Center player
+                    hexagonCtx.fillStyle = '#fff';
+                    hexagonCtx.beginPath();
+                    hexagonCtx.arc(0, 0, 3, 0, Math.PI * 2);
+                    hexagonCtx.fill();
+                    
+                    hexagonCtx.restore();
+                    
+                    rotation += 0.02;
+                }
+                
+                setInterval(drawHexagon, 16);
+            }
+        }
     </script>
 </body>
 </html>
