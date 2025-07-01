@@ -51,6 +51,13 @@
             color: var(--text-color);
             background: var(--bg-color);
             transition: all 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
         }
 
         /* Navbar Styles */
@@ -69,7 +76,7 @@
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            color: var(--primary-color) !important;
+            color: white !important;
         }
 
         .nav-link {
@@ -599,9 +606,35 @@
                 gap: 15px;
             }
         }
+
+        /* Footer */
+        .footer {
+            background-color: var(--footer-bg);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .footer .social-links {
+            margin-bottom: 20px;
+        }
+
+        .footer .social-link {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer .social-link:hover {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
+    <div class="main-content">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: var(--navbar-bg); border-bottom: 1px solid rgba(102, 126, 234, 0.2);">
         <div class="container">
@@ -1010,8 +1043,29 @@
             </div>
         </div>
     </section>
+    </div>
 
-    <!-- Matrix Effect Overlay -->
+    <!-- Footer -->
+    <footer class="footer mt-auto">
+        <div class="container">
+            <nav class="social-links" aria-label="Liens vers les réseaux sociaux">
+                <a href="https://github.com/oaojfr" target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub" aria-label="Profil GitHub de João">
+                    <i class="bi bi-github" aria-hidden="true"></i>
+                </a>
+                <a href="https://bsky.app/profile/oaoj.fr" target="_blank" rel="noopener noreferrer" class="social-link" title="Bluesky" aria-label="Profil Bluesky de João">
+                    <i class="bi bi-cloud" aria-hidden="true"></i>
+                </a>
+                <span class="social-link" title="Discord: nethoria" aria-label="Discord: nethoria">
+                    <i class="bi bi-discord" aria-hidden="true"></i>
+                </span>
+            </nav>
+            <p class="mb-0">
+                <span data-translate="footer.copyright">&copy; 2025 João. Tous droits réservés. Fait avec</span> <i class="bi bi-heart-fill text-danger" aria-hidden="true"></i> <span data-translate="footer.made">et Bootstrap.</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Matrix Effect Overlay (Easter Egg) -->
     <div id="matrix-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none;">
         <canvas id="matrix-canvas"></canvas>
         <div id="matrix-close" style="position: absolute; top: 20px; right: 30px; color: #0f0; font-size: 2rem; cursor: pointer; z-index: 10001;">&times;</div>
@@ -1102,7 +1156,9 @@
                 'units.weight': 'Poids',
                 'units.temperature': 'Température',
                 'units.filesize': 'Taille de fichier',
-                'units.convert': 'Convertir'
+                'units.convert': 'Convertir',
+                'footer.copyright': '© 2025 João. Tous droits réservés. Fait avec',
+                'footer.made': 'et Bootstrap.'
             },
             en: {
                 'nav.brand': 'João',
@@ -1182,7 +1238,9 @@
                 'units.weight': 'Weight',
                 'units.temperature': 'Temperature',
                 'units.filesize': 'File size',
-                'units.convert': 'Convert'
+                'units.convert': 'Convert',
+                'footer.copyright': '© 2025 João. All rights reserved. Made with',
+                'footer.made': 'and Bootstrap.'
             },
             pt: {
                 'nav.brand': 'João',
@@ -1262,7 +1320,9 @@
                 'units.weight': 'Peso',
                 'units.temperature': 'Temperatura',
                 'units.filesize': 'Tamanho de arquivo',
-                'units.convert': 'Converter'
+                'units.convert': 'Converter',
+                'footer.copyright': '© 2025 João. Todos os direitos reservados. Feito com',
+                'footer.made': 'e Bootstrap.'
             }
         };
 
@@ -1285,7 +1345,13 @@
             document.querySelectorAll('[data-translate]').forEach(element => {
                 const key = element.dataset.translate;
                 if (translations[lang][key]) {
-                    element.innerHTML = translations[lang][key];
+                    // Special handling for footer copyright
+                    if (key.includes('footer.copyright')) {
+                        const heartIcon = ' <i class="bi bi-heart-fill text-danger" aria-hidden="true"></i> ';
+                        element.innerHTML = translations[lang][key] + heartIcon + translations[lang]['footer.made'];
+                    } else {
+                        element.innerHTML = translations[lang][key];
+                    }
                 }
             });
 

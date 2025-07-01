@@ -76,6 +76,13 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
         }
 
         .navbar {
@@ -92,7 +99,7 @@
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            color: var(--primary-color) !important;
+            color: white !important;
         }
 
         .nav-link {
@@ -382,6 +389,7 @@
     </style>
 </head>
 <body>
+    <div class="main-content">
     <!-- Navigation Menu -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: var(--navbar-bg); border-bottom: 1px solid rgba(102, 126, 234, 0.2);">
         <div class="container">
@@ -492,6 +500,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Footer -->
