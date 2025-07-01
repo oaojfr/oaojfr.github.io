@@ -842,8 +842,11 @@ class SuperMarioGame {
     }
     
     render() {
-        // Clear canvas
-        this.ctx.fillStyle = '#5C94FC';
+        // Arrière-plan avec dégradé ciel comme dans la preview
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient.addColorStop(0, '#87CEEB');  // Bleu ciel
+        gradient.addColorStop(1, '#98FB98');  // Vert pâle
+        this.ctx.fillStyle = gradient;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Sauvegarder l'état du contexte
@@ -877,15 +880,11 @@ class SuperMarioGame {
                 continue;
             }
             
+            // Style minimal - couleurs simples sans dégradés
             this.ctx.fillStyle = this.getTileColor(tile.type);
             this.ctx.fillRect(tile.x, tile.y, this.TILE_SIZE, this.TILE_SIZE);
             
-            // Bordure
-            this.ctx.strokeStyle = '#000';
-            this.ctx.lineWidth = 1;
-            this.ctx.strokeRect(tile.x, tile.y, this.TILE_SIZE, this.TILE_SIZE);
-            
-            // Symbole pour les blocs spéciaux
+            // Symbole simple pour les blocs question
             if (tile.type === 'question') {
                 this.ctx.fillStyle = '#FFF';
                 this.ctx.font = 'bold 20px Arial';
@@ -897,19 +896,13 @@ class SuperMarioGame {
     
     renderPipes() {
         for (let pipe of this.pipes) {
-            // Corps du tuyau
+            // Style minimal - tuyaux verts simples
             this.ctx.fillStyle = '#00AA00';
             this.ctx.fillRect(pipe.x, pipe.y, pipe.width, pipe.height);
             
-            // Haut du tuyau
+            // Haut du tuyau légèrement plus large
             this.ctx.fillStyle = '#00CC00';
             this.ctx.fillRect(pipe.x - 4, pipe.y, pipe.width + 8, this.TILE_SIZE);
-            
-            // Bordures
-            this.ctx.strokeStyle = '#008800';
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeRect(pipe.x, pipe.y, pipe.width, pipe.height);
-            this.ctx.strokeRect(pipe.x - 4, pipe.y, pipe.width + 8, this.TILE_SIZE);
         }
     }
     
@@ -1020,16 +1013,17 @@ class SuperMarioGame {
         for (let item of this.items) {
             if (item.collected) continue;
             
+            // Style minimal - rectangles simples avec couleurs vives
             this.ctx.fillStyle = this.getItemColor(item.type);
             this.ctx.fillRect(item.x, item.y, item.width || this.TILE_SIZE, item.height || this.TILE_SIZE);
             
-            // Symbole de l'item
-            this.ctx.fillStyle = '#FFF';
-            this.ctx.font = 'bold 16px Arial';
-            this.ctx.textAlign = 'center';
-            
-            const symbol = this.getItemSymbol(item.type);
-            this.ctx.fillText(symbol, item.x + (item.width || this.TILE_SIZE)/2, item.y + (item.height || this.TILE_SIZE)/2 + 5);
+            // Effet scintillant pour les pièces
+            if (item.type === 'coin') {
+                this.ctx.fillStyle = '#ffff00';
+                const coinSize = (item.width || this.TILE_SIZE) * 0.6;
+                const coinOffset = ((item.width || this.TILE_SIZE) - coinSize) / 2;
+                this.ctx.fillRect(item.x + coinOffset, item.y + coinOffset, coinSize, coinSize);
+            }
         }
     }
     
@@ -1044,84 +1038,18 @@ class SuperMarioGame {
         const w = this.player.width;
         const h = this.player.height;
         
-        // Corps de Mario avec dégradé
-        const gradient = this.ctx.createLinearGradient(x, y, x, y + h);
-        if (this.powerState === 0) {
-            gradient.addColorStop(0, '#FF6B6B');
-            gradient.addColorStop(1, '#DC143C');
-        } else if (this.powerState === 1) {
-            gradient.addColorStop(0, '#FF6B6B');
-            gradient.addColorStop(0.5, '#4169E1');
-            gradient.addColorStop(1, '#DC143C');
-        } else {
-            gradient.addColorStop(0, '#FFD700');
-            gradient.addColorStop(0.5, '#FF6B6B');
-            gradient.addColorStop(1, '#DC143C');
-        }
+        // Style minimal comme dans la preview
+        // Chapeau/Casquette (rouge)
+        this.ctx.fillStyle = '#ff0000';
+        this.ctx.fillRect(x, y, w, Math.floor(h * 0.4));
         
-        this.ctx.fillStyle = gradient;
-        this.ctx.fillRect(x, y, w, h);
+        // Visage (beige)
+        this.ctx.fillStyle = '#ffdbac';
+        this.ctx.fillRect(x + 2, y + Math.floor(h * 0.25), w - 4, Math.floor(h * 0.35));
         
-        // Casquette
-        this.ctx.fillStyle = '#8B0000';
-        this.ctx.fillRect(x + 2, y, w - 4, h * 0.3);
-        
-        // Logo M sur la casquette
-        this.ctx.fillStyle = '#FFF';
-        this.ctx.font = 'bold 10px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText('M', x + w/2, y + h * 0.2);
-        
-        // Yeux
-        const eyeSize = 2;
-        const eyeY = y + h * 0.35;
-        this.ctx.fillStyle = '#FFF';
-        this.ctx.fillRect(x + 4, eyeY, eyeSize * 2, eyeSize);
-        this.ctx.fillRect(x + w - 6 - eyeSize, eyeY, eyeSize * 2, eyeSize);
-        
-        // Pupilles (direction)
-        this.ctx.fillStyle = '#000';
-        const pupilX1 = this.player.facingRight ? x + 5 : x + 4;
-        const pupilX2 = this.player.facingRight ? x + w - 5 : x + w - 6;
-        this.ctx.fillRect(pupilX1, eyeY, eyeSize, eyeSize);
-        this.ctx.fillRect(pupilX2, eyeY, eyeSize, eyeSize);
-        
-        // Nez
-        this.ctx.fillStyle = '#FFB6C1';
-        this.ctx.fillRect(x + w/2 - 1, y + h * 0.45, 2, 3);
-        
-        // Moustache
-        this.ctx.fillStyle = '#8B4513';
-        this.ctx.fillRect(x + 3, y + h * 0.55, w - 6, 2);
-        
-        // Salopette (si grand Mario)
-        if (this.powerState > 0) {
-            this.ctx.fillStyle = '#0000FF';
-            this.ctx.fillRect(x + 2, y + h * 0.7, w - 4, h * 0.3);
-            
-            // Boutons
-            this.ctx.fillStyle = '#FFD700';
-            this.ctx.fillRect(x + 4, y + h * 0.75, 2, 2);
-            this.ctx.fillRect(x + w - 6, y + h * 0.75, 2, 2);
-        }
-        
-        // Bordure
-        this.ctx.strokeStyle = '#000';
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(x, y, w, h);
-        
-        // Effet de puissance feu
-        if (this.powerState === 2) {
-            this.ctx.save();
-            this.ctx.globalAlpha = 0.3;
-            this.ctx.fillStyle = '#FF4500';
-            for (let i = 0; i < 3; i++) {
-                const flameX = x + Math.random() * w;
-                const flameY = y + Math.random() * h;
-                this.ctx.fillRect(flameX, flameY, 2, 2);
-            }
-            this.ctx.restore();
-        }
+        // Corps/Salopette (bleu)
+        this.ctx.fillStyle = '#0000ff';
+        this.ctx.fillRect(x, y + Math.floor(h * 0.6), w, Math.floor(h * 0.4));
     }
     
     renderParticles() {
