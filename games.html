@@ -412,19 +412,19 @@
                 </div>
             </div>
 
-            <!-- Mario Game Card -->
+            <!-- Pong Game Card -->
             <div class="col-md-6 col-lg-4">
                 <div class="game-card">
                     <div class="game-preview">
-                        <canvas class="game-canvas" id="marioPreview"></canvas>
-                        <div class="glow" style="background: radial-gradient(circle, rgba(255,0,0,0.3), transparent);"></div>
+                        <canvas class="game-canvas" id="pongPreview"></canvas>
+                        <div class="glow" style="background: radial-gradient(circle, rgba(0,255,255,0.3), transparent);"></div>
                     </div>
                     <div class="game-card-content">
-                        <h2 class="game-card-title pixel-font" data-translate="games.mario.name">🍄 MARIO</h2>
-                        <p class="game-card-description" data-translate="games.mario.description">
-                            Une version simplifiée du célèbre jeu Super Mario. Évitez les ennemis et collectez des pièces.
+                        <h2 class="game-card-title pixel-font" data-translate="games.pong.name">� PONG</h2>
+                        <p class="game-card-description" data-translate="games.pong.description">
+                            Le classique jeu de tennis de table en mode cyberpunk. Jouez contre l'IA ou en mode 2 joueurs.
                         </p>
-                        <a href="games/mario/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
+                        <a href="games/pong/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
                 </div>
             </div>
@@ -786,134 +786,125 @@
                 setInterval(drawBreakout, 16);
             }
 
-            // Mario Preview
-            const marioCanvas = document.getElementById('marioPreview');
-            if (marioCanvas) {
-                const marioCtx = marioCanvas.getContext('2d');
-                marioCanvas.width = 400;
-                marioCanvas.height = 225;
+            // Pong Preview
+            const pongCanvas = document.getElementById('pongPreview');
+            if (pongCanvas) {
+                const pongCtx = pongCanvas.getContext('2d');
+                pongCanvas.width = 400;
+                pongCanvas.height = 225;
                 
-                let marioX = 50, marioY = 180;
-                let coinX = 300, coinY = 160;
-                let coinRotation = 0;
+                let ballX = 200, ballY = 112;
+                let ballVelX = 2, ballVelY = 1.5;
+                let paddle1Y = 90, paddle2Y = 90;
+                let glowIntensity = 0;
                 
-                function drawMario() {
-                    // Fond 3D-like avec dégradé plus sophistiqué
-                    const gradient = marioCtx.createRadialGradient(200, 112, 0, 200, 112, 200);
-                    gradient.addColorStop(0, '#87CEEB');
-                    gradient.addColorStop(0.7, '#4169E1');
-                    gradient.addColorStop(1, '#191970');
-                    marioCtx.fillStyle = gradient;
-                    marioCtx.fillRect(0, 0, 400, 225);
+                function drawPong() {
+                    // Fond cyberpunk
+                    const gradient = pongCtx.createRadialGradient(200, 112, 0, 200, 112, 200);
+                    gradient.addColorStop(0, '#0a0a0f');
+                    gradient.addColorStop(0.7, '#000033');
+                    gradient.addColorStop(1, '#000000');
+                    pongCtx.fillStyle = gradient;
+                    pongCtx.fillRect(0, 0, 400, 225);
                     
-                    // Effet de profondeur avec des lignes de fuite
-                    marioCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-                    marioCtx.lineWidth = 1;
-                    for (let i = 0; i < 10; i++) {
-                        marioCtx.beginPath();
-                        marioCtx.moveTo(0, 112 + i * 10);
-                        marioCtx.lineTo(400, 112 + i * 5);
-                        marioCtx.stroke();
+                    // Lignes de grille cyberpunk
+                    pongCtx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+                    pongCtx.lineWidth = 1;
+                    for (let i = 0; i < 400; i += 40) {
+                        pongCtx.beginPath();
+                        pongCtx.moveTo(i, 0);
+                        pongCtx.lineTo(i, 225);
+                        pongCtx.stroke();
+                    }
+                    for (let i = 0; i < 225; i += 30) {
+                        pongCtx.beginPath();
+                        pongCtx.moveTo(0, i);
+                        pongCtx.lineTo(400, i);
+                        pongCtx.stroke();
                     }
                     
-                    // Sol 3D
-                    marioCtx.fillStyle = '#8B4513';
-                    marioCtx.fillRect(0, 180, 400, 45);
+                    // Ligne centrale avec effet néon
+                    pongCtx.strokeStyle = '#00ffff';
+                    pongCtx.lineWidth = 2;
+                    pongCtx.setLineDash([10, 10]);
+                    pongCtx.beginPath();
+                    pongCtx.moveTo(200, 0);
+                    pongCtx.lineTo(200, 225);
+                    pongCtx.stroke();
+                    pongCtx.setLineDash([]);
                     
-                    // Ombrage 3D pour le sol
-                    const shadowGradient = marioCtx.createLinearGradient(0, 180, 0, 225);
-                    shadowGradient.addColorStop(0, 'rgba(0,0,0,0.2)');
-                    shadowGradient.addColorStop(1, 'rgba(0,0,0,0.6)');
-                    marioCtx.fillStyle = shadowGradient;
-                    marioCtx.fillRect(0, 180, 400, 45);
+                    // Ombre néon pour la ligne centrale
+                    pongCtx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+                    pongCtx.lineWidth = 6;
+                    pongCtx.setLineDash([10, 10]);
+                    pongCtx.beginPath();
+                    pongCtx.moveTo(200, 0);
+                    pongCtx.lineTo(200, 225);
+                    pongCtx.stroke();
+                    pongCtx.setLineDash([]);
                     
-                    // Plateformes 3D avec perspective
-                    marioCtx.fillStyle = '#654321';
-                    // Plateforme 1 (plus proche)
-                    marioCtx.fillRect(120, 130, 80, 15);
-                    marioCtx.fillStyle = '#543210';
-                    marioCtx.fillRect(120, 145, 80, 3); // Ombre
+                    // Paddle gauche avec effet néon
+                    pongCtx.fillStyle = '#ff6600';
+                    pongCtx.fillRect(20, paddle1Y, 8, 45);
+                    pongCtx.shadowColor = '#ff6600';
+                    pongCtx.shadowBlur = 10;
+                    pongCtx.fillRect(20, paddle1Y, 8, 45);
+                    pongCtx.shadowBlur = 0;
                     
-                    // Plateforme 2 (plus loin, plus petite)
-                    marioCtx.fillStyle = '#654321';
-                    marioCtx.fillRect(250, 100, 60, 12);
-                    marioCtx.fillStyle = '#543210';
-                    marioCtx.fillRect(250, 112, 60, 2); // Ombre
+                    // Paddle droite avec effet néon
+                    pongCtx.fillStyle = '#9933ff';
+                    pongCtx.fillRect(372, paddle2Y, 8, 45);
+                    pongCtx.shadowColor = '#9933ff';
+                    pongCtx.shadowBlur = 10;
+                    pongCtx.fillRect(372, paddle2Y, 8, 45);
+                    pongCtx.shadowBlur = 0;
                     
-                    // Mario 3D avec ombrage
-                    const marioSize = 12;
+                    // Balle avec trail néon
+                    glowIntensity = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;
                     
-                    // Ombre de Mario
-                    marioCtx.fillStyle = 'rgba(0,0,0,0.3)';
-                    marioCtx.fillRect(marioX + 2, 182, marioSize, 4);
-                    
-                    // Corps principal avec effet 3D
-                    // Casquette (rouge avec highlight)
-                    const redGradient = marioCtx.createLinearGradient(marioX, marioY, marioX + marioSize, marioY + 8);
-                    redGradient.addColorStop(0, '#ff4444');
-                    redGradient.addColorStop(1, '#cc0000');
-                    marioCtx.fillStyle = redGradient;
-                    marioCtx.fillRect(marioX, marioY, marioSize, 8);
-                    
-                    // Highlight sur la casquette
-                    marioCtx.fillStyle = 'rgba(255,255,255,0.3)';
-                    marioCtx.fillRect(marioX + 1, marioY + 1, marioSize - 2, 2);
-                    
-                    // Visage (beige avec ombrage)
-                    const faceGradient = marioCtx.createLinearGradient(marioX + 2, marioY + 4, marioX + 10, marioY + 12);
-                    faceGradient.addColorStop(0, '#ffdbac');
-                    faceGradient.addColorStop(1, '#ddbf88');
-                    marioCtx.fillStyle = faceGradient;
-                    marioCtx.fillRect(marioX + 2, marioY + 4, 8, 8);
-                    
-                    // Corps (bleu avec effet 3D)
-                    const blueGradient = marioCtx.createLinearGradient(marioX, marioY + 12, marioX + marioSize, marioY + 20);
-                    blueGradient.addColorStop(0, '#4444ff');
-                    blueGradient.addColorStop(1, '#0000cc');
-                    marioCtx.fillStyle = blueGradient;
-                    marioCtx.fillRect(marioX, marioY + 12, marioSize, 8);
-                    
-                    // Pièce 3D avec animation et brillance
-                    marioCtx.save();
-                    marioCtx.translate(coinX + 6, coinY + 6);
-                    marioCtx.rotate(coinRotation);
-                    
-                    // Ombre de la pièce
-                    marioCtx.fillStyle = 'rgba(0,0,0,0.2)';
-                    marioCtx.fillRect(-5, 2, 10, 8);
-                    
-                    // Pièce principale
-                    const coinGradient = marioCtx.createRadialGradient(0, 0, 0, 0, 0, 6);
-                    coinGradient.addColorStop(0, '#ffff44');
-                    coinGradient.addColorStop(0.7, '#ffd700');
-                    coinGradient.addColorStop(1, '#b8860b');
-                    marioCtx.fillStyle = coinGradient;
-                    marioCtx.fillRect(-6, -6, 12, 12);
-                    
-                    // Brillance sur la pièce
-                    marioCtx.fillStyle = 'rgba(255,255,255,0.6)';
-                    marioCtx.fillRect(-4, -4, 3, 3);
-                    
-                    marioCtx.restore();
-                    
-                    // Particules d'étoiles pour l'effet magique
-                    const time = Date.now() * 0.001;
-                    for (let i = 0; i < 3; i++) {
-                        const x = 50 + Math.sin(time + i) * 30;
-                        const y = 50 + Math.cos(time + i * 2) * 20;
-                        marioCtx.fillStyle = `rgba(255, 255, 255, ${0.3 + Math.sin(time * 3 + i) * 0.2})`;
-                        marioCtx.fillRect(x, y, 2, 2);
+                    // Trail de la balle
+                    for (let i = 1; i <= 5; i++) {
+                        const trailX = ballX - ballVelX * i * 2;
+                        const trailY = ballY - ballVelY * i * 2;
+                        const opacity = (6 - i) / 6 * 0.3;
+                        
+                        pongCtx.fillStyle = `rgba(255, 255, 0, ${opacity})`;
+                        pongCtx.fillRect(trailX - 4, trailY - 4, 8, 8);
                     }
                     
-                    // Update animations
-                    marioX += 1;
-                    if (marioX > 400) marioX = -20;
+                    // Balle principale
+                    pongCtx.fillStyle = '#ffff00';
+                    pongCtx.fillRect(ballX - 6, ballY - 6, 12, 12);
                     
-                    coinRotation += 0.1;
-                    coinY += Math.sin(Date.now() * 0.005) * 0.5;
+                    // Effet de lueur sur la balle
+                    const ballGlow = pongCtx.createRadialGradient(ballX, ballY, 0, ballX, ballY, 15);
+                    ballGlow.addColorStop(0, `rgba(255, 255, 0, ${0.6 + glowIntensity * 0.4})`);
+                    ballGlow.addColorStop(1, 'rgba(255, 255, 0, 0)');
+                    pongCtx.fillStyle = ballGlow;
+                    pongCtx.fillRect(ballX - 15, ballY - 15, 30, 30);
+                    
+                    // Animation
+                    ballX += ballVelX;
+                    ballY += ballVelY;
+                    
+                    // Rebonds sur les murs
+                    if (ballY <= 6 || ballY >= 219) ballVelY = -ballVelY;
+                    if (ballX <= 0 || ballX >= 400) {
+                        ballVelX = -ballVelX;
+                        ballX = 200;
+                        ballY = 112;
+                    }
+                    
+                    // IA simple pour les paddles
+                    paddle1Y += (ballY - paddle1Y - 22.5) * 0.03;
+                    paddle2Y += (ballY - paddle2Y - 22.5) * 0.025;
+                    
+                    // Limites des paddles
+                    paddle1Y = Math.max(0, Math.min(180, paddle1Y));
+                    paddle2Y = Math.max(0, Math.min(180, paddle2Y));
                 }
                 
-                setInterval(drawMario, 50);
+                setInterval(drawPong, 16);
             }
 
             // Hexagon Preview
