@@ -1,6 +1,691 @@
-// Snake Game Script
-const canvas = document.getElementById('snakeCanvas');
-const ctx = canvas.getContext('2d');
+// Snake Game - Complet et fonctionnel
+class SnakeGame {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.canvas.width = 800;
+        this.canvas.height = 600;
+        
+        // Configuration du jeu
+        this.gridSize = 20;
+        this.tileCountX = Math.floor(this.canvas.width / this.gridSize);
+        this.tileCountY = Math.floor(this.canvas.height / this.gridSize);
+        
+        // État du jeu
+        this.gameRunning = false;
+        this.gameStarted = false;
+        this.gamePaused = false;
+        this.gameOver = false;
+        
+        // Score et statistiques
+        this.score = 0;
+        this.highScore = parseInt(localStorage.getItem('snakeHighScore')) || 0;
+        this.gameSpeed = 150;
+        this.level = 1;
+        
+        // Serpent
+        this.snake = [];
+        this.direction = { x: 1, y: 0 };
+        this.nextDirection = { x: 1, y: 0 };
+        
+        // Nourriture
+        this.food = {};
+        this.specialFood = null;
+        this.specialFoodTimer = 0;
+        
+        // Contrôles
+        this.keys = {};
+        
+        // Particules pour les effets
+        this.particles = [];
+        
+        // Configuration des couleurs
+        this.colors = {
+            background: '#0a0a23',
+            snake: '#4ECDC4',
+            snakeHead: '#667eea',
+            food: '#ff6b6b',
+            specialFood: '#FFD700',
+            gridLines: '#1e1e3a',
+            text: '#FFFFFF',
+            particle: '#FFFFFF'
+        };
+        
+        this.setupEventListeners();
+        this.initGame();
+    }
+    
+    setupEventListeners() {
+        // Clavier
+        document.addEventListener('keydown', (e) => {
+            this.keys[e.key] = true;
+            
+            if (e.key === ' ') {
+                e.preventDefault();
+                if (!this.gameStarted) {
+                    this.start();
+                } else if (this.gameRunning) {
+                    this.togglePause();
+                }
+            }
+            
+            // Contrôles du serpent
+            if (this.gameRunning && !this.gamePaused) {
+                switch(e.key) {
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                        if (this.direction.y !== 1) {
+                            this.nextDirection = {x: 0, y: -1};
+                        }
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        if (this.direction.y !== -1) {
+                            this.nextDirection = {x: 0, y: 1};
+                        }
+                        break;
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        if (this.direction.x !== 1) {
+                            this.nextDirection = {x: -1, y: 0};
+                        }
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        if (this.direction.x !== -1) {
+                            this.nextDirection = {x: 1, y: 0};
+                        }
+                        break;
+                }
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            this.keys[e.key] = false;
+        });
+        
+        // Clic pour démarrer
+        this.canvas.addEventListener('click', () => {
+            if (!this.gameStarted) {
+                this.start();
+            }
+        });
+    }
+    
+    initGame() {
+        // Initialiser le serpent
+        this.snake = [
+            {x: 10, y: 10},
+            {x: 9, y: 10},
+            {x: 8, y: 10}
+        ];
+        this.direction = { x: 1, y: 0 };
+        this.nextDirection = { x: 1, y: 0 };
+        
+        // Reset du score et de la vitesse
+        this.score = 0;
+        this.gameSpeed = 150;
+        this.level = 1;
+        
+        // Générer la première nourriture
+        this.generateFood();
+        
+        // Clear effects
+        this.particles = [];
+        this.specialFood = null;
+        this.specialFoodTimer = 0;
+        
+        this.updateUI();
+    }
+    
+    start() {
+        this.gameStarted = true;
+        this.gameRunning = true;
+        this.gameOver = false;
+        this.gamePaused = false;
+        this.gameLoop();
+    }
+    
+    togglePause() {
+        this.gamePaused = !this.gamePaused;
+        if (!this.gamePaused) {
+            this.gameLoop();
+        }
+    }
+    
+    restart() {
+        this.gameOver = false;
+        this.gameRunning = false;
+        this.gameStarted = false;
+        this.gamePaused = false;
+        
+        this.initGame();
+    }
+    
+    generateFood() {
+        let validPosition = false;
+        let newFood;
+        
+        while (!validPosition) {
+            newFood = {
+                x: Math.floor(Math.random() * this.tileCountX),
+                y: Math.floor(Math.random() * this.tileCountY)
+            };
+            
+            // Vérifier que la position n'est pas sur le serpent
+            validPosition = !this.snake.some(segment => segment.x === newFood.x && segment.y === newFood.y);
+        }
+        
+        this.food = newFood;
+        
+        // Chance de générer une nourriture spéciale
+        if (Math.random() < 0.1 && !this.specialFood) {
+            this.generateSpecialFood();
+        }
+    }
+    
+    generateSpecialFood() {
+        let validPosition = false;
+        let newSpecialFood;
+        
+        while (!validPosition) {
+            newSpecialFood = {
+                x: Math.floor(Math.random() * this.tileCountX),
+                y: Math.floor(Math.random() * this.tileCountY),
+                type: Math.random() > 0.5 ? 'golden' : 'speed',
+                timer: 300 // 5 secondes à 60 FPS
+            };
+            
+            // Vérifier que la position n'est pas sur le serpent ou la nourriture normale
+            validPosition = !this.snake.some(segment => segment.x === newSpecialFood.x && segment.y === newSpecialFood.y) &&
+                           !(newSpecialFood.x === this.food.x && newSpecialFood.y === this.food.y);
+        }
+        
+        this.specialFood = newSpecialFood;
+        this.specialFoodTimer = 300;
+    }
+    
+    update() {
+        if (!this.gameRunning || this.gamePaused || this.gameOver) return;
+        
+        // Mettre à jour la direction
+        this.direction = { ...this.nextDirection };
+        
+        // Calculer la nouvelle position de la tête
+        const head = {...this.snake[0]};
+        head.x += this.direction.x;
+        head.y += this.direction.y;
+        
+        // Vérifier les collisions avec les bords
+        if (head.x < 0 || head.x >= this.tileCountX || head.y < 0 || head.y >= this.tileCountY) {
+            this.gameOver = true;
+            this.gameRunning = false;
+            this.createDeathParticles();
+            this.showGameOver();
+            return;
+        }
+        
+        // Vérifier les collisions avec le serpent lui-même
+        for (let segment of this.snake) {
+            if (head.x === segment.x && head.y === segment.y) {
+                this.gameOver = true;
+                this.gameRunning = false;
+                this.createDeathParticles();
+                this.showGameOver();
+                return;
+            }
+        }
+        
+        // Ajouter la nouvelle tête
+        this.snake.unshift(head);
+        
+        // Vérifier si le serpent a mangé la nourriture normale
+        if (head.x === this.food.x && head.y === this.food.y) {
+            this.score += 10;
+            this.createFoodParticles(this.food.x * this.gridSize + this.gridSize/2, 
+                                   this.food.y * this.gridSize + this.gridSize/2, 
+                                   this.colors.food);
+            this.generateFood();
+            this.updateGameSpeed();
+            this.updateUI();
+        }
+        // Vérifier si le serpent a mangé la nourriture spéciale
+        else if (this.specialFood && head.x === this.specialFood.x && head.y === this.specialFood.y) {
+            if (this.specialFood.type === 'golden') {
+                this.score += 50;
+                // Faire grandir le serpent de 2 segments
+                this.snake.push({...this.snake[this.snake.length - 1]});
+            } else if (this.specialFood.type === 'speed') {
+                this.score += 25;
+                this.gameSpeed = Math.max(50, this.gameSpeed - 20);
+            }
+            
+            this.createFoodParticles(this.specialFood.x * this.gridSize + this.gridSize/2, 
+                                   this.specialFood.y * this.gridSize + this.gridSize/2, 
+                                   this.colors.specialFood);
+            this.specialFood = null;
+            this.specialFoodTimer = 0;
+            this.updateUI();
+        }
+        else {
+            // Retirer la queue si aucune nourriture n'a été mangée
+            this.snake.pop();
+        }
+        
+        // Mettre à jour la nourriture spéciale
+        this.updateSpecialFood();
+        
+        // Mettre à jour les particules
+        this.updateParticles();
+    }
+    
+    updateGameSpeed() {
+        // Augmenter la vitesse tous les 5 points
+        if (this.score % 50 === 0 && this.gameSpeed > 50) {
+            this.gameSpeed = Math.max(50, this.gameSpeed - 10);
+            this.level++;
+        }
+    }
+    
+    updateSpecialFood() {
+        if (this.specialFood) {
+            this.specialFoodTimer--;
+            if (this.specialFoodTimer <= 0) {
+                this.specialFood = null;
+            }
+        }
+    }
+    
+    updateParticles() {
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            const particle = this.particles[i];
+            particle.x += particle.dx;
+            particle.y += particle.dy;
+            particle.life--;
+            particle.size *= 0.98;
+            
+            if (particle.life <= 0 || particle.size < 1) {
+                this.particles.splice(i, 1);
+            }
+        }
+    }
+    
+    createFoodParticles(x, y, color) {
+        for (let i = 0; i < 8; i++) {
+            this.particles.push({
+                x: x,
+                y: y,
+                dx: (Math.random() - 0.5) * 8,
+                dy: (Math.random() - 0.5) * 8,
+                life: 30,
+                size: Math.random() * 4 + 2,
+                color: color
+            });
+        }
+    }
+    
+    createDeathParticles() {
+        const head = this.snake[0];
+        const x = head.x * this.gridSize + this.gridSize/2;
+        const y = head.y * this.gridSize + this.gridSize/2;
+        
+        for (let i = 0; i < 20; i++) {
+            this.particles.push({
+                x: x,
+                y: y,
+                dx: (Math.random() - 0.5) * 12,
+                dy: (Math.random() - 0.5) * 12,
+                life: 60,
+                size: Math.random() * 6 + 3,
+                color: this.colors.snakeHead
+            });
+        }
+    }
+    
+    render() {
+        // Clear canvas
+        this.ctx.fillStyle = this.colors.background;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Grille de fond
+        this.drawGrid();
+        
+        // Nourriture
+        this.drawFood();
+        
+        // Nourriture spéciale
+        if (this.specialFood) {
+            this.drawSpecialFood();
+        }
+        
+        // Serpent
+        this.drawSnake();
+        
+        // Particules
+        this.drawParticles();
+        
+        // HUD
+        this.drawHUD();
+        
+        // Messages
+        if (!this.gameStarted) {
+            this.drawStartMessage();
+        } else if (this.gamePaused) {
+            this.drawPauseMessage();
+        }
+    }
+    
+    drawGrid() {
+        this.ctx.strokeStyle = this.colors.gridLines;
+        this.ctx.lineWidth = 0.5;
+        
+        // Lignes horizontales
+        for (let i = 0; i <= this.tileCountY; i++) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, i * this.gridSize);
+            this.ctx.lineTo(this.canvas.width, i * this.gridSize);
+            this.ctx.stroke();
+        }
+        
+        // Lignes verticales
+        for (let i = 0; i <= this.tileCountX; i++) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(i * this.gridSize, 0);
+            this.ctx.lineTo(i * this.gridSize, this.canvas.height);
+            this.ctx.stroke();
+        }
+    }
+    
+    drawFood() {
+        const x = this.food.x * this.gridSize;
+        const y = this.food.y * this.gridSize;
+        
+        // Ombre
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.beginPath();
+        this.ctx.arc(x + this.gridSize/2 + 2, y + this.gridSize/2 + 2, this.gridSize/2 - 2, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Nourriture avec gradient
+        const gradient = this.ctx.createRadialGradient(
+            x + this.gridSize/2 - 3, y + this.gridSize/2 - 3, 0,
+            x + this.gridSize/2, y + this.gridSize/2, this.gridSize/2 - 2
+        );
+        gradient.addColorStop(0, '#FFFFFF');
+        gradient.addColorStop(1, this.colors.food);
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.arc(x + this.gridSize/2, y + this.gridSize/2, this.gridSize/2 - 2, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Bordure
+        this.ctx.strokeStyle = '#FFFFFF';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+    }
+    
+    drawSpecialFood() {
+        const x = this.specialFood.x * this.gridSize;
+        const y = this.specialFood.y * this.gridSize;
+        
+        // Effet de clignotement
+        const alpha = Math.sin(Date.now() * 0.01) * 0.3 + 0.7;
+        
+        // Ombre
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.fillRect(x + 2, y + 2, this.gridSize - 4, this.gridSize - 4);
+        
+        // Nourriture spéciale avec gradient
+        this.ctx.save();
+        this.ctx.globalAlpha = alpha;
+        
+        const gradient = this.ctx.createLinearGradient(x, y, x + this.gridSize, y + this.gridSize);
+        gradient.addColorStop(0, this.colors.specialFood);
+        gradient.addColorStop(0.5, '#FFFFFF');
+        gradient.addColorStop(1, this.colors.specialFood);
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(x + 2, y + 2, this.gridSize - 4, this.gridSize - 4);
+        
+        // Bordure
+        this.ctx.strokeStyle = '#FFFFFF';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(x + 2, y + 2, this.gridSize - 4, this.gridSize - 4);
+        
+        // Symbole
+        this.ctx.fillStyle = '#000';
+        this.ctx.font = 'bold 12px Arial';
+        this.ctx.textAlign = 'center';
+        const symbol = this.specialFood.type === 'golden' ? '★' : '⚡';
+        this.ctx.fillText(symbol, x + this.gridSize/2, y + this.gridSize/2 + 4);
+        
+        this.ctx.restore();
+    }
+    
+    drawSnake() {
+        this.snake.forEach((segment, index) => {
+            const x = segment.x * this.gridSize;
+            const y = segment.y * this.gridSize;
+            
+            // Ombre
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            this.ctx.fillRect(x + 2, y + 2, this.gridSize - 2, this.gridSize - 2);
+            
+            // Couleur du segment
+            const isHead = index === 0;
+            const gradient = this.ctx.createLinearGradient(x, y, x + this.gridSize, y + this.gridSize);
+            
+            if (isHead) {
+                gradient.addColorStop(0, this.colors.snakeHead);
+                gradient.addColorStop(1, '#4169E1');
+            } else {
+                gradient.addColorStop(0, this.colors.snake);
+                gradient.addColorStop(1, '#2E8B57');
+            }
+            
+            this.ctx.fillStyle = gradient;
+            
+            // Rectangle arrondi
+            this.drawRoundedRect(x + 1, y + 1, this.gridSize - 2, this.gridSize - 2, 4);
+            
+            // Bordure
+            this.ctx.strokeStyle = '#FFFFFF';
+            this.ctx.lineWidth = 1;
+            this.ctx.stroke();
+            
+            // Yeux pour la tête
+            if (isHead) {
+                this.drawSnakeEyes(x, y);
+            }
+        });
+    }
+    
+    drawSnakeEyes(x, y) {
+        const eyeSize = 3;
+        let eyeX1, eyeX2, eyeY1, eyeY2;
+        
+        // Position des yeux selon la direction
+        if (this.direction.x === 1) { // Droite
+            eyeX1 = eyeX2 = x + this.gridSize - eyeSize * 2;
+            eyeY1 = y + this.gridSize / 3;
+            eyeY2 = y + this.gridSize * 2/3;
+        } else if (this.direction.x === -1) { // Gauche
+            eyeX1 = eyeX2 = x + eyeSize;
+            eyeY1 = y + this.gridSize / 3;
+            eyeY2 = y + this.gridSize * 2/3;
+        } else if (this.direction.y === -1) { // Haut
+            eyeX1 = x + this.gridSize / 3;
+            eyeX2 = x + this.gridSize * 2/3;
+            eyeY1 = eyeY2 = y + eyeSize;
+        } else { // Bas
+            eyeX1 = x + this.gridSize / 3;
+            eyeX2 = x + this.gridSize * 2/3;
+            eyeY1 = eyeY2 = y + this.gridSize - eyeSize * 2;
+        }
+        
+        // Dessiner les yeux
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.beginPath();
+        this.ctx.arc(eyeX1, eyeY1, eyeSize, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(eyeX2, eyeY2, eyeSize, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Pupilles
+        this.ctx.fillStyle = '#000';
+        this.ctx.beginPath();
+        this.ctx.arc(eyeX1, eyeY1, eyeSize / 2, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(eyeX2, eyeY2, eyeSize / 2, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+    
+    drawRoundedRect(x, y, width, height, radius) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + radius, y);
+        this.ctx.lineTo(x + width - radius, y);
+        this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        this.ctx.lineTo(x + width, y + height - radius);
+        this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        this.ctx.lineTo(x + radius, y + height);
+        this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        this.ctx.lineTo(x, y + radius);
+        this.ctx.quadraticCurveTo(x, y, x + radius, y);
+        this.ctx.closePath();
+        this.ctx.fill();
+    }
+    
+    drawParticles() {
+        for (let particle of this.particles) {
+            this.ctx.save();
+            this.ctx.globalAlpha = particle.life / 60;
+            this.ctx.fillStyle = particle.color;
+            this.ctx.beginPath();
+            this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+    }
+    
+    drawHUD() {
+        this.ctx.fillStyle = this.colors.text;
+        this.ctx.font = 'bold 20px Arial';
+        this.ctx.textAlign = 'left';
+        
+        // Score
+        this.ctx.fillText(`Score: ${this.score}`, 20, 30);
+        
+        // Meilleur score
+        this.ctx.fillText(`Meilleur: ${this.highScore}`, 20, 55);
+        
+        // Niveau
+        this.ctx.fillText(`Niveau: ${this.level}`, 200, 30);
+        
+        // Longueur du serpent
+        this.ctx.fillText(`Longueur: ${this.snake.length}`, 200, 55);
+        
+        // Timer pour la nourriture spéciale
+        if (this.specialFood) {
+            this.ctx.fillStyle = this.colors.specialFood;
+            this.ctx.fillText(`Bonus: ${Math.ceil(this.specialFoodTimer / 60)}s`, 350, 30);
+        }
+    }
+    
+    drawStartMessage() {
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 48px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('SNAKE', this.canvas.width/2, this.canvas.height/2 - 60);
+        
+        this.ctx.font = '24px Arial';
+        this.ctx.fillText('Cliquez ou appuyez sur ESPACE pour commencer', this.canvas.width/2, this.canvas.height/2 - 10);
+        
+        this.ctx.font = '18px Arial';
+        this.ctx.fillText('Utilisez les flèches ou WASD pour diriger le serpent', this.canvas.width/2, this.canvas.height/2 + 20);
+        
+        this.ctx.font = '16px Arial';
+        this.ctx.fillText('★ Nourriture dorée = +50 points | ⚡ Vitesse = +25 points', this.canvas.width/2, this.canvas.height/2 + 50);
+    }
+    
+    drawPauseMessage() {
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 36px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('PAUSE', this.canvas.width/2, this.canvas.height/2);
+        
+        this.ctx.font = '20px Arial';
+        this.ctx.fillText('Appuyez sur ESPACE pour reprendre', this.canvas.width/2, this.canvas.height/2 + 40);
+    }
+    
+    updateUI() {
+        document.getElementById('score').textContent = this.score;
+        document.getElementById('highScore').textContent = this.highScore;
+    }
+    
+    showGameOver() {
+        // Mettre à jour le meilleur score
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('snakeHighScore', this.highScore.toString());
+        }
+        
+        document.getElementById('finalScore').textContent = this.score;
+        document.getElementById('finalHighScore').textContent = this.highScore;
+        document.getElementById('gameMessage').style.display = 'block';
+    }
+    
+    gameLoop() {
+        if (!this.gamePaused) {
+            this.update();
+            this.render();
+        }
+        
+        if (this.gameRunning || this.gamePaused) {
+            setTimeout(() => {
+                if (this.gameRunning || this.gamePaused) {
+                    this.gameLoop();
+                }
+            }, this.gameSpeed);
+        } else if (!this.gameOver) {
+            this.render();
+            setTimeout(() => {
+                if (!this.gameOver) {
+                    this.gameLoop();
+                }
+            }, this.gameSpeed);
+        }
+    }
+}
+
+// Initialisation
+let snakeGame;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('snakeCanvas');
+    snakeGame = new SnakeGame(canvas);
+    
+    // Bouton restart
+    document.getElementById('restartBtn').addEventListener('click', function() {
+        document.getElementById('gameMessage').style.display = 'none';
+        snakeGame.restart();
+    });
+    
+    // Démarrer le rendu
+    snakeGame.render();
+});
 const scoreElement = document.getElementById('score');
 const finalScoreElement = document.getElementById('finalScore');
 const gameMessage = document.getElementById('gameMessage');
