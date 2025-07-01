@@ -1,10 +1,14 @@
-// Pong Game - Complet et fonctionnel
+// Pong Game - Complet et fonctionnel avec modes de jeu
 class PongGame {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.canvas.width = 800;
         this.canvas.height = 400;
+        
+        // Mode de jeu
+        this.gameMode = null; // null = menu, '1player', '2players', 'vs-ai'
+        this.showMenu = true;
         
         // État du jeu
         this.gameRunning = false;
@@ -14,11 +18,11 @@ class PongGame {
         
         // Scores
         this.playerScore = 0;
-        this.aiScore = 0;
+        this.player2Score = 0; // Pour le mode 2 joueurs ou IA
         this.maxScore = 5;
         
-        // Raquette joueur
-        this.player = {
+        // Raquette joueur 1
+        this.player1 = {
             x: 10,
             y: this.canvas.height / 2 - 50,
             width: 15,
@@ -27,14 +31,17 @@ class PongGame {
             dy: 0
         };
         
-        // Raquette IA
-        this.ai = {
+        // Raquette joueur 2/IA
+        this.player2 = {
             x: this.canvas.width - 25,
             y: this.canvas.height / 2 - 50,
             width: 15,
             height: 100,
-            speed: 4,
-            dy: 0
+            speed: 6,
+            dy: 0,
+            isAI: false,
+            aiSpeed: 4,
+            aiDifficulty: 0.85 // 0.0 = facile, 1.0 = impossible
         };
         
         // Balle
@@ -61,13 +68,22 @@ class PongGame {
         // Configuration des couleurs
         this.colors = {
             background: '#0a0a23',
-            player: '#4ECDC4',
-            ai: '#FF6B6B',
+            player1: '#4ECDC4',
+            player2: '#FF6B6B',
             ball: '#FFD700',
             text: '#FFFFFF',
             trail: '#FFD700',
-            particle: '#FFFFFF'
+            particle: '#FFFFFF',
+            menu: '#667eea'
         };
+        
+        // Interface du menu
+        this.menuItems = [
+            { text: '1 JOUEUR', mode: '1player', description: 'Jouer seul contre les murs' },
+            { text: '2 JOUEURS', mode: '2players', description: 'Jouer à deux sur le même clavier' },
+            { text: 'JOUEUR vs IA', mode: 'vs-ai', description: 'Affronter l\'intelligence artificielle' }
+        ];
+        this.selectedMenuItem = 0;
         
         this.setupEventListeners();
         this.resetBall();
@@ -78,12 +94,27 @@ class PongGame {
         document.addEventListener('keydown', (e) => {
             this.keys[e.key] = true;
             
-            if (e.key === ' ') {
-                e.preventDefault();
-                if (!this.gameStarted) {
-                    this.start();
-                } else if (this.gameRunning) {
-                    this.togglePause();
+            if (this.showMenu) {
+                if (e.key === 'ArrowUp') {
+                    this.selectedMenuItem = Math.max(0, this.selectedMenuItem - 1);
+                } else if (e.key === 'ArrowDown') {
+                    this.selectedMenuItem = Math.min(this.menuItems.length - 1, this.selectedMenuItem + 1);
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectGameMode(this.menuItems[this.selectedMenuItem].mode);
+                }
+            } else {
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    if (this.gameOver) {
+                        this.restart();
+                    } else if (!this.gameStarted) {
+                        this.start();
+                    } else if (this.gameRunning) {
+                        this.togglePause();
+                    }
+                } else if (e.key === 'Escape') {
+                    this.showMainMenu();
                 }
             }
         });
@@ -92,12 +123,58 @@ class PongGame {
             this.keys[e.key] = false;
         });
         
-        // Clic pour démarrer
-        this.canvas.addEventListener('click', () => {
-            if (!this.gameStarted) {
+        // Clic pour démarrer ou naviguer dans le menu
+        this.canvas.addEventListener('click', (e) => {
+            if (this.showMenu) {
+                const rect = this.canvas.getBoundingClientRect();
+                const clickY = e.clientY - rect.top;
+                const menuStartY = this.canvas.height / 2 - 60;
+                
+                for (let i = 0; i < this.menuItems.length; i++) {
+                    const itemY = menuStartY + i * 80;
+                    if (clickY >= itemY - 25 && clickY <= itemY + 25) {
+                        this.selectGameMode(this.menuItems[i].mode);
+                        break;
+                    }
+                }
+            } else if (this.gameOver) {
+                this.restart();
+            } else if (!this.gameStarted) {
                 this.start();
             }
         });
+    }
+    
+    selectGameMode(mode) {
+        this.gameMode = mode;
+        this.showMenu = false;
+        
+        // Configurer selon le mode
+        switch (mode) {
+            case '1player':
+                this.player2.isAI = false;
+                // Pas de deuxième raquette en mode 1 joueur
+                break;
+            case '2players':
+                this.player2.isAI = false;
+                break;
+            case 'vs-ai':
+                this.player2.isAI = true;
+                this.player2.speed = this.player2.aiSpeed;
+                break;
+        }
+        
+        this.restart();
+    }
+    
+    showMainMenu() {
+        this.showMenu = true;
+        this.gameMode = null;
+        this.gameRunning = false;
+        this.gameStarted = false;
+        this.gamePaused = false;
+        this.gameOver = false;
+        this.selectedMenuItem = 0;
     }
     
     start() {
@@ -117,15 +194,15 @@ class PongGame {
     
     restart() {
         this.playerScore = 0;
-        this.aiScore = 0;
+        this.player2Score = 0;
         this.gameOver = false;
         this.gameRunning = false;
         this.gameStarted = false;
         this.gamePaused = false;
         
         // Reset positions
-        this.player.y = this.canvas.height / 2 - 50;
-        this.ai.y = this.canvas.height / 2 - 50;
+        this.player1.y = this.canvas.height / 2 - 50;
+        this.player2.y = this.canvas.height / 2 - 50;
         this.resetBall();
         
         // Clear effects
@@ -153,65 +230,90 @@ class PongGame {
     update() {
         if (!this.gameRunning || this.gamePaused || this.gameOver) return;
         
-        this.updatePlayer();
-        this.updateAI();
+        this.updatePlayer1();
+        if (this.gameMode !== '1player') {
+            this.updatePlayer2();
+        }
         this.updateBall();
         this.updateParticles();
         this.updateBallTrail();
         this.checkWinCondition();
     }
     
-    updatePlayer() {
-        // Contrôles du joueur
+    updatePlayer1() {
+        // Contrôles du joueur 1 (gauche)
         if (this.keys['ArrowUp'] || this.keys['w'] || this.keys['W']) {
-            this.player.dy = -this.player.speed;
+            this.player1.dy = -this.player1.speed;
         } else if (this.keys['ArrowDown'] || this.keys['s'] || this.keys['S']) {
-            this.player.dy = this.player.speed;
+            this.player1.dy = this.player1.speed;
         } else {
-            this.player.dy = 0;
+            this.player1.dy = 0;
         }
         
         // Mise à jour position
-        this.player.y += this.player.dy;
+        this.player1.y += this.player1.dy;
         
         // Limites
-        if (this.player.y < 0) this.player.y = 0;
-        if (this.player.y + this.player.height > this.canvas.height) {
-            this.player.y = this.canvas.height - this.player.height;
+        if (this.player1.y < 0) this.player1.y = 0;
+        if (this.player1.y + this.player1.height > this.canvas.height) {
+            this.player1.y = this.canvas.height - this.player1.height;
         }
     }
     
-    updateAI() {
-        // IA simple mais efficace
-        const ballCenterY = this.ball.y;
-        const aiCenterY = this.ai.y + this.ai.height / 2;
-        const difference = ballCenterY - aiCenterY;
-        
-        // L'IA réagit seulement si la balle se dirige vers elle
-        if (this.ball.dx > 0) {
-            if (Math.abs(difference) > 10) {
-                this.ai.dy = difference > 0 ? this.ai.speed : -this.ai.speed;
+    updatePlayer2() {
+        if (this.player2.isAI) {
+            // IA améliorée
+            const ballCenterY = this.ball.y;
+            const player2CenterY = this.player2.y + this.player2.height / 2;
+            const difference = ballCenterY - player2CenterY;
+            
+            // L'IA réagit seulement si la balle se dirige vers elle
+            if (this.ball.dx > 0) {
+                // Prédiction de la position de la balle
+                const timeToReach = (this.player2.x - this.ball.x) / this.ball.dx;
+                const predictedY = this.ball.y + this.ball.dy * timeToReach;
+                const targetY = Math.max(this.player2.height / 2, 
+                                       Math.min(this.canvas.height - this.player2.height / 2, predictedY));
+                const targetDiff = targetY - player2CenterY;
+                
+                // Ajouter de l'imprécision selon la difficulté
+                const accuracy = this.player2.aiDifficulty;
+                const randomFactor = (1 - accuracy) * 50 * (Math.random() - 0.5);
+                const finalDiff = targetDiff + randomFactor;
+                
+                if (Math.abs(finalDiff) > 10) {
+                    this.player2.dy = finalDiff > 0 ? this.player2.aiSpeed : -this.player2.aiSpeed;
+                } else {
+                    this.player2.dy = 0;
+                }
             } else {
-                this.ai.dy = 0;
+                // Retour au centre quand la balle s'éloigne
+                const centerY = this.canvas.height / 2 - this.player2.height / 2;
+                const centerDiff = centerY - this.player2.y;
+                if (Math.abs(centerDiff) > 5) {
+                    this.player2.dy = centerDiff > 0 ? this.player2.aiSpeed * 0.3 : -this.player2.aiSpeed * 0.3;
+                } else {
+                    this.player2.dy = 0;
+                }
             }
         } else {
-            // Retour au centre quand la balle s'éloigne
-            const centerY = this.canvas.height / 2 - this.ai.height / 2;
-            const centerDiff = centerY - this.ai.y;
-            if (Math.abs(centerDiff) > 5) {
-                this.ai.dy = centerDiff > 0 ? this.ai.speed * 0.3 : -this.ai.speed * 0.3;
+            // Contrôles du joueur 2 (droite) - mode 2 joueurs
+            if (this.keys['i'] || this.keys['I']) {
+                this.player2.dy = -this.player2.speed;
+            } else if (this.keys['k'] || this.keys['K']) {
+                this.player2.dy = this.player2.speed;
             } else {
-                this.ai.dy = 0;
+                this.player2.dy = 0;
             }
         }
         
         // Mise à jour position
-        this.ai.y += this.ai.dy;
+        this.player2.y += this.player2.dy;
         
         // Limites
-        if (this.ai.y < 0) this.ai.y = 0;
-        if (this.ai.y + this.ai.height > this.canvas.height) {
-            this.ai.y = this.canvas.height - this.ai.height;
+        if (this.player2.y < 0) this.player2.y = 0;
+        if (this.player2.y + this.player2.height > this.canvas.height) {
+            this.player2.y = this.canvas.height - this.player2.height;
         }
     }
     
@@ -225,55 +327,69 @@ class PongGame {
             this.createParticles(this.ball.x, this.ball.y, this.colors.particle);
         }
         
-        // Collision avec la raquette du joueur
-        if (this.ball.x - this.ball.radius <= this.player.x + this.player.width &&
-            this.ball.x + this.ball.radius >= this.player.x &&
-            this.ball.y >= this.player.y &&
-            this.ball.y <= this.player.y + this.player.height) {
+        // Collision avec la raquette du joueur 1
+        if (this.ball.x - this.ball.radius <= this.player1.x + this.player1.width &&
+            this.ball.x + this.ball.radius >= this.player1.x &&
+            this.ball.y >= this.player1.y &&
+            this.ball.y <= this.player1.y + this.player1.height) {
             
             if (this.ball.dx < 0) { // Seulement si la balle va vers le joueur
                 // Calcul de l'angle de rebond
-                const hitPos = (this.ball.y - this.player.y) / this.player.height;
+                const hitPos = (this.ball.y - this.player1.y) / this.player1.height;
                 const angle = (hitPos - 0.5) * Math.PI / 3; // ±60 degrés
                 
                 const speed = Math.min(Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) + 0.2, this.ball.maxSpeed);
                 this.ball.dx = speed * Math.cos(angle);
                 this.ball.dy = speed * Math.sin(angle);
                 
-                this.createParticles(this.ball.x, this.ball.y, this.colors.player);
+                this.createParticles(this.ball.x, this.ball.y, this.colors.player1);
             }
         }
         
-        // Collision avec la raquette de l'IA
-        if (this.ball.x + this.ball.radius >= this.ai.x &&
-            this.ball.x - this.ball.radius <= this.ai.x + this.ai.width &&
-            this.ball.y >= this.ai.y &&
-            this.ball.y <= this.ai.y + this.ai.height) {
-            
-            if (this.ball.dx > 0) { // Seulement si la balle va vers l'IA
-                // Calcul de l'angle de rebond
-                const hitPos = (this.ball.y - this.ai.y) / this.ai.height;
-                const angle = Math.PI - (hitPos - 0.5) * Math.PI / 3; // ±60 degrés
+        // Collision avec la raquette du joueur 2/IA (seulement en mode 2 joueurs ou vs-ai)
+        if (this.gameMode !== '1player') {
+            if (this.ball.x + this.ball.radius >= this.player2.x &&
+                this.ball.x - this.ball.radius <= this.player2.x + this.player2.width &&
+                this.ball.y >= this.player2.y &&
+                this.ball.y <= this.player2.y + this.player2.height) {
                 
-                const speed = Math.min(Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) + 0.2, this.ball.maxSpeed);
-                this.ball.dx = -speed * Math.cos(angle);
-                this.ball.dy = speed * Math.sin(angle);
-                
-                this.createParticles(this.ball.x, this.ball.y, this.colors.ai);
+                if (this.ball.dx > 0) { // Seulement si la balle va vers le joueur 2/IA
+                    // Calcul de l'angle de rebond
+                    const hitPos = (this.ball.y - this.player2.y) / this.player2.height;
+                    const angle = Math.PI - (hitPos - 0.5) * Math.PI / 3; // ±60 degrés
+                    
+                    const speed = Math.min(Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) + 0.2, this.ball.maxSpeed);
+                    this.ball.dx = -speed * Math.cos(angle);
+                    this.ball.dy = speed * Math.sin(angle);
+                    
+                    this.createParticles(this.ball.x, this.ball.y, this.colors.player2);
+                }
             }
         }
         
-        // Points marqués
+        // Points marqués ou rebonds selon le mode
         if (this.ball.x < 0) {
-            this.aiScore++;
-            this.createScoreParticles(this.canvas.width / 2, this.canvas.height / 2, this.colors.ai);
-            this.resetBall();
-            this.updateUI();
+            if (this.gameMode === '1player') {
+                // En mode 1 joueur, la balle rebondit sur le côté gauche
+                this.ball.dx = -this.ball.dx;
+                this.createParticles(this.ball.x, this.ball.y, this.colors.player1);
+            } else {
+                // En mode multijoueur, le joueur 2 marque un point
+                this.player2Score++;
+                this.createScoreParticles(this.canvas.width / 2, this.canvas.height / 2, this.colors.player2);
+                this.resetBall();
+            }
         } else if (this.ball.x > this.canvas.width) {
-            this.playerScore++;
-            this.createScoreParticles(this.canvas.width / 2, this.canvas.height / 2, this.colors.player);
-            this.resetBall();
-            this.updateUI();
+            if (this.gameMode === '1player') {
+                // En mode 1 joueur, la balle rebondit sur le côté droit
+                this.ball.dx = -this.ball.dx;
+                this.createParticles(this.ball.x, this.ball.y, this.colors.player1);
+            } else {
+                // En mode multijoueur, le joueur 1 marque un point
+                this.playerScore++;
+                this.createScoreParticles(this.canvas.width / 2, this.canvas.height / 2, this.colors.player1);
+                this.resetBall();
+            }
         }
     }
     
@@ -305,10 +421,15 @@ class PongGame {
     }
     
     checkWinCondition() {
-        if (this.playerScore >= this.maxScore || this.aiScore >= this.maxScore) {
+        if (this.gameMode === '1player') {
+            // En mode 1 joueur, le jeu continue indéfiniment (pas de condition de victoire)
+            // Ou on pourrait ajouter un système de score basé sur le temps
+            return;
+        }
+        
+        if (this.playerScore >= this.maxScore || this.player2Score >= this.maxScore) {
             this.gameOver = true;
             this.gameRunning = false;
-            this.showGameOver();
         }
     }
     
@@ -345,12 +466,19 @@ class PongGame {
         this.ctx.fillStyle = this.colors.background;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
+        if (this.showMenu) {
+            this.drawMenu();
+            return;
+        }
+        
         // Ligne centrale
         this.drawCenterLine();
         
         // Raquettes
-        this.drawPaddle(this.player, this.colors.player);
-        this.drawPaddle(this.ai, this.colors.ai);
+        this.drawPaddle(this.player1, this.colors.player1);
+        if (this.gameMode !== '1player') {
+            this.drawPaddle(this.player2, this.colors.player2);
+        }
         
         // Trail de la balle
         this.drawBallTrail();
@@ -369,6 +497,8 @@ class PongGame {
             this.drawStartMessage();
         } else if (this.gamePaused) {
             this.drawPauseMessage();
+        } else if (this.gameOver) {
+            this.drawGameOverMessage();
         }
     }
     
@@ -481,16 +611,22 @@ class PongGame {
         this.ctx.font = 'bold 48px Arial';
         this.ctx.textAlign = 'center';
         
-        // Score joueur
+        // Score joueur 1
         this.ctx.fillText(this.playerScore, this.canvas.width / 4, 60);
         
-        // Score IA
-        this.ctx.fillText(this.aiScore, (this.canvas.width * 3) / 4, 60);
+        // Score joueur 2 (ou IA)
+        if (this.gameMode !== '1player') {
+            this.ctx.fillText(this.player2Score, (this.canvas.width * 3) / 4, 60);
+        }
         
         // Labels
         this.ctx.font = 'bold 16px Arial';
-        this.ctx.fillText('JOUEUR', this.canvas.width / 4, 90);
-        this.ctx.fillText('IA', (this.canvas.width * 3) / 4, 90);
+        this.ctx.fillText('JOUEUR 1', this.canvas.width / 4, 90);
+        if (this.gameMode === 'vs-ai') {
+            this.ctx.fillText('IA', (this.canvas.width * 3) / 4, 90);
+        } else if (this.gameMode === '2players') {
+            this.ctx.fillText('JOUEUR 2', (this.canvas.width * 3) / 4, 90);
+        }
     }
     
     drawStartMessage() {
@@ -498,18 +634,35 @@ class PongGame {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 48px Arial';
+        this.ctx.font = 'bold 32px Arial';
         this.ctx.textAlign = 'center';
-        this.ctx.fillText('PONG', this.canvas.width/2, this.canvas.height/2 - 60);
         
-        this.ctx.font = '24px Arial';
+        let message = '';
+        if (this.gameMode === '1player') {
+            message = 'MODE 1 JOUEUR';
+        } else if (this.gameMode === '2players') {
+            message = 'MODE 2 JOUEURS';
+        } else if (this.gameMode === 'vs-ai') {
+            message = 'JOUEUR vs IA';
+        }
+        
+        this.ctx.fillText(message, this.canvas.width/2, this.canvas.height/2 - 60);
+        
+        this.ctx.font = '20px Arial';
         this.ctx.fillText('Cliquez ou appuyez sur ESPACE pour commencer', this.canvas.width/2, this.canvas.height/2 - 10);
         
-        this.ctx.font = '18px Arial';
-        this.ctx.fillText('Utilisez les flèches ou W/S pour déplacer votre raquette', this.canvas.width/2, this.canvas.height/2 + 20);
-        
         this.ctx.font = '16px Arial';
-        this.ctx.fillText(`Premier à ${this.maxScore} points gagne!`, this.canvas.width/2, this.canvas.height/2 + 50);
+        if (this.gameMode === '1player') {
+            this.ctx.fillText('Utilisez les flèches ou W/S pour déplacer votre raquette', this.canvas.width/2, this.canvas.height/2 + 20);
+            this.ctx.fillText('Empêchez la balle de sortir des côtés !', this.canvas.width/2, this.canvas.height/2 + 45);
+        } else if (this.gameMode === '2players') {
+            this.ctx.fillText('Joueur 1: W/S ou Flèches - Joueur 2: I/K', this.canvas.width/2, this.canvas.height/2 + 20);
+        } else if (this.gameMode === 'vs-ai') {
+            this.ctx.fillText('Utilisez les flèches ou W/S pour déplacer votre raquette', this.canvas.width/2, this.canvas.height/2 + 20);
+        }
+        
+        this.ctx.fillText(`Premier à ${this.maxScore} points gagne!`, this.canvas.width/2, this.canvas.height/2 + 70);
+        this.ctx.fillText('ESC pour revenir au menu', this.canvas.width/2, this.canvas.height/2 + 95);
     }
     
     drawPauseMessage() {
@@ -523,31 +676,106 @@ class PongGame {
         
         this.ctx.font = '20px Arial';
         this.ctx.fillText('Appuyez sur ESPACE pour reprendre', this.canvas.width/2, this.canvas.height/2 + 40);
+        this.ctx.fillText('ESC pour revenir au menu', this.canvas.width/2, this.canvas.height/2 + 65);
     }
     
-    updateUI() {
-        document.getElementById('playerScore').textContent = this.playerScore;
-        document.getElementById('aiScore').textContent = this.aiScore;
+    drawGameOverMessage() {
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 48px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('GAME OVER', this.canvas.width/2, this.canvas.height/2 - 60);
+        
+        // Déterminer le gagnant
+        let winner = '';
+        if (this.gameMode === '1player') {
+            winner = this.playerScore >= this.maxScore ? 'VICTOIRE!' : 'DÉFAITE!';
+        } else if (this.gameMode === '2players') {
+            winner = this.playerScore >= this.maxScore ? 'JOUEUR 1 GAGNE!' : 'JOUEUR 2 GAGNE!';
+        } else if (this.gameMode === 'vs-ai') {
+            winner = this.playerScore >= this.maxScore ? 'VOUS GAGNEZ!' : 'IA GAGNE!';
+        }
+        
+        this.ctx.font = 'bold 32px Arial';
+        this.ctx.fillStyle = this.playerScore >= this.maxScore ? '#4ECDC4' : '#FF6B6B';
+        this.ctx.fillText(winner, this.canvas.width/2, this.canvas.height/2 - 10);
+        
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = '24px Arial';
+        this.ctx.fillText(`Score final: ${this.playerScore} - ${this.player2Score}`, this.canvas.width/2, this.canvas.height/2 + 30);
+        
+        this.ctx.font = '18px Arial';
+        this.ctx.fillText('Cliquez ou appuyez sur ESPACE pour rejouer', this.canvas.width/2, this.canvas.height/2 + 60);
+        this.ctx.fillText('ESC pour revenir au menu', this.canvas.width/2, this.canvas.height/2 + 85);
     }
     
-    showGameOver() {
-        const winner = this.playerScore >= this.maxScore ? 'Joueur' : 'IA';
-        document.getElementById('winner').textContent = winner;
-        document.getElementById('finalPlayerScore').textContent = this.playerScore;
-        document.getElementById('finalAiScore').textContent = this.aiScore;
-        document.getElementById('gameMessage').style.display = 'block';
+    drawMenu() {
+        // Fond dégradé
+        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+        gradient.addColorStop(0, '#1a1a2e');
+        gradient.addColorStop(1, '#16213e');
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Titre
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 72px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.strokeStyle = '#667eea';
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeText('PONG', this.canvas.width/2, 120);
+        this.ctx.fillText('PONG', this.canvas.width/2, 120);
+        
+        // Emoji
+        this.ctx.font = '48px Arial';
+        this.ctx.fillText('🏓', this.canvas.width/2, 180);
+        
+        // Options de menu
+        const menuStartY = this.canvas.height / 2 - 60;
+        for (let i = 0; i < this.menuItems.length; i++) {
+            const item = this.menuItems[i];
+            const y = menuStartY + i * 80;
+            const isSelected = i === this.selectedMenuItem;
+            
+            // Fond de sélection
+            if (isSelected) {
+                this.ctx.fillStyle = 'rgba(102, 126, 234, 0.3)';
+                this.ctx.fillRect(this.canvas.width/2 - 180, y - 30, 360, 55);
+                
+                this.ctx.strokeStyle = '#667eea';
+                this.ctx.lineWidth = 2;
+                this.ctx.strokeRect(this.canvas.width/2 - 180, y - 30, 360, 55);
+            }
+            
+            // Titre de l'option
+            this.ctx.fillStyle = isSelected ? '#FFD700' : '#ffffff';
+            this.ctx.font = isSelected ? 'bold 28px Arial' : 'bold 24px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(item.text, this.canvas.width/2, y);
+            
+            // Description
+            this.ctx.fillStyle = isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.7)';
+            this.ctx.font = '14px Arial';
+            this.ctx.fillText(item.description, this.canvas.width/2, y + 20);
+        }
+        
+        // Instructions
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        this.ctx.font = '16px Arial';
+        this.ctx.fillText('Utilisez les flèches pour naviguer, ENTRÉE pour sélectionner', this.canvas.width/2, this.canvas.height - 30);
     }
     
     gameLoop() {
-        if (!this.gamePaused) {
+        this.render();
+        
+        if (this.gameRunning && !this.gamePaused) {
             this.update();
-            this.render();
         }
         
-        if (this.gameRunning || this.gamePaused) {
-            requestAnimationFrame(() => this.gameLoop());
-        } else if (!this.gameOver) {
-            this.render();
+        // Continuer la boucle si le jeu est en cours ou si on affiche le menu
+        if (this.gameRunning || this.gamePaused || this.showMenu || !this.gameStarted) {
             requestAnimationFrame(() => this.gameLoop());
         }
     }
@@ -558,280 +786,9 @@ let pongGame;
 
 document.addEventListener('DOMContentLoaded', function() {
     const canvas = document.getElementById('pongCanvas');
-    pongGame = new PongGame(canvas);
-    
-    // Bouton restart
-    document.getElementById('restartBtn').addEventListener('click', function() {
-        document.getElementById('gameMessage').style.display = 'none';
-        pongGame.restart();
-    });
-    
-    // Démarrer le rendu
-    pongGame.render();
+    if (canvas) {
+        pongGame = new PongGame(canvas);
+        pongGame.gameLoop();
+    }
 });
-const player1ScoreElement = document.getElementById('player1Score');
-const player2ScoreElement = document.getElementById('player2Score');
-const gameMessage = document.getElementById('gameMessage');
-const winnerMessage = document.getElementById('winnerMessage');
-const newGameBtn = document.getElementById('newGameBtn');
 
-// Game objects
-let gameRunning = true;
-let ball, paddle1, paddle2;
-let keys = {};
-let speedMultiplier = 1.0;
-
-// Audio system
-let audio = {
-    sounds: {},
-    music: null
-};
-
-// Précharger les sons et la musique pour Pong
-function preloadAudio() {
-    try {
-        // Créer un contexte audio
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioContext = new AudioContext();
-        
-        // Sons à précharger
-        const soundsToLoad = {
-            'hit': 'https://bearable-hacker.io/pong-hit.mp3',
-            'score': 'https://bearable-hacker.io/pong-score.mp3',
-            'wall': 'https://bearable-hacker.io/pong-wall.mp3',
-            'background': 'https://bearable-hacker.io/pong-background.mp3'
-        };
-        
-        // Charger chaque son
-        Object.entries(soundsToLoad).forEach(([name, url]) => {
-            fetch(url)
-                .then(response => response.arrayBuffer())
-                .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-                .then(audioBuffer => {
-                    audio.sounds[name] = {
-                        buffer: audioBuffer,
-                        context: audioContext,
-                        loop: name === 'background'
-                    };
-                })
-                .catch(e => console.log('Erreur de chargement audio:', e));
-        });
-    } catch (e) {
-        console.log('Audio non supporté:', e);
-    }
-}
-
-// Jouer un son
-function playSound(soundName) {
-    try {
-        if (!audio.sounds[soundName]) return null;
-        
-        const sound = audio.sounds[soundName];
-        const source = sound.context.createBufferSource();
-        source.buffer = sound.buffer;
-        source.connect(sound.context.destination);
-        source.loop = sound.loop;
-        source.start(0);
-        
-        return source;
-    } catch (e) {
-        console.log('Erreur de lecture audio:', e);
-        return null;
-    }
-}
-
-// Démarrer la musique de fond
-function startMusic() {
-    if (audio.music) {
-        audio.music.stop();
-    }
-    audio.music = playSound('background');
-}
-
-function initGame() {
-    // Précharger les sons
-    preloadAudio();
-    
-    // Initialize game objects
-    ball = {
-        x: canvas.width / 2,
-        y: canvas.height / 2,
-        radius: 10,
-        velocityX: 5,
-        velocityY: 4,
-        color: '#667eea'
-    };
-    
-    paddle1 = {
-        x: 10,
-        y: canvas.height / 2 - 50,
-        width: 10,
-        height: 100,
-        color: '#ff6b6b',
-        score: 0
-    };
-    
-    paddle2 = {
-        x: canvas.width - 20,
-        y: canvas.height / 2 - 50,
-        width: 10,
-        height: 100,
-        color: '#4ecdc4',
-        score: 0
-    };
-    
-    // Update score display
-    player1ScoreElement.textContent = paddle1.score;
-    player2ScoreElement.textContent = paddle2.score;
-    
-    // Start game loop
-    gameLoop();
-}
-
-// Controls
-function handleKeyDown(e) {
-    keys[e.key] = true;
-}
-
-function handleKeyUp(e) {
-    keys[e.key] = false;
-}
-
-document.addEventListener('keydown', handleKeyDown);
-document.addEventListener('keyup', handleKeyUp);
-
-function updatePaddles() {
-    const paddleSpeed = 12 * speedMultiplier;
-    
-    // Player 1 (W/S)
-    if (keys['w'] || keys['W']) {
-        paddle1.y = Math.max(0, paddle1.y - paddleSpeed);
-    }
-    if (keys['s'] || keys['S']) {
-        paddle1.y = Math.min(canvas.height - paddle1.height, paddle1.y + paddleSpeed);
-    }
-    
-    // Player 2 (Arrow keys)
-    if (keys['ArrowUp']) {
-        paddle2.y = Math.max(0, paddle2.y - paddleSpeed);
-    }
-    if (keys['ArrowDown']) {
-        paddle2.y = Math.min(canvas.height - paddle2.height, paddle2.y + paddleSpeed);
-    }
-}
-
-function updateBall() {
-    // La vitesse augmente légèrement avec le temps pour plus de difficulté
-    const speedIncrement = Math.min(1.5, 1.0 + Math.min(0.5, paddle1.score + paddle2.score) / 10);
-    
-    ball.x += ball.velocityX * speedMultiplier * speedIncrement;
-    ball.y += ball.velocityY * speedMultiplier * speedIncrement;
-      
-    // Top and bottom walls
-    if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
-        ball.velocityY = -ball.velocityY;
-        playSound('wall'); // Jouer son de rebond sur mur
-    }
-    
-    // Paddle collisions
-    if (ball.x - ball.radius < paddle1.x + paddle1.width &&
-        ball.y > paddle1.y && ball.y < paddle1.y + paddle1.height) {
-        ball.velocityX = Math.abs(ball.velocityX);
-        ball.velocityY += (Math.random() - 0.5) * 2;
-        playSound('hit'); // Jouer le son de collision
-    }
-    
-    if (ball.x + ball.radius > paddle2.x &&
-        ball.y > paddle2.y && ball.y < paddle2.y + paddle2.height) {
-        ball.velocityX = -Math.abs(ball.velocityX);
-        ball.velocityY += (Math.random() - 0.5) * 2;
-        playSound('hit'); // Jouer le son de collision
-    }
-    
-    // Scoring
-    if (ball.x < 0) {
-        paddle2.score++;
-        playSound('score'); // Jouer le son de score
-        resetBall();
-    }
-    if (ball.x > canvas.width) {
-        paddle1.score++;
-        playSound('score'); // Jouer le son de score
-        resetBall();
-    }
-    
-    // Update score display
-    player1ScoreElement.textContent = paddle1.score;
-    player2ScoreElement.textContent = paddle2.score;
-    
-    // Check win condition
-    if (paddle1.score >= 5 || paddle2.score >= 5) {
-        const winnerNumber = paddle1.score >= 5 ? '1' : '2';
-        winnerMessage.textContent = `🎉 Joueur ${winnerNumber} gagne !`;
-        gameMessage.style.display = 'block';
-        gameRunning = false;
-    }
-}
-
-function resetBall() {
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
-    ball.velocityX = (Math.random() > 0.5 ? 1 : -1) * 5;
-    ball.velocityY = (Math.random() - 0.5) * 6;
-}
-
-function draw() {
-    // Clear canvas
-    ctx.fillStyle = '#1a1a2e';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw center line
-    ctx.setLineDash([5, 15]);
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, 0);
-    ctx.lineTo(canvas.width / 2, canvas.height);
-    ctx.strokeStyle = '#667eea';
-    ctx.stroke();
-    ctx.setLineDash([]);
-    
-    // Draw paddles
-    ctx.fillStyle = paddle1.color;
-    ctx.fillRect(paddle1.x, paddle1.y, paddle1.width, paddle1.height);
-    
-    ctx.fillStyle = paddle2.color;
-    ctx.fillRect(paddle2.x, paddle2.y, paddle2.width, paddle2.height);
-    
-    // Draw ball
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    ctx.fillStyle = ball.color;
-    ctx.fill();
-    ctx.closePath();
-}
-
-function gameLoop() {
-    if (!gameRunning) return;
-    
-    updatePaddles();
-    updateBall();
-    draw();
-    
-    requestAnimationFrame(gameLoop);
-}
-
-function startNewGame() {
-    gameMessage.style.display = 'none';
-    paddle1.score = 0;
-    paddle2.score = 0;
-    player1ScoreElement.textContent = '0';
-    player2ScoreElement.textContent = '0';
-    resetBall();
-    gameRunning = true;
-    gameLoop();
-}
-
-// New game button event
-newGameBtn.addEventListener('click', startNewGame);
-
-// Initialize game when page loads
-document.addEventListener('DOMContentLoaded', initGame);
