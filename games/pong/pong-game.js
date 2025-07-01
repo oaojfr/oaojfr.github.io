@@ -242,9 +242,10 @@ class PongGame {
     
     updatePlayer1() {
         // Contrôles du joueur 1 (gauche)
-        if (this.keys['ArrowUp'] || this.keys['w'] || this.keys['W']) {
+        // W/S pour le joueur 1 uniquement
+        if (this.keys['w'] || this.keys['W']) {
             this.player1.dy = -this.player1.speed;
-        } else if (this.keys['ArrowDown'] || this.keys['s'] || this.keys['S']) {
+        } else if (this.keys['s'] || this.keys['S']) {
             this.player1.dy = this.player1.speed;
         } else {
             this.player1.dy = 0;
@@ -298,9 +299,10 @@ class PongGame {
             }
         } else {
             // Contrôles du joueur 2 (droite) - mode 2 joueurs
-            if (this.keys['i'] || this.keys['I']) {
+            // Flèches haut/bas OU I/K pour le joueur 2
+            if (this.keys['ArrowUp'] || this.keys['i'] || this.keys['I']) {
                 this.player2.dy = -this.player2.speed;
-            } else if (this.keys['k'] || this.keys['K']) {
+            } else if (this.keys['ArrowDown'] || this.keys['k'] || this.keys['K']) {
                 this.player2.dy = this.player2.speed;
             } else {
                 this.player2.dy = 0;
@@ -339,7 +341,7 @@ class PongGame {
                 const angle = (hitPos - 0.5) * Math.PI / 3; // ±60 degrés
                 
                 const speed = Math.min(Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) + 0.2, this.ball.maxSpeed);
-                this.ball.dx = speed * Math.cos(angle);
+                this.ball.dx = Math.abs(speed * Math.cos(angle)); // Toujours positif pour aller vers la droite
                 this.ball.dy = speed * Math.sin(angle);
                 
                 this.createParticles(this.ball.x, this.ball.y, this.colors.player1);
@@ -356,10 +358,10 @@ class PongGame {
                 if (this.ball.dx > 0) { // Seulement si la balle va vers le joueur 2/IA
                     // Calcul de l'angle de rebond
                     const hitPos = (this.ball.y - this.player2.y) / this.player2.height;
-                    const angle = Math.PI - (hitPos - 0.5) * Math.PI / 3; // ±60 degrés
+                    const angle = (hitPos - 0.5) * Math.PI / 3; // ±60 degrés
                     
                     const speed = Math.min(Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) + 0.2, this.ball.maxSpeed);
-                    this.ball.dx = -speed * Math.cos(angle);
+                    this.ball.dx = -Math.abs(speed * Math.cos(angle)); // Toujours négatif pour aller vers la gauche
                     this.ball.dy = speed * Math.sin(angle);
                     
                     this.createParticles(this.ball.x, this.ball.y, this.colors.player2);
@@ -653,12 +655,12 @@ class PongGame {
         
         this.ctx.font = '16px Arial';
         if (this.gameMode === '1player') {
-            this.ctx.fillText('Utilisez les flèches ou W/S pour déplacer votre raquette', this.canvas.width/2, this.canvas.height/2 + 20);
+            this.ctx.fillText('Utilisez W/S pour déplacer votre raquette', this.canvas.width/2, this.canvas.height/2 + 20);
             this.ctx.fillText('Empêchez la balle de sortir des côtés !', this.canvas.width/2, this.canvas.height/2 + 45);
         } else if (this.gameMode === '2players') {
-            this.ctx.fillText('Joueur 1: W/S ou Flèches - Joueur 2: I/K', this.canvas.width/2, this.canvas.height/2 + 20);
+            this.ctx.fillText('Joueur 1: W/S - Joueur 2: Flèches ↑/↓', this.canvas.width/2, this.canvas.height/2 + 20);
         } else if (this.gameMode === 'vs-ai') {
-            this.ctx.fillText('Utilisez les flèches ou W/S pour déplacer votre raquette', this.canvas.width/2, this.canvas.height/2 + 20);
+            this.ctx.fillText('Utilisez W/S pour déplacer votre raquette', this.canvas.width/2, this.canvas.height/2 + 20);
         }
         
         this.ctx.fillText(`Premier à ${this.maxScore} points gagne!`, this.canvas.width/2, this.canvas.height/2 + 70);
