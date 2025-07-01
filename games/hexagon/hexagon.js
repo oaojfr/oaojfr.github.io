@@ -86,6 +86,10 @@ class SuperHexagon {
     }
     
     setupEventListeners() {
+        // Variables pour éviter les répétitions
+        this.lastMoveTime = 0;
+        this.moveDelay = 150; // millisecondes entre les mouvements
+        
         document.addEventListener('keydown', (e) => {
             this.keys[e.key.toLowerCase()] = true;
             
@@ -98,14 +102,44 @@ class SuperHexagon {
                 }
             }
             
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                if (this.gameState === 'playing') {
+                    this.pauseGame();
+                } else if (this.gameState === 'paused') {
+                    this.resumeGame();
+                }
+            }
+            
             if (e.key.toLowerCase() === 'r' && this.gameState === 'playing') {
                 this.restartGame();
+            }
+            
+            // Gestion des mouvements avec délai
+            const currentTime = Date.now();
+            if (currentTime - this.lastMoveTime > this.moveDelay && this.gameState === 'playing') {
+                if (e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    this.movePlayer(-1);
+                    this.lastMoveTime = currentTime;
+                }
+                if (e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    this.movePlayer(1);
+                    this.lastMoveTime = currentTime;
+                }
             }
         });
         
         document.addEventListener('keyup', (e) => {
             this.keys[e.key.toLowerCase()] = false;
         });
+    }
+    
+    movePlayer(direction) {
+        this.player.position = (this.player.position + direction + 6) % 6;
+        this.player.targetAngle = this.player.position * (Math.PI / 3);
+        this.sounds.move();
     }
     
     selectDifficulty(difficulty) {
@@ -200,22 +234,10 @@ class SuperHexagon {
     }
     
     updatePlayer() {
-        // Rotation du joueur
-        if (this.keys['a'] || this.keys['arrowleft']) {
-            this.player.position = (this.player.position - 1 + 6) % 6;
-            this.player.targetAngle = this.player.position * (Math.PI / 3);
-            this.sounds.move();
-        }
-        if (this.keys['d'] || this.keys['arrowright']) {
-            this.player.position = (this.player.position + 1) % 6;
-            this.player.targetAngle = this.player.position * (Math.PI / 3);
-            this.sounds.move();
-        }
-        
         // Interpolation smooth de l'angle
         const angleDiff = this.player.targetAngle - this.player.angle;
         const adjustedDiff = ((angleDiff + Math.PI) % (2 * Math.PI)) - Math.PI;
-        this.player.angle += adjustedDiff * 0.2;
+        this.player.angle += adjustedDiff * 0.15; // Plus smooth
     }
     
     updateObstacles() {
