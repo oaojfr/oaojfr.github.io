@@ -31,9 +31,12 @@ class SuperHexagon {
         // Joueur (triangle qui tourne autour du centre)
         this.player = {
             angle: 0,
-            position: 0, // Position discrète (0-5)
+            targetAngle: 0,
+            position: 0, // Position discrète (0-5) pour la détection de collision
             radius: this.HEX_RADIUS + 35,
-            size: this.PLAYER_SIZE
+            size: this.PLAYER_SIZE,
+            smoothing: 0.15, // Facteur de lissage pour l'interpolation
+            rotationSpeed: 0.08 // Vitesse de rotation fluide
         };
         
         // Murs/patterns
@@ -48,8 +51,8 @@ class SuperHexagon {
         
         // Contrôles
         this.keys = {};
-        this.lastMoveTime = 0;
-        this.moveDelay = 100; // Délai entre les mouvements
+        this.leftPressed = false;
+        this.rightPressed = false;
         
         // Effets visuels
         this.particles = [];
@@ -141,20 +144,14 @@ class SuperHexagon {
             
             // Contrôles du jeu
             if (this.gameState === 'playing') {
-                const currentTime = Date.now();
-                
-                // Mouvement du joueur (discret comme l'original)
-                if ((e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') && 
-                    currentTime - this.lastMoveTime > this.moveDelay) {
-                    this.movePlayer(-1);
-                    this.lastMoveTime = currentTime;
+                // Mouvement fluide du joueur
+                if (e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') {
+                    this.leftPressed = true;
                     e.preventDefault();
                 }
                 
-                if ((e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') && 
-                    currentTime - this.lastMoveTime > this.moveDelay) {
-                    this.movePlayer(1);
-                    this.lastMoveTime = currentTime;
+                if (e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') {
+                    this.rightPressed = true;
                     e.preventDefault();
                 }
                 
@@ -178,12 +175,22 @@ class SuperHexagon {
         
         document.addEventListener('keyup', (e) => {
             this.keys[e.key.toLowerCase()] = false;
+            
+            // Arrêter le mouvement fluide
+            if (e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') {
+                this.leftPressed = false;
+            }
+            if (e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') {
+                this.rightPressed = false;
+            }
         });
     }
     
     movePlayer(direction) {
+        // Cette méthode n'est plus utilisée pour le mouvement fluide
+        // mais on la garde pour compatibilité si nécessaire
         this.player.position = (this.player.position + direction + 6) % 6;
-        this.player.angle = this.player.position * (Math.PI / 3);
+        this.player.targetAngle = this.player.position * (Math.PI / 3);
         
         // Effet visuel lors du mouvement
         this.createMoveEffect();
@@ -218,7 +225,12 @@ class SuperHexagon {
         
         // Reset player
         this.player.angle = 0;
+        this.player.targetAngle = 0;
         this.player.position = 0;
+        
+        // Reset des contrôles
+        this.leftPressed = false;
+        this.rightPressed = false;
         
         this.hideAllOverlays();
         this.updateDisplay();
@@ -283,6 +295,10 @@ class SuperHexagon {
         if (this.gameState !== 'playing') return;
         
         this.time += 1/60; // 60 FPS
+        
+        // Mouvement fluide du joueur
+        this.updatePlayerMovement();
+        
         this.updateWalls();
         this.updateParticles();
         this.updateEffects();
@@ -349,11 +365,13 @@ class SuperHexagon {
     }
     
     checkCollisions() {
-        const playerSegment = this.player.position;
+        // Calculer le segment basé sur l'angle exact du joueur
+        const normalizedAngle = (this.player.angle + Math.PI / 6) % (Math.PI * 2);
+        const currentSegment = Math.floor(normalizedAngle / (Math.PI / 3));
         
         for (const wall of this.walls) {
             // Vérifier si le joueur est dans le même segment qu'un mur
-            if (wall.segment === playerSegment) {
+            if (wall.segment === currentSegment) {
                 // Calculer la distance entre le joueur et le mur
                 const playerDistance = this.player.radius;
                 const wallOuterEdge = wall.distance;
@@ -362,7 +380,7 @@ class SuperHexagon {
                 // Collision uniquement si le joueur entre dans l'épaisseur du mur
                 if (playerDistance >= wallInnerEdge && playerDistance <= wallOuterEdge + this.player.size) {
                     console.log('Collision detected!', {
-                        playerSegment,
+                        currentSegment,
                         wallSegment: wall.segment,
                         playerDistance,
                         wallInnerEdge,
@@ -502,63 +520,7 @@ class SuperHexagon {
         this.CENTER_Y = this.canvas.height / 2;
     }
     
-    setupEventListeners() {
-        // Variables pour éviter les répétitions
-        this.lastMoveTime = 0;
-        this.moveDelay = 150; // millisecondes entre les mouvements
-        
-        document.addEventListener('keydown', (e) => {
-            this.keys[e.key.toLowerCase()] = true;
-            
-            if (e.key === ' ') {
-                e.preventDefault();
-                if (this.gameState === 'playing') {
-                    this.pauseGame();
-                } else if (this.gameState === 'paused') {
-                    this.resumeGame();
-                }
-            }
-            
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                if (this.gameState === 'playing') {
-                    this.pauseGame();
-                } else if (this.gameState === 'paused') {
-                    this.resumeGame();
-                }
-            }
-            
-            if (e.key.toLowerCase() === 'r' && this.gameState === 'playing') {
-                this.restartGame();
-            }
-            
-            // Gestion des mouvements avec délai
-            const currentTime = Date.now();
-            if (currentTime - this.lastMoveTime > this.moveDelay && this.gameState === 'playing') {
-                if (e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    this.movePlayer(-1);
-                    this.lastMoveTime = currentTime;
-                }
-                if (e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    this.movePlayer(1);
-                    this.lastMoveTime = currentTime;
-                }
-            }
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            this.keys[e.key.toLowerCase()] = false;
-        });
-    }
-    
-    movePlayer(direction) {
-        this.player.angle = this.player.position * (Math.PI / 3);
-        
-        // Effet visuel lors du mouvement
-        this.createMoveEffect();
-    }
+
     
     selectDifficulty(difficulty) {
         this.difficulty = difficulty;
@@ -571,97 +533,27 @@ class SuperHexagon {
         this.updateBestTimeDisplay();
     }
     
-    startGame() {
-        this.gameState = 'playing';
-        this.time = 0;
-        this.patternIndex = 0;
-        this.walls = [];
-        this.particles = [];
-        this.spawnTimer = 0;
-        this.worldRotation = 0;
-        this.pulseIntensity = 0;
-        
-        // Appliquer les paramètres de difficulté
-        const settings = this.difficultySettings[this.difficulty];
-        this.wallSpeed = settings.wallSpeed;
-        this.spawnRate = settings.spawnRate;
-        this.worldRotationSpeed = settings.rotationSpeed;
-        
-        // Reset player
-        this.player.angle = 0;
-        this.player.position = 0;
-        
-        this.hideAllOverlays();
-        this.updateDisplay();
-    }
-    
-    pauseGame() {
-        this.gameState = 'paused';
-        document.getElementById('pauseOverlay').style.display = 'flex';
-    }
-    
-    resumeGame() {
-        this.gameState = 'playing';
-        this.hideAllOverlays();
-    }
-    
-    restartGame() {
-        this.startGame();
-    }
-    
-    showMenu() {
-        this.gameState = 'menu';
-        this.hideAllOverlays();
-        document.getElementById('menuOverlay').style.display = 'flex';
-    }
-    
-    hideAllOverlays() {
-        document.getElementById('menuOverlay').style.display = 'none';
-        document.getElementById('pauseOverlay').style.display = 'none';
-        document.getElementById('gameOverOverlay').style.display = 'none';
-    }
-    
-    gameOver() {
-        this.gameState = 'gameOver';
-        
-        // Vérifier nouveau record
-        let isNewRecord = false;
-        const currentBest = this.bestTimes[this.difficulty];
-        if (this.time > currentBest) {
-            this.bestTimes[this.difficulty] = this.time;
-            localStorage.setItem(`hexagonBest${this.difficulty.charAt(0).toUpperCase() + this.difficulty.slice(1)}`, this.time.toString());
-            isNewRecord = true;
+    updatePlayerMovement() {
+        // Mouvement fluide basé sur les touches pressées
+        if (this.leftPressed && !this.rightPressed) {
+            this.player.angle -= this.player.rotationSpeed;
+        } else if (this.rightPressed && !this.leftPressed) {
+            this.player.angle += this.player.rotationSpeed;
         }
         
-        const finalTimeEl = document.getElementById('finalTime');
-        const newRecordEl = document.getElementById('newRecordDisplay');
-        
-        if (finalTimeEl) finalTimeEl.textContent = this.time.toFixed(2) + 's';
-        if (newRecordEl) {
-            newRecordEl.style.display = isNewRecord ? 'block' : 'none';
+        // Maintenir l'angle dans la plage [0, 2π]
+        if (this.player.angle < 0) {
+            this.player.angle += Math.PI * 2;
+        } else if (this.player.angle >= Math.PI * 2) {
+            this.player.angle -= Math.PI * 2;
         }
         
-        document.getElementById('gameOverOverlay').style.display = 'flex';
-        
-        this.createDeathEffect();
-        this.shakeScreen(30);
-        this.updateBestTimeDisplay();
+        // Mettre à jour la position discrète pour la détection de collision
+        this.player.position = Math.round(this.player.angle / (Math.PI / 3)) % 6;
+        if (this.player.position < 0) this.player.position += 6;
     }
     
-    update() {
-        if (this.gameState !== 'playing') return;
-        
-        this.time += 1/60; // 60 FPS
-        this.updateWalls();
-        this.updateParticles();
-        this.updateEffects();
-        this.checkCollisions();
-        this.spawnWalls();
-        this.updateDisplay();
-    }
-    
-    
-    render() {
+render() {
         // Fond avec gradient cyberpunk
         const gradient = this.ctx.createRadialGradient(
             this.CENTER_X, this.CENTER_Y, 0,
