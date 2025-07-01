@@ -631,28 +631,119 @@
                 }
                 
                 function drawBreakout() {
-                    breakoutCtx.fillStyle = '#000022';
+                    // Fond cyberpunk avec dégradé radial
+                    const bgGradient = breakoutCtx.createRadialGradient(200, 112, 0, 200, 112, 250);
+                    bgGradient.addColorStop(0, '#001122');
+                    bgGradient.addColorStop(0.5, '#000033');
+                    bgGradient.addColorStop(1, '#000011');
+                    breakoutCtx.fillStyle = bgGradient;
                     breakoutCtx.fillRect(0, 0, 400, 225);
                     
-                    // Bricks
-                    bricks.forEach(brick => {
-                        breakoutCtx.fillStyle = brick.color;
+                    // Grille cyberpunk en arrière-plan
+                    breakoutCtx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+                    breakoutCtx.lineWidth = 1;
+                    for (let i = 0; i < 400; i += 20) {
+                        breakoutCtx.beginPath();
+                        breakoutCtx.moveTo(i, 0);
+                        breakoutCtx.lineTo(i, 225);
+                        breakoutCtx.stroke();
+                    }
+                    for (let i = 0; i < 225; i += 20) {
+                        breakoutCtx.beginPath();
+                        breakoutCtx.moveTo(0, i);
+                        breakoutCtx.lineTo(400, i);
+                        breakoutCtx.stroke();
+                    }
+                    
+                    // Bricks avec effet néon et 3D
+                    bricks.forEach((brick, index) => {
+                        const time = Date.now() * 0.001;
+                        const pulse = Math.sin(time * 3 + index * 0.5) * 0.3 + 0.7;
+                        
+                        // Couleur néon basée sur la ligne
+                        const colors = ['#ff0080', '#00ff80', '#8000ff', '#ff8000', '#0080ff'];
+                        const colorIndex = Math.floor(brick.y / 20) % colors.length;
+                        
+                        // Ombre 3D
+                        breakoutCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                        breakoutCtx.fillRect(brick.x + 2, brick.y + 2, brick.width, brick.height);
+                        
+                        // Brick principal avec dégradé
+                        const brickGradient = breakoutCtx.createLinearGradient(brick.x, brick.y, brick.x + brick.width, brick.y + brick.height);
+                        brickGradient.addColorStop(0, colors[colorIndex]);
+                        brickGradient.addColorStop(1, colors[colorIndex] + '66');
+                        breakoutCtx.fillStyle = brickGradient;
                         breakoutCtx.fillRect(brick.x, brick.y, brick.width, brick.height);
-                        breakoutCtx.strokeStyle = '#fff';
+                        
+                        // Effet néon (glow)
+                        breakoutCtx.shadowColor = colors[colorIndex];
+                        breakoutCtx.shadowBlur = 5 * pulse;
+                        breakoutCtx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                        breakoutCtx.shadowBlur = 0;
+                        
+                        // Bordure brillante
+                        breakoutCtx.strokeStyle = '#ffffff88';
+                        breakoutCtx.lineWidth = 1;
                         breakoutCtx.strokeRect(brick.x, brick.y, brick.width, brick.height);
                     });
                     
-                    // Paddle
-                    breakoutCtx.fillStyle = '#ffa500';
+                    // Paddle avec effet holographique
+                    const paddleGradient = breakoutCtx.createLinearGradient(paddleX, 200, paddleX + 50, 210);
+                    paddleGradient.addColorStop(0, '#00ffff');
+                    paddleGradient.addColorStop(0.5, '#ffffff');
+                    paddleGradient.addColorStop(1, '#00ffff');
+                    breakoutCtx.fillStyle = paddleGradient;
                     breakoutCtx.fillRect(paddleX, 200, 50, 10);
                     
-                    // Ball
-                    breakoutCtx.fillStyle = '#fff';
-                    breakoutCtx.beginPath();
-                    breakoutCtx.arc(ballX, ballY, 5, 0, Math.PI * 2);
-                    breakoutCtx.fill();
+                    // Effet glow sur la paddle
+                    breakoutCtx.shadowColor = '#00ffff';
+                    breakoutCtx.shadowBlur = 8;
+                    breakoutCtx.fillRect(paddleX, 200, 50, 10);
+                    breakoutCtx.shadowBlur = 0;
                     
-                    // Update ball
+                    // Ball avec trail et effet énergétique
+                    const ballTime = Date.now() * 0.01;
+                    
+                    // Trail de la balle
+                    for (let i = 0; i < 5; i++) {
+                        const alpha = (5 - i) / 5 * 0.3;
+                        const trailX = ballX - ballVelX * i * 2;
+                        const trailY = ballY - ballVelY * i * 2;
+                        
+                        breakoutCtx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                        breakoutCtx.beginPath();
+                        breakoutCtx.arc(trailX, trailY, 5 - i, 0, Math.PI * 2);
+                        breakoutCtx.fill();
+                    }
+                    
+                    // Balle principale avec effet énergétique
+                    const ballGradient = breakoutCtx.createRadialGradient(ballX, ballY, 0, ballX, ballY, 8);
+                    ballGradient.addColorStop(0, '#ffffff');
+                    ballGradient.addColorStop(0.7, '#ffff00');
+                    ballGradient.addColorStop(1, '#ff8800');
+                    breakoutCtx.fillStyle = ballGradient;
+                    
+                    // Pulsation énergétique
+                    const pulseSize = 5 + Math.sin(ballTime) * 2;
+                    breakoutCtx.shadowColor = '#ffff00';
+                    breakoutCtx.shadowBlur = 10;
+                    breakoutCtx.beginPath();
+                    breakoutCtx.arc(ballX, ballY, pulseSize, 0, Math.PI * 2);
+                    breakoutCtx.fill();
+                    breakoutCtx.shadowBlur = 0;
+                    
+                    // Particules d'énergie autour de la balle
+                    for (let i = 0; i < 3; i++) {
+                        const angle = ballTime + i * Math.PI * 2 / 3;
+                        const radius = 10 + Math.sin(ballTime * 2) * 3;
+                        const px = ballX + Math.cos(angle) * radius;
+                        const py = ballY + Math.sin(angle) * radius;
+                        
+                        breakoutCtx.fillStyle = `rgba(255, 255, 0, ${0.6 + Math.sin(ballTime * 3) * 0.3})`;
+                        breakoutCtx.fillRect(px - 1, py - 1, 2, 2);
+                    }
+                    
+                    // Update ball physics
                     ballX += ballVelX;
                     ballY += ballVelY;
                     
@@ -666,17 +757,28 @@
                         ballVelY = -3;
                     }
                     
-                    // Brick collision
+                    // Brick collision avec effet d'explosion
                     bricks = bricks.filter(brick => {
                         if (ballX > brick.x && ballX < brick.x + brick.width &&
                             ballY > brick.y && ballY < brick.y + brick.height) {
                             ballVelY = -ballVelY;
+                            
+                            // Effet d'explosion
+                            for (let i = 0; i < 3; i++) {
+                                setTimeout(() => {
+                                    breakoutCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                                    breakoutCtx.beginPath();
+                                    breakoutCtx.arc(brick.x + brick.width/2, brick.y + brick.height/2, i * 5, 0, Math.PI * 2);
+                                    breakoutCtx.fill();
+                                }, i * 50);
+                            }
+                            
                             return false;
                         }
                         return true;
                     });
                     
-                    // Move paddle
+                    // Move paddle avec effet de vague
                     paddleX += Math.sin(Date.now() * 0.003) * 2;
                     paddleX = Math.max(0, Math.min(350, paddleX));
                 }
@@ -696,41 +798,114 @@
                 let coinRotation = 0;
                 
                 function drawMario() {
-                    // Sky gradient
-                    const gradient = marioCtx.createLinearGradient(0, 0, 0, 225);
+                    // Fond 3D-like avec dégradé plus sophistiqué
+                    const gradient = marioCtx.createRadialGradient(200, 112, 0, 200, 112, 200);
                     gradient.addColorStop(0, '#87CEEB');
-                    gradient.addColorStop(1, '#98FB98');
+                    gradient.addColorStop(0.7, '#4169E1');
+                    gradient.addColorStop(1, '#191970');
                     marioCtx.fillStyle = gradient;
                     marioCtx.fillRect(0, 0, 400, 225);
                     
-                    // Ground
+                    // Effet de profondeur avec des lignes de fuite
+                    marioCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                    marioCtx.lineWidth = 1;
+                    for (let i = 0; i < 10; i++) {
+                        marioCtx.beginPath();
+                        marioCtx.moveTo(0, 112 + i * 10);
+                        marioCtx.lineTo(400, 112 + i * 5);
+                        marioCtx.stroke();
+                    }
+                    
+                    // Sol 3D
                     marioCtx.fillStyle = '#8B4513';
-                    marioCtx.fillRect(0, 200, 400, 25);
+                    marioCtx.fillRect(0, 180, 400, 45);
                     
-                    // Platforms
+                    // Ombrage 3D pour le sol
+                    const shadowGradient = marioCtx.createLinearGradient(0, 180, 0, 225);
+                    shadowGradient.addColorStop(0, 'rgba(0,0,0,0.2)');
+                    shadowGradient.addColorStop(1, 'rgba(0,0,0,0.6)');
+                    marioCtx.fillStyle = shadowGradient;
+                    marioCtx.fillRect(0, 180, 400, 45);
+                    
+                    // Plateformes 3D avec perspective
                     marioCtx.fillStyle = '#654321';
-                    marioCtx.fillRect(150, 150, 100, 20);
-                    marioCtx.fillRect(280, 120, 80, 20);
+                    // Plateforme 1 (plus proche)
+                    marioCtx.fillRect(120, 130, 80, 15);
+                    marioCtx.fillStyle = '#543210';
+                    marioCtx.fillRect(120, 145, 80, 3); // Ombre
                     
-                    // Mario (simple character)
-                    marioCtx.fillStyle = '#ff0000';
-                    marioCtx.fillRect(marioX, marioY, 12, 8);
-                    marioCtx.fillStyle = '#ffdbac';
-                    marioCtx.fillRect(marioX + 2, marioY - 8, 8, 8);
-                    marioCtx.fillStyle = '#0000ff';
-                    marioCtx.fillRect(marioX, marioY + 8, 12, 12);
+                    // Plateforme 2 (plus loin, plus petite)
+                    marioCtx.fillStyle = '#654321';
+                    marioCtx.fillRect(250, 100, 60, 12);
+                    marioCtx.fillStyle = '#543210';
+                    marioCtx.fillRect(250, 112, 60, 2); // Ombre
                     
-                    // Coin
+                    // Mario 3D avec ombrage
+                    const marioSize = 12;
+                    
+                    // Ombre de Mario
+                    marioCtx.fillStyle = 'rgba(0,0,0,0.3)';
+                    marioCtx.fillRect(marioX + 2, 182, marioSize, 4);
+                    
+                    // Corps principal avec effet 3D
+                    // Casquette (rouge avec highlight)
+                    const redGradient = marioCtx.createLinearGradient(marioX, marioY, marioX + marioSize, marioY + 8);
+                    redGradient.addColorStop(0, '#ff4444');
+                    redGradient.addColorStop(1, '#cc0000');
+                    marioCtx.fillStyle = redGradient;
+                    marioCtx.fillRect(marioX, marioY, marioSize, 8);
+                    
+                    // Highlight sur la casquette
+                    marioCtx.fillStyle = 'rgba(255,255,255,0.3)';
+                    marioCtx.fillRect(marioX + 1, marioY + 1, marioSize - 2, 2);
+                    
+                    // Visage (beige avec ombrage)
+                    const faceGradient = marioCtx.createLinearGradient(marioX + 2, marioY + 4, marioX + 10, marioY + 12);
+                    faceGradient.addColorStop(0, '#ffdbac');
+                    faceGradient.addColorStop(1, '#ddbf88');
+                    marioCtx.fillStyle = faceGradient;
+                    marioCtx.fillRect(marioX + 2, marioY + 4, 8, 8);
+                    
+                    // Corps (bleu avec effet 3D)
+                    const blueGradient = marioCtx.createLinearGradient(marioX, marioY + 12, marioX + marioSize, marioY + 20);
+                    blueGradient.addColorStop(0, '#4444ff');
+                    blueGradient.addColorStop(1, '#0000cc');
+                    marioCtx.fillStyle = blueGradient;
+                    marioCtx.fillRect(marioX, marioY + 12, marioSize, 8);
+                    
+                    // Pièce 3D avec animation et brillance
                     marioCtx.save();
                     marioCtx.translate(coinX + 6, coinY + 6);
                     marioCtx.rotate(coinRotation);
-                    marioCtx.fillStyle = '#ffd700';
+                    
+                    // Ombre de la pièce
+                    marioCtx.fillStyle = 'rgba(0,0,0,0.2)';
+                    marioCtx.fillRect(-5, 2, 10, 8);
+                    
+                    // Pièce principale
+                    const coinGradient = marioCtx.createRadialGradient(0, 0, 0, 0, 0, 6);
+                    coinGradient.addColorStop(0, '#ffff44');
+                    coinGradient.addColorStop(0.7, '#ffd700');
+                    coinGradient.addColorStop(1, '#b8860b');
+                    marioCtx.fillStyle = coinGradient;
                     marioCtx.fillRect(-6, -6, 12, 12);
-                    marioCtx.fillStyle = '#ffff00';
-                    marioCtx.fillRect(-4, -4, 8, 8);
+                    
+                    // Brillance sur la pièce
+                    marioCtx.fillStyle = 'rgba(255,255,255,0.6)';
+                    marioCtx.fillRect(-4, -4, 3, 3);
+                    
                     marioCtx.restore();
                     
-                    // Update
+                    // Particules d'étoiles pour l'effet magique
+                    const time = Date.now() * 0.001;
+                    for (let i = 0; i < 3; i++) {
+                        const x = 50 + Math.sin(time + i) * 30;
+                        const y = 50 + Math.cos(time + i * 2) * 20;
+                        marioCtx.fillStyle = `rgba(255, 255, 255, ${0.3 + Math.sin(time * 3 + i) * 0.2})`;
+                        marioCtx.fillRect(x, y, 2, 2);
+                    }
+                    
+                    // Update animations
                     marioX += 1;
                     if (marioX > 400) marioX = -20;
                     
