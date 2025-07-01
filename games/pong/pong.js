@@ -58,11 +58,13 @@ class PongGame {
     }
     
     initializeGame() {
+        console.log('Initializing Pong game...'); // Debug
         this.setupEventListeners();
         this.resizeCanvas();
         this.updateScoreDisplay();
         window.addEventListener('resize', () => this.resizeCanvas());
         this.gameLoop();
+        console.log('Pong game initialized successfully'); // Debug
     }
     
     resizeCanvas() {
@@ -109,6 +111,7 @@ class PongGame {
     }
     
     startGame(mode) {
+        console.log('Starting game with mode:', mode); // Debug
         this.gameMode = mode;
         this.gameState = 'playing';
         this.score = { player1: 0, player2: 0 };
@@ -121,6 +124,8 @@ class PongGame {
         this.resetPaddles();
         this.hideAllOverlays();
         this.updateScoreDisplay();
+        
+        console.log('Game started successfully with mode:', mode); // Debug
     }
     
     pauseGame() {
@@ -565,30 +570,48 @@ class PongGame {
 
 // Fonctions globales pour l'interface
 function startGame(mode) {
+    console.log('Global startGame called with mode:', mode); // Debug
     if (window.game) {
         window.game.startGame(mode);
+    } else {
+        console.error('Game not initialized yet!');
     }
 }
 
 function resumeGame() {
+    console.log('Global resumeGame called'); // Debug
     if (window.game) {
         window.game.resumeGame();
+    } else {
+        console.error('Game not initialized yet!');
     }
 }
 
 function restartGame() {
+    console.log('Global restartGame called'); // Debug
     if (window.game) {
         window.game.restartGame();
+    } else {
+        console.error('Game not initialized yet!');
     }
 }
 
 function showMenu() {
+    console.log('Global showMenu called'); // Debug
     if (window.game) {
         window.game.showMenu();
+    } else {
+        console.error('Game not initialized yet!');
     }
 }
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
-    window.game = new PongGame();
+    console.log('DOM loaded, initializing Pong game...'); // Debug
+    try {
+        window.game = new PongGame();
+        console.log('Pong game instance created:', window.game); // Debug
+    } catch (error) {
+        console.error('Error creating Pong game:', error);
+    }
 });
