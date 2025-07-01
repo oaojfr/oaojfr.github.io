@@ -1,507 +1,564 @@
-// Hexagon Game Script
-const canvas = document.getElementById('hexagonCanvas');
-const ctx = canvas.getContext('2d');
-const scoreElement = document.getElementById('score');
-const finalScoreElement = document.getElementById('finalScore');
-const gameMessage = document.getElementById('gameMessage');
-const restartBtn = document.getElementById('restartBtn');
+/**
+ * HEXAGON ULTRA - AAA Quality 3D Reflex Game
+ * Created with Three.js for stunning 3D visuals and electronic music
+ */
 
-// Game settings
-const HEX_CONFIG = {
-    wallSpeed: 1.5,
-    playerRotationSpeed: 0.1,
-    wallSpawnRate: 1500, // ms
-    maxWallsOnScreen: 20,
-    baseRadius: 50,
-    playerSize: 10,
-    colorSchemes: [
-        // Rouge/Orange
-        ['#ff4b1f', '#ff9068', '#ff416c', '#ff4e50', '#f9d423', '#f83600'],
-        // Bleu/Violet
-        ['#4776e6', '#8e54e9', '#00cdac', '#4b74e8', '#5f2c82', '#667eea'],
-        // Vert/Cyan
-        ['#1d976c', '#93f9b9', '#06beb6', '#48b1bf', '#56ab2f', '#00b09b'],
-    ],
-    colorSchemeTitles: ['Inferno', 'Cosmos', 'Verdant']
-};
-
-// Game variables
-let score = 0;
-let highScore = 0;
-let difficultyLevel = 1;
-let gameStartTime;
-let animationFrame;
-let lastTime = 0;
-let rotationSpeed = 0.02;
-let player;
-let walls = [];
-let colors;
-let colorScheme = 0;
-let pulse = 0;
-let pulseDirection = 1;
-let gameRunning = false; // Commencer en pause
-let gameStarted = false; // État pour savoir si le jeu a démarré
-
-// Audio system
-let audio = {
-    sounds: {}
-};
-
-// Précharger les sons pour Hexagon
-function preloadAudio() {
-    try {
-        // Créer un contexte audio
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioContext = new AudioContext();
+class HexagonUltra {
+    constructor() {
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.player = null;
+        this.hexagonGroup = null;
+        this.walls = [];
+        this.particles = [];
+        this.audioContext = null;
+        this.masterGain = null;
+        this.musicEnabled = true;
         
-        // Sons à précharger
-        const soundsToLoad = {
-            'gameStart': 'https://dl.dropboxusercontent.com/s/97uxf2r5zcql9lh/game-start.mp3',
-            'gameOver': 'https://dl.dropboxusercontent.com/s/i9f612y4ci30pzi/game-over.mp3',
-            'wallPass': 'https://dl.dropboxusercontent.com/s/r2mgz1ryjc6m6ah/wall-pass.mp3',
-            'levelUp': 'https://dl.dropboxusercontent.com/s/p7yheqwkfgw3hw2/level-up.mp3'
+        // Game state
+        this.gameState = 'menu'; // menu, playing, gameOver
+        this.score = 0;
+        this.speed = 1.0;
+        this.playerRotation = 0;
+        this.hexagonRotation = 0;
+        this.lastTime = 0;
+        this.beatTime = 0;
+        
+        // Controls
+        this.keys = {};
+        
+        // Game settings
+        this.baseSpeed = 0.02;
+        this.wallSpawnRate = 0.015;
+        this.maxWalls = 50;
+        this.playerRadius = 1.2;
+        this.playerSpeed = 0.1;
+        
+        // Visual effects
+        this.bloomPass = null;
+        this.composer = null;
+        
+        this.init();
+    }
+    
+    init() {
+        this.setupScene();
+        this.setupCamera();
+        this.setupRenderer();
+        this.setupLights();
+        this.setupPlayer();
+        this.setupHexagon();
+        this.setupControls();
+        this.setupAudio();
+        this.setupPostProcessing();
+        this.loadBestScore();
+        this.animate();
+    }
+    
+    setupScene() {
+        this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.Fog(0x000033, 10, 100);
+        
+        // Background geometry with animated stars
+        const starGeometry = new THREE.BufferGeometry();
+        const starVertices = [];
+        for (let i = 0; i < 1000; i++) {
+            starVertices.push(
+                (Math.random() - 0.5) * 200,
+                (Math.random() - 0.5) * 200,
+                -Math.random() * 100 - 50
+            );
+        }
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+        
+        const starMaterial = new THREE.PointsMaterial({
+            color: 0x00ffff,
+            size: 0.5,
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        this.stars = new THREE.Points(starGeometry, starMaterial);
+        this.scene.add(this.stars);
+    }
+    
+    setupCamera() {
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.position.set(0, 0, 15);
+        this.camera.lookAt(0, 0, 0);
+    }
+    
+    setupRenderer() {
+        this.renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('gameCanvas'),
+            antialias: true,
+            alpha: true
+        });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setClearColor(0x000011, 1);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.2;
+    }
+    
+    setupLights() {
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0x440088, 0.3);
+        this.scene.add(ambientLight);
+        
+        // Central point light with pulsing effect
+        this.centralLight = new THREE.PointLight(0x00ffff, 2, 20);
+        this.centralLight.position.set(0, 0, 5);
+        this.centralLight.castShadow = true;
+        this.scene.add(this.centralLight);
+        
+        // Rim lighting
+        const rimLight1 = new THREE.DirectionalLight(0xff00ff, 0.5);
+        rimLight1.position.set(10, 10, 10);
+        this.scene.add(rimLight1);
+        
+        const rimLight2 = new THREE.DirectionalLight(0x00ff00, 0.3);
+        rimLight2.position.set(-10, -10, 10);
+        this.scene.add(rimLight2);
+    }
+    
+    setupPlayer() {
+        // Player - a glowing cube
+        const playerGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+        const playerMaterial = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            emissive: 0x004444,
+            shininess: 100,
+            transparent: true,
+            opacity: 0.9
+        });
+        
+        this.player = new THREE.Mesh(playerGeometry, playerMaterial);
+        this.player.position.set(0, this.playerRadius, 0);
+        this.player.castShadow = true;
+        this.scene.add(this.player);
+        
+        // Player trail effect
+        this.playerTrail = [];
+        for (let i = 0; i < 10; i++) {
+            const trailGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+            const trailMaterial = new THREE.MeshBasicMaterial({
+                color: 0x00ffff,
+                transparent: true,
+                opacity: 0.1 + (i * 0.05)
+            });
+            const trail = new THREE.Mesh(trailGeometry, trailMaterial);
+            this.playerTrail.push(trail);
+            this.scene.add(trail);
+        }
+    }
+    
+    setupHexagon() {
+        this.hexagonGroup = new THREE.Group();
+        
+        // Create hexagon outline
+        const hexGeometry = new THREE.RingGeometry(2, 2.1, 6);
+        const hexMaterial = new THREE.MeshPhongMaterial({
+            color: 0x00ffff,
+            emissive: 0x002222,
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        this.hexagon = new THREE.Mesh(hexGeometry, hexMaterial);
+        this.hexagonGroup.add(this.hexagon);
+        
+        // Inner hexagon for visual depth
+        const innerHexGeometry = new THREE.RingGeometry(1.5, 1.6, 6);
+        const innerHexMaterial = new THREE.MeshPhongMaterial({
+            color: 0xff00ff,
+            emissive: 0x220022,
+            transparent: true,
+            opacity: 0.6
+        });
+        
+        this.innerHexagon = new THREE.Mesh(innerHexGeometry, innerHexMaterial);
+        this.hexagonGroup.add(this.innerHexagon);
+        
+        this.scene.add(this.hexagonGroup);
+    }
+    
+    setupControls() {
+        document.addEventListener('keydown', (e) => {
+            this.keys[e.key.toLowerCase()] = true;
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            this.keys[e.key.toLowerCase()] = false;
+        });
+        
+        // Mobile touch controls
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touchX = e.touches[0].clientX;
+            const deltaX = touchX - touchStartX;
+            
+            if (Math.abs(deltaX) > 10) {
+                if (deltaX > 0) {
+                    this.keys['d'] = true;
+                    this.keys['a'] = false;
+                } else {
+                    this.keys['a'] = true;
+                    this.keys['d'] = false;
+                }
+                touchStartX = touchX;
+            }
+        });
+        
+        document.addEventListener('touchend', () => {
+            this.keys['a'] = false;
+            this.keys['d'] = false;
+        });
+    }
+    
+    setupAudio() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.masterGain = this.audioContext.createGain();
+            this.masterGain.connect(this.audioContext.destination);
+            this.masterGain.gain.value = 0.3;
+            
+            // Generate 8-bit style music
+            this.generateMusic();
+        } catch (e) {
+            console.log('Audio not supported');
+            this.musicEnabled = false;
+        }
+    }
+    
+    generateMusic() {
+        if (!this.audioContext) return;
+        
+        // Create a simple 8-bit style beat
+        this.beatOscillator = this.audioContext.createOscillator();
+        this.beatGain = this.audioContext.createGain();
+        
+        this.beatOscillator.type = 'square';
+        this.beatOscillator.frequency.setValueAtTime(220, this.audioContext.currentTime);
+        
+        this.beatGain.gain.value = 0;
+        this.beatOscillator.connect(this.beatGain);
+        this.beatGain.connect(this.masterGain);
+        
+        this.beatOscillator.start();
+        
+        // Bass line
+        this.bassOscillator = this.audioContext.createOscillator();
+        this.bassGain = this.audioContext.createGain();
+        
+        this.bassOscillator.type = 'sawtooth';
+        this.bassOscillator.frequency.setValueAtTime(110, this.audioContext.currentTime);
+        
+        this.bassGain.gain.value = 0;
+        this.bassOscillator.connect(this.bassGain);
+        this.bassGain.connect(this.masterGain);
+        
+        this.bassOscillator.start();
+    }
+    
+    setupPostProcessing() {
+        // For now, we'll add bloom effects manually through materials
+        // In a full implementation, you'd use EffectComposer and passes
+    }
+    
+    spawnWall() {
+        const angle = Math.random() * Math.PI * 2;
+        const side = Math.floor(Math.random() * 6);
+        const sideAngle = (side * Math.PI) / 3;
+        
+        // Create wall geometry
+        const wallGeometry = new THREE.BoxGeometry(1, 0.2, 0.3);
+        const wallMaterial = new THREE.MeshPhongMaterial({
+            color: new THREE.Color().setHSL((this.score * 0.01) % 1, 1, 0.5),
+            emissive: new THREE.Color().setHSL((this.score * 0.01) % 1, 0.5, 0.1),
+            shininess: 100
+        });
+        
+        const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+        
+        // Position wall at hexagon edge
+        const radius = 8;
+        wall.position.x = Math.cos(sideAngle) * radius;
+        wall.position.y = Math.sin(sideAngle) * radius;
+        wall.position.z = 0;
+        
+        wall.rotation.z = sideAngle + Math.PI / 2;
+        wall.userData = {
+            side: side,
+            speed: this.baseSpeed * this.speed,
+            angle: sideAngle
         };
         
-        // Charger chaque son
-        Object.entries(soundsToLoad).forEach(([name, url]) => {
-            fetch(url)
-                .then(response => response.arrayBuffer())
-                .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-                .then(audioBuffer => {
-                    audio.sounds[name] = {
-                        buffer: audioBuffer,
-                        context: audioContext
-                    };
-                })
-                .catch(e => console.log('Erreur de chargement audio:', e));
-        });
-    } catch (e) {
-        console.log('Audio non supporté:', e);
-    }
-}
-
-// Jouer un son
-function playSound(soundName) {
-    try {
-        if (!audio.sounds[soundName]) return;
-        
-        const sound = audio.sounds[soundName];
-        const source = sound.context.createBufferSource();
-        source.buffer = sound.buffer;
-        source.connect(sound.context.destination);
-        source.start(0);
-    } catch (e) {
-        console.log('Erreur de lecture audio:', e);
-    }
-}
-
-// Initialiser le jeu
-function initGame() {
-    preloadAudio();
-    
-    // Récupérer le meilleur score du localStorage s'il existe
-    const savedHighScore = localStorage.getItem('hexagonHighScore');
-    if (savedHighScore) {
-        highScore = parseInt(savedHighScore);
+        wall.castShadow = true;
+        this.walls.push(wall);
+        this.scene.add(wall);
     }
     
-    // Configuration du jeu
-    colors = HEX_CONFIG.colorSchemes[colorScheme];
-    
-    // Créer le joueur
-    player = {
-        angle: 0,
-        distance: canvas.height * 0.38
-    };
-    
-    // Réinitialiser le score et la difficulté
-    score = 0;
-    difficultyLevel = 1;
-    rotationSpeed = 0.02;
-    walls = [];
-    
-    // Démarrer la génération des murs
-    gameStartTime = Date.now();
-    
-    // Ne pas démarrer automatiquement
-    gameRunning = false;
-    gameStarted = false;
-    
-    // Initialiser les contrôles
-    setupControls();
-    
-    // Mettre à jour le score affiché
-    scoreElement.textContent = score;
-    
-    // Afficher le message de démarrage
-    draw();
-}
-
-// Démarrer le jeu
-function startGame() {
-    if (!gameStarted && !gameRunning) {
-        gameStarted = true;
-        gameRunning = true;
-        
-        // Première apparition d'un mur
-        spawnWall();
-        
-        // Démarrer la boucle de jeu
-        gameLoop();
-        
-        // Son de démarrage
-        playSound('gameStart');
-    }
-}
-
-// Configurer les contrôles
-function setupControls() {
-    // Contrôles clavier
-    document.addEventListener('keydown', function(e) {
-        // Démarrer le jeu avec ESPACE
-        if (e.key === ' ' && !gameStarted) {
-            e.preventDefault();
-            startGame();
-            return;
-        }
-        
-        if (!gameRunning) return;
-        
-        switch(e.key) {
-            case 'ArrowLeft':
-            case 'a':
-            case 'A':
-                player.angle -= HEX_CONFIG.playerRotationSpeed;
-                break;
-            case 'ArrowRight':
-            case 'd':
-            case 'D':
-                player.angle += HEX_CONFIG.playerRotationSpeed;
-                break;
-        }
-    });
-    
-    // Clic pour démarrer le jeu
-    canvas.addEventListener('click', function() {
-        if (!gameStarted) {
-            startGame();
-        }
-    });
-}
-
-// Créer un mur
-function spawnWall() {
-    if (walls.length >= HEX_CONFIG.maxWallsOnScreen || !gameRunning) return;
-    
-    // Augmenter la difficulté avec le temps
-    const gameTimeSeconds = (Date.now() - gameStartTime) / 1000;
-    const newDifficultyLevel = Math.floor(gameTimeSeconds / 15) + 1;
-    
-    if (newDifficultyLevel > difficultyLevel) {
-        difficultyLevel = newDifficultyLevel;
-        rotationSpeed += 0.005;
-        playSound('levelUp');
-    }
-    
-    // Paramètres du mur
-    const segments = 6; // Hexagone
-    const gapSize = Math.max(1, Math.floor(segments / 3) - Math.floor(difficultyLevel / 3));
-    const gapPosition = Math.floor(Math.random() * segments);
-    
-    // Créer le mur
-    walls.push({
-        distance: canvas.width * 0.8,
-        segments: segments,
-        gapPosition: gapPosition,
-        gapSize: gapSize,
-        passed: false,
-        rotation: Math.random() * Math.PI * 2
-    });
-    
-    // Programmer le prochain mur
-    const spawnDelay = Math.max(300, HEX_CONFIG.wallSpawnRate - difficultyLevel * 100);
-    setTimeout(spawnWall, spawnDelay);
-}
-
-// Mettre à jour l'état du jeu
-function update(deltaTime) {
-    // Mise à jour de l'effet de pulsation
-    pulse += 0.05 * pulseDirection;
-    if (pulse >= 1) {
-        pulse = 1;
-        pulseDirection = -1;
-    } else if (pulse <= 0) {
-        pulse = 0;
-        pulseDirection = 1;
-    }
-    
-    // Rotation du monde
-    const worldRotation = Date.now() * 0.001 * rotationSpeed;
-    
-    // Mettre à jour les murs
-    for (let i = walls.length - 1; i >= 0; i--) {
-        const wall = walls[i];
-        
-        // Déplacer le mur vers le centre
-        wall.distance -= HEX_CONFIG.wallSpeed * difficultyLevel * deltaTime * 0.1;
-        
-        // Vérifier si le joueur a passé le mur
-        if (!wall.passed && wall.distance < player.distance) {
-            wall.passed = true;
-            score += 10;
-            scoreElement.textContent = score;
-            playSound('wallPass');
-        }
-        
-        // Vérifier les collisions avec le joueur
-        if (Math.abs(wall.distance - player.distance) < 10) {
-            // Calculer l'angle du joueur par rapport au mur
-            const playerAngleNormalized = ((player.angle + worldRotation) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-            const segmentAngle = Math.PI * 2 / wall.segments;
+    updateWalls() {
+        for (let i = this.walls.length - 1; i >= 0; i--) {
+            const wall = this.walls[i];
+            const userData = wall.userData;
             
-            // Déterminer dans quel segment le joueur se trouve
-            let playerSegment = Math.floor(playerAngleNormalized / segmentAngle);
+            // Move wall towards center
+            const currentRadius = Math.sqrt(wall.position.x ** 2 + wall.position.y ** 2);
+            const newRadius = currentRadius - userData.speed * (this.speed + this.score * 0.001);
             
-            // Ajuster en fonction de la rotation du mur
-            playerSegment = (playerSegment - Math.floor(wall.rotation / segmentAngle) + wall.segments) % wall.segments;
-            
-            // Vérifier si le joueur est dans un segment de mur (pas dans l'ouverture)
-            const inGap = playerSegment >= wall.gapPosition && playerSegment < wall.gapPosition + wall.gapSize;
-            
-            if (!inGap) {
-                gameOver();
-                return;
-            }
-        }
-        
-        // Supprimer les murs qui sont sortis de l'écran
-        if (wall.distance < 0) {
-            walls.splice(i, 1);
-        }
-    }
-}
-
-// Dessiner le jeu
-function draw() {
-    // Effacer le canvas
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Centrer le contexte
-    ctx.save();
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    
-    // Rotation du monde
-    const worldRotation = Date.now() * 0.001 * rotationSpeed;
-    ctx.rotate(worldRotation);
-    
-    // Dessiner l'arrière-plan hexagonal
-    drawBackground();
-    
-    // Dessiner les murs
-    drawWalls();
-    
-    // Restaurer la transformation
-    ctx.restore();
-    
-    // Dessiner le joueur
-    drawPlayer();
-    
-    // Dessiner les informations de jeu
-    drawGameInfo();
-    
-    // Message de démarrage
-    if (!gameStarted) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 36px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('HEXAGON', canvas.width/2, canvas.height/2 - 50);
-        
-        ctx.font = '20px Arial';
-        ctx.fillText('Cliquez ou appuyez sur ESPACE pour commencer', canvas.width/2, canvas.height/2);
-        
-        ctx.font = '16px Arial';
-        ctx.fillText('Utilisez les flèches ou A/D pour tourner', canvas.width/2, canvas.height/2 + 30);
-    }
-}
-
-// Dessiner l'arrière-plan
-function drawBackground() {
-    const centerRadius = HEX_CONFIG.baseRadius * (0.8 + pulse * 0.2);
-    
-    // Dessiner l'hexagone central
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-        const angle = i * Math.PI / 3;
-        const x = Math.cos(angle) * centerRadius;
-        const y = Math.sin(angle) * centerRadius;
-        if (i === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
-        }
-    }
-    ctx.closePath();
-    
-    // Remplir avec un dégradé radial
-    const gradient = ctx.createRadialGradient(0, 0, centerRadius * 0.5, 0, 0, centerRadius);
-    gradient.addColorStop(0, colors[0]);
-    gradient.addColorStop(1, colors[1]);
-    ctx.fillStyle = gradient;
-    ctx.fill();
-    
-    // Ajouter un contour
-    ctx.strokeStyle = colors[2];
-    ctx.lineWidth = 3;
-    ctx.stroke();
-}
-
-// Dessiner les murs
-function drawWalls() {
-    walls.forEach(wall => {
-        const segmentAngle = Math.PI * 2 / wall.segments;
-        const wallThickness = 15 + difficultyLevel * 2;
-        
-        ctx.save();
-        ctx.rotate(wall.rotation);
-        
-        for (let i = 0; i < wall.segments; i++) {
-            // Ne pas dessiner les segments qui forment l'ouverture
-            if (i >= wall.gapPosition && i < wall.gapPosition + wall.gapSize) {
+            if (newRadius <= 0.5) {
+                // Remove wall if it reaches center
+                this.scene.remove(wall);
+                this.walls.splice(i, 1);
                 continue;
             }
             
-            // Dessiner le segment
-            ctx.beginPath();
-            ctx.arc(0, 0, wall.distance, i * segmentAngle, (i + 1) * segmentAngle);
-            ctx.arc(0, 0, wall.distance + wallThickness, (i + 1) * segmentAngle, i * segmentAngle, true);
-            ctx.closePath();
+            // Update position
+            wall.position.x = Math.cos(userData.angle) * newRadius;
+            wall.position.y = Math.sin(userData.angle) * newRadius;
             
-            // Remplir avec un dégradé
-            const colorIndex = (i % colors.length);
-            ctx.fillStyle = colors[colorIndex];
-            ctx.fill();
+            // Add rotation effect
+            wall.rotation.z += 0.02;
             
-            // Contour
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 1;
-            ctx.stroke();
+            // Check collision with player
+            if (this.checkCollision(wall)) {
+                this.gameOver();
+                return;
+            }
+        }
+    }
+    
+    checkCollision(wall) {
+        const distance = this.player.position.distanceTo(wall.position);
+        return distance < 0.5;
+    }
+    
+    updatePlayer() {
+        if (this.gameState !== 'playing') return;
+        
+        // Player movement
+        if (this.keys['a'] || this.keys['arrowleft']) {
+            this.playerRotation -= this.playerSpeed;
+        }
+        if (this.keys['d'] || this.keys['arrowright']) {
+            this.playerRotation += this.playerSpeed;
         }
         
-        ctx.restore();
+        // Update player position
+        this.player.position.x = Math.cos(this.playerRotation) * this.playerRadius;
+        this.player.position.y = Math.sin(this.playerRotation) * this.playerRadius;
+        
+        // Player rotation animation
+        this.player.rotation.x += 0.1;
+        this.player.rotation.y += 0.05;
+        
+        // Update player trail
+        for (let i = this.playerTrail.length - 1; i > 0; i--) {
+            this.playerTrail[i].position.copy(this.playerTrail[i - 1].position);
+        }
+        if (this.playerTrail.length > 0) {
+            this.playerTrail[0].position.copy(this.player.position);
+        }
+    }
+    
+    updateEffects(deltaTime) {
+        // Pulsing central light
+        this.centralLight.intensity = 2 + Math.sin(this.beatTime * 4) * 0.5;
+        
+        // Hexagon rotation
+        this.hexagonRotation += 0.005 * this.speed;
+        this.hexagonGroup.rotation.z = this.hexagonRotation;
+        
+        // Inner hexagon counter-rotation
+        this.innerHexagon.rotation.z -= 0.01 * this.speed;
+        
+        // Stars animation
+        this.stars.rotation.z += 0.001;
+        
+        // Camera shake effect when speed increases
+        if (this.speed > 2) {
+            this.camera.position.x = (Math.random() - 0.5) * 0.1 * (this.speed - 2);
+            this.camera.position.y = (Math.random() - 0.5) * 0.1 * (this.speed - 2);
+        }
+        
+        // Speed increase over time
+        this.speed += 0.0005;
+        
+        // Score increase
+        this.score += Math.floor(this.speed * 10);
+        
+        // Update UI
+        document.getElementById('scoreValue').textContent = Math.floor(this.score);
+        document.getElementById('speedValue').textContent = this.speed.toFixed(1);
+    }
+    
+    updateMusic() {
+        if (!this.musicEnabled || !this.audioContext) return;
+        
+        this.beatTime += 0.016; // Assuming 60fps
+        
+        // Beat pattern
+        if (Math.floor(this.beatTime * 4) % 2 === 0) {
+            this.beatGain.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+            this.beatGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.1);
+            
+            // Bass effect
+            document.getElementById('bassEffect').style.opacity = '0.3';
+            setTimeout(() => {
+                document.getElementById('bassEffect').style.opacity = '0';
+            }, 100);
+        }
+        
+        // Bass line
+        const bassPattern = [110, 130, 165, 220];
+        const currentBass = bassPattern[Math.floor(this.beatTime) % bassPattern.length];
+        this.bassOscillator.frequency.setValueAtTime(currentBass, this.audioContext.currentTime);
+        
+        if (Math.floor(this.beatTime * 2) % 4 === 0) {
+            this.bassGain.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+            this.bassGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
+        }
+    }
+    
+    animate() {
+        requestAnimationFrame(() => this.animate());
+        
+        const currentTime = Date.now();
+        const deltaTime = (currentTime - this.lastTime) / 1000;
+        this.lastTime = currentTime;
+        
+        if (this.gameState === 'playing') {
+            this.updatePlayer();
+            this.updateWalls();
+            this.updateEffects(deltaTime);
+            this.updateMusic();
+            
+            // Spawn new walls
+            if (Math.random() < this.wallSpawnRate * this.speed && this.walls.length < this.maxWalls) {
+                this.spawnWall();
+            }
+        }
+        
+        this.renderer.render(this.scene, this.camera);
+    }
+    
+    startGame() {
+        this.gameState = 'playing';
+        this.score = 0;
+        this.speed = 1.0;
+        this.playerRotation = 0;
+        this.hexagonRotation = 0;
+        this.beatTime = 0;
+        
+        // Clear existing walls
+        this.walls.forEach(wall => this.scene.remove(wall));
+        this.walls = [];
+        
+        // Reset player position
+        this.player.position.set(0, this.playerRadius, 0);
+        
+        // Hide menu
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('gameOver').style.display = 'none';
+        
+        // Resume audio context if needed
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
+    }
+    
+    gameOver() {
+        this.gameState = 'gameOver';
+        
+        // Update best score
+        const bestScore = localStorage.getItem('hexagonBestScore') || 0;
+        if (this.score > bestScore) {
+            localStorage.setItem('hexagonBestScore', Math.floor(this.score));
+        }
+        
+        // Show game over screen
+        document.getElementById('finalScore').textContent = Math.floor(this.score);
+        document.getElementById('bestScore').textContent = localStorage.getItem('hexagonBestScore') || 0;
+        document.getElementById('gameOver').style.display = 'block';
+        
+        // Camera effect
+        this.camera.position.x = 0;
+        this.camera.position.y = 0;
+    }
+    
+    restartGame() {
+        this.startGame();
+    }
+    
+    showMenu() {
+        this.gameState = 'menu';
+        document.getElementById('menu').style.display = 'block';
+        document.getElementById('gameOver').style.display = 'none';
+        
+        // Reset camera
+        this.camera.position.set(0, 0, 15);
+        this.camera.position.x = 0;
+        this.camera.position.y = 0;
+    }
+    
+    toggleMusic() {
+        this.musicEnabled = !this.musicEnabled;
+        const button = document.querySelector('[data-translate="game.music"]');
+        if (this.musicEnabled) {
+            button.textContent = translations[currentLanguage]['game.music'] || 'MUSIQUE: ON';
+            if (this.masterGain) this.masterGain.gain.value = 0.3;
+        } else {
+            button.textContent = 'MUSIC: OFF';
+            if (this.masterGain) this.masterGain.gain.value = 0;
+        }
+    }
+    
+    loadBestScore() {
+        const bestScore = localStorage.getItem('hexagonBestScore') || 0;
+        document.getElementById('bestScore').textContent = bestScore;
+    }
+    
+    handleResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+}
+
+// Initialize the game
+let game;
+
+document.addEventListener('DOMContentLoaded', () => {
+    game = new HexagonUltra();
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        game.handleResize();
     });
-}
-
-// Dessiner le joueur
-function drawPlayer() {
-    const worldRotation = Date.now() * 0.001 * rotationSpeed;
-    const x = canvas.width / 2 + Math.cos(player.angle + worldRotation) * player.distance;
-    const y = canvas.height / 2 + Math.sin(player.angle + worldRotation) * player.distance;
-    
-    // Cercle du joueur
-    ctx.beginPath();
-    ctx.arc(x, y, HEX_CONFIG.playerSize, 0, Math.PI * 2);
-    
-    // Dégradé pour le joueur
-    const gradient = ctx.createRadialGradient(
-        x, y, 0,
-        x, y, HEX_CONFIG.playerSize
-    );
-    gradient.addColorStop(0, 'white');
-    gradient.addColorStop(1, colors[3]);
-    ctx.fillStyle = gradient;
-    ctx.fill();
-    
-    // Contour
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    
-    // Effet de brillance
-    ctx.beginPath();
-    ctx.arc(
-        x - HEX_CONFIG.playerSize * 0.3, 
-        y - HEX_CONFIG.playerSize * 0.3, 
-        HEX_CONFIG.playerSize * 0.3, 
-        0, Math.PI * 2
-    );
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.fill();
-}
-
-// Dessiner les informations de jeu
-function drawGameInfo() {
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 20px Poppins';
-    ctx.textAlign = 'center';
-    
-    // Colorscheme et niveau de difficulté
-    ctx.fillText(
-        `${HEX_CONFIG.colorSchemeTitles[colorScheme]} - Level ${difficultyLevel}`, 
-        canvas.width / 2, 
-        30
-    );
-}
-
-// Gérer le game over
-function gameOver() {
-    gameRunning = false;
-    playSound('gameOver');
-    
-    // Mettre à jour le meilleur score si nécessaire
-    if (score > highScore) {
-        highScore = score;
-        localStorage.setItem('hexagonHighScore', highScore);
-    }
-    
-    // Afficher l'écran de game over
-    finalScoreElement.textContent = score;
-    gameMessage.style.display = 'block';
-}
-
-// Boucle principale du jeu
-function gameLoop(timestamp) {
-    if (!gameRunning) return;
-    
-    // Calculer le delta time
-    if (!lastTime) {
-        lastTime = timestamp;
-    }
-    const deltaTime = timestamp - lastTime;
-    lastTime = timestamp;
-    
-    // Mettre à jour et dessiner le jeu
-    update(deltaTime);
-    draw();
-    
-    // Continuer la boucle
-    animationFrame = requestAnimationFrame(gameLoop);
-}
-
-// Redémarrer le jeu
-function restartGame() {
-    if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-    }
-    gameMessage.style.display = 'none';
-    gameStarted = false;
-    gameRunning = false;
-    initGame();
-}
-
-// Bouton de redémarrage
-restartBtn.addEventListener('click', restartGame);
-
-// Changer la couleur avec C
-document.addEventListener('keydown', function(e) {
-    if (e.key.toLowerCase() === 'c') {
-        colorScheme = (colorScheme + 1) % HEX_CONFIG.colorSchemes.length;
-        colors = HEX_CONFIG.colorSchemes[colorScheme];
-    }
 });
 
-// Initialiser le jeu au chargement
-window.addEventListener('load', initGame);
+// Global functions for UI
+function startGame() {
+    game.startGame();
+}
+
+function restartGame() {
+    game.restartGame();
+}
+
+function showMenu() {
+    game.showMenu();
+}
+
+function toggleMusic() {
+    game.toggleMusic();
+}

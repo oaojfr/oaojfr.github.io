@@ -749,41 +749,98 @@
                 hexagonCanvas.height = 225;
                 
                 let rotation = 0;
+                let pulseTime = 0;
+                let walls = [];
+                
+                // Generate initial walls
+                for (let i = 0; i < 8; i++) {
+                    walls.push({
+                        angle: (Math.PI * 2 / 6) * Math.floor(Math.random() * 6),
+                        distance: 150 + Math.random() * 50,
+                        speed: 0.5 + Math.random() * 0.5,
+                        color: `hsl(${180 + Math.random() * 180}, 80%, 60%)`
+                    });
+                }
                 
                 function drawHexagon() {
-                    hexagonCtx.fillStyle = '#000';
+                    // Gradient background
+                    const gradient = hexagonCtx.createRadialGradient(200, 112, 0, 200, 112, 200);
+                    gradient.addColorStop(0, '#001122');
+                    gradient.addColorStop(1, '#000000');
+                    hexagonCtx.fillStyle = gradient;
                     hexagonCtx.fillRect(0, 0, 400, 225);
                     
                     hexagonCtx.save();
                     hexagonCtx.translate(200, 112);
-                    hexagonCtx.rotate(rotation);
                     
-                    // Draw hexagons
-                    for (let i = 0; i < 3; i++) {
-                        const radius = 30 + i * 25;
+                    // Pulsing effect
+                    pulseTime += 0.05;
+                    const pulse = 1 + Math.sin(pulseTime * 4) * 0.1;
+                    
+                    // Draw outer glow
+                    hexagonCtx.shadowColor = '#00ffff';
+                    hexagonCtx.shadowBlur = 20;
+                    
+                    // Draw hexagon rings with different colors
+                    for (let i = 0; i < 4; i++) {
+                        const radius = (25 + i * 20) * pulse;
                         hexagonCtx.beginPath();
                         for (let j = 0; j < 6; j++) {
-                            const angle = (j * Math.PI) / 3;
+                            const angle = (j * Math.PI) / 3 + rotation;
                             const x = Math.cos(angle) * radius;
                             const y = Math.sin(angle) * radius;
                             if (j === 0) hexagonCtx.moveTo(x, y);
                             else hexagonCtx.lineTo(x, y);
                         }
                         hexagonCtx.closePath();
-                        hexagonCtx.strokeStyle = `hsl(${280 + i * 30}, 70%, 50%)`;
-                        hexagonCtx.lineWidth = 3;
+                        
+                        const hue = (280 + i * 40 + rotation * 50) % 360;
+                        hexagonCtx.strokeStyle = `hsl(${hue}, 80%, 60%)`;
+                        hexagonCtx.lineWidth = 3 - i * 0.5;
                         hexagonCtx.stroke();
                     }
                     
-                    // Center player
-                    hexagonCtx.fillStyle = '#fff';
+                    // Draw walls
+                    hexagonCtx.shadowBlur = 10;
+                    walls.forEach((wall, index) => {
+                        const x = Math.cos(wall.angle) * wall.distance;
+                        const y = Math.sin(wall.angle) * wall.distance;
+                        
+                        hexagonCtx.fillStyle = wall.color;
+                        hexagonCtx.shadowColor = wall.color;
+                        hexagonCtx.fillRect(x - 15, y - 4, 30, 8);
+                        
+                        // Move wall towards center
+                        wall.distance -= wall.speed;
+                        
+                        // Reset wall if it reaches center
+                        if (wall.distance < 20) {
+                            wall.distance = 150 + Math.random() * 50;
+                            wall.angle = (Math.PI * 2 / 6) * Math.floor(Math.random() * 6);
+                            wall.color = `hsl(${180 + Math.random() * 180}, 80%, 60%)`;
+                        }
+                    });
+                    
+                    // Draw central player with glow
+                    hexagonCtx.shadowColor = '#ffffff';
+                    hexagonCtx.shadowBlur = 15;
+                    hexagonCtx.fillStyle = '#ffffff';
                     hexagonCtx.beginPath();
-                    hexagonCtx.arc(0, 0, 3, 0, Math.PI * 2);
+                    hexagonCtx.arc(0, 0, 4, 0, Math.PI * 2);
                     hexagonCtx.fill();
+                    
+                    // Player position on hexagon
+                    const playerAngle = pulseTime * 2;
+                    const playerX = Math.cos(playerAngle) * 30;
+                    const playerY = Math.sin(playerAngle) * 30;
+                    
+                    hexagonCtx.shadowBlur = 8;
+                    hexagonCtx.fillStyle = '#00ffff';
+                    hexagonCtx.fillRect(playerX - 2, playerY - 2, 4, 4);
                     
                     hexagonCtx.restore();
                     
-                    rotation += 0.02;
+                    rotation += 0.015;
                 }
                 
                 setInterval(drawHexagon, 16);
