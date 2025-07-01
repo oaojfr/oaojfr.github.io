@@ -841,6 +841,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#contact" data-translate="nav.contact">Contact</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -1591,6 +1601,38 @@
             if (languageMeta) {
                 languageMeta.setAttribute('content', lang);
             }
+            
+            // Apply translations
+            applyTranslations(lang);
+            
+            // Update language button states
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Apply translations based on saved language
+        function applyTranslations(lang) {
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    if (key.includes('footer.copyright')) {
+                        // Preserve the heart icon
+                        element.innerHTML = translations[lang][key] + ' <i class="bi bi-heart-fill text-danger"></i> ' + translations[lang]['footer.made'];
+                    } else {
+                        element.innerHTML = translations[lang][key];
+                    }
+                }
+            });
+        }
+
+        // Change language (alias for switchLanguage for compatibility)
+        function changeLanguage(lang) {
+            localStorage.setItem('language', lang);
+            switchLanguage(lang);
         }
 
         // Theme switching
@@ -1695,18 +1737,20 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Load preferences
-            const savedLanguage = localStorage.getItem('preferred-language') || 'fr';
+            const savedLanguage = localStorage.getItem('language') || localStorage.getItem('preferred-language') || 'fr';
             const savedTheme = localStorage.getItem('preferred-theme') || 'light';
             
             if (savedTheme === 'dark') {
                 toggleTheme();
             }
             
+            // Apply saved language
             if (savedLanguage !== 'fr') {
                 switchLanguage(savedLanguage);
             }
             
-            // Load GitHub stats            loadGitHubStats();
+            // Load GitHub stats
+            loadGitHubStats();
         });
 
         // Existing code for smooth scrolling and animations
