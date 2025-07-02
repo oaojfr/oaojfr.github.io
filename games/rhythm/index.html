@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Rhythm Hero - João</title>
+    <meta name="description" content="Jeu de rythme personnalisé - Uploadez votre MP3 et jouez sur votre musique préférée !">
+    <meta name="keywords" content="rhythm, jeu, musique, mp3, rythme, cyberpunk, javascript">
+    <meta name="author" content="João">
+    
+    <!-- Alternate language versions -->
+    <link rel="alternate" href="../../games/rhythm/index.html" hreflang="fr">
+    <link rel="alternate" href="../../games/rhythm/index.html" hreflang="en">
+    <link rel="alternate" href="../../games/rhythm/index.html" hreflang="pt">
+    <link rel="alternate" href="../../games/rhythm/index.html" hreflang="x-default">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neon-cyan: #00ffff;
+            --neon-purple: #8b00ff;
+            --neon-orange: #ff6600;
+            --neon-yellow: #ffff00;
+            --neon-pink: #ff007f;
+            --neon-green: #00ff88;
+            --dark-bg: #0a0a0f;
+            --space-blue: #000033;
+        }
+
+        [data-theme="dark"] {
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, var(--dark-bg), var(--space-blue));
+            color: var(--neon-cyan);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gameCanvas {
+            background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1), transparent);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            box-shadow: 0 0 30px var(--neon-cyan);
+            animation: canvasGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes canvasGlow {
+            from { box-shadow: 0 0 30px var(--neon-cyan); }
+            to { box-shadow: 0 0 50px var(--neon-cyan), 0 0 80px rgba(0, 255, 255, 0.3); }
+        }
+
+        /* Overlay Styles */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .overlay-content {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(139, 0, 255, 0.1));
+            border: 2px solid var(--neon-cyan);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            margin: 2rem;
+        }
+
+        .title-text {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan);
+            margin-bottom: 2rem;
+            animation: titlePulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes titlePulse {
+            from { text-shadow: 0 0 20px var(--neon-cyan); }
+            to { text-shadow: 0 0 30px var(--neon-cyan), 0 0 40px var(--neon-cyan); }
+        }
+
+        .subtitle-text {
+            font-size: 1.2rem;
+            color: var(--neon-yellow);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 3px dashed var(--neon-purple);
+            border-radius: 15px;
+            padding: 3rem;
+            margin: 2rem 0;
+            background: linear-gradient(45deg, rgba(139, 0, 255, 0.1), rgba(255, 0, 127, 0.1));
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-area:hover {
+            border-color: var(--neon-pink);
+            background: linear-gradient(45deg, rgba(255, 0, 127, 0.2), rgba(139, 0, 255, 0.2));
+            transform: scale(1.02);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--neon-green);
+            background: linear-gradient(45deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 255, 0.2));
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--neon-purple);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.3rem;
+            color: var(--neon-purple);
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            font-size: 0.9rem;
+            color: rgba(139, 0, 255, 0.7);
+            margin-top: 0.5rem;
+        }
+
+        /* Buttons */
+        .btn-cyber {
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-cyber:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 30px rgba(0, 255, 255, 0.5);
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+        }
+
+        .btn-cyber:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Game UI */
+        #gameUI {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: none;
+            z-index: 10;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 10px;
+            padding: 10px 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        .combo-display {
+            font-size: 1.2rem;
+            color: var(--neon-orange);
+            text-shadow: 0 0 10px var(--neon-orange);
+        }
+
+        .fever-indicator {
+            font-size: 1.8rem;
+            color: var(--neon-pink);
+            text-shadow: 0 0 15px var(--neon-pink);
+            animation: pulse 0.5s ease-in-out infinite alternate;
+            display: none;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .settings-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--neon-purple);
+            border-radius: 10px;
+            padding: 15px;
+            display: none;
+            z-index: 50;
+        }
+
+        .setting-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .setting-item label {
+            color: var(--neon-cyan);
+            margin-right: 10px;
+        }
+
+        .setting-item input[type="range"] {
+            width: 100px;
+        }
+
+        .high-scores {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .score-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        /* Améliorations des contrôles */
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--neon-green);
+            border-radius: 10px;
+            padding: 10px 20px;
+            display: none;
+        }
+
+        .key-indicator {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 5px;
+            text-align: center;
+            line-height: 26px;
+            transition: all 0.1s ease;
+        }
+
+        .key-indicator.active {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 50;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--neon-cyan);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 10px;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 255, 255, 0.3);
+            border-top: 4px solid var(--neon-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .processing-text {
+            color: var(--neon-cyan);
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Hidden file input */
+        #fileInput {
+            display: none;
+        }
+        
+        /* Difficulty Selector */
+        .difficulty-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .difficulty-btn {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(139, 0, 255, 0.2));
+            color: var(--neon-cyan);
+            border: 2px solid var(--neon-cyan);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.3), rgba(139, 0, 255, 0.3));
+        }
+        
+        .difficulty-btn.active {
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            color: white;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .difficulty-btn.active:hover {
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+            border-color: var(--neon-pink);
+        }
+
+        /* Progress Bar in Overlay */
+        .progress-container-overlay {
+            width: 100%;
+            margin: 1rem 0;
+        }
+        
+        .progress-bar-overlay {
+            height: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--neon-cyan);
+        }
+        
+        .progress-fill-overlay {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            border-radius: 8px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+        
+        /* Analysis Steps */
+        #analysisInfo div {
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            margin: 0.3rem 0;
+        }
+        
+        #analysisInfo div.active {
+            opacity: 1;
+            color: var(--neon-yellow);
+            transform: translateX(10px);
+        }
+        
+        #analysisInfo div.completed {
+            opacity: 0.8;
+            color: var(--neon-green);
+        }
+
+        /* Back Button */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(45deg, rgba(255, 0, 127, 0.8), rgba(139, 0, 255, 0.8));
+            color: white;
+            border: 2px solid var(--neon-pink);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 200;
+        }
+
+        .back-button:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 0, 127, 0.4);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title-text {
+                font-size: 2.5rem;
+            }
+            
+            .overlay-content {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .upload-area {
+                padding: 2rem;
+            }
+            
+            .game-ui {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Back Button -->
+        <a href="../../games.html" class="back-button">
+            <i class="bi bi-arrow-left"></i> Retour aux Jeux
+        </a>
+
+        <!-- Game Canvas -->
+        <canvas id="gameCanvas" width="1200" height="700"></canvas>
+
+        <!-- Game UI with enhanced features -->
+        <div id="gameUI" style="display: none;">
+            <div class="game-info">
+                <div class="score-display">
+                    Score: <span id="scoreValue">0</span>
+                </div>
+                <div class="combo-display">
+                    Combo: <span id="comboValue">0</span>
+                </div>
+                <div class="fever-indicator" id="feverIndicator">
+                    Fever!
+                </div>
+                <div style="color: var(--neon-green);">
+                    <span id="bpmDisplay">BPM: --</span> | 
+                    <span id="difficultyDisplay">Niveau: --</span>
+                </div>
+            </div>
+            
+            <!-- Settings Panel -->
+            <div class="settings-panel" id="settingsPanel">
+                <h4 style="color: var(--neon-purple); margin-bottom: 15px;">⚙️ Paramètres</h4>
+                <div class="setting-item">
+                    <label>Vitesse des notes:</label>
+                    <input type="range" id="speedSlider" min="300" max="800" value="500">
+                    <span id="speedValue">500</span>
+                </div>
+                <div class="setting-item">
+                    <label>Décalage audio (ms):</label>
+                    <input type="range" id="offsetSlider" min="-200" max="200" value="0">
+                    <span id="offsetValue">0</span>
+                </div>
+                <div class="setting-item">
+                    <label>Traînées:</label>
+                    <input type="checkbox" id="trailsToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Particules:</label>
+                    <input type="checkbox" id="particlesToggle" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Screen Shake:</label>
+                    <input type="checkbox" id="shakeToggle" checked>
+                </div>
+            </div>
+            
+            <!-- Settings Button -->
+            <button id="settingsBtn" style="position: absolute; top: 20px; right: 20px; background: rgba(139, 0, 255, 0.8); border: 1px solid var(--neon-purple); color: white; padding: 10px; border-radius: 5px;">
+                ⚙️
+            </button>
+        </div>
+        
+        <!-- Enhanced Controls Hint -->
+        <div class="controls-hint" id="controlsHint">
+            <div style="color: var(--neon-green); margin-bottom: 10px;">Contrôles:</div>
+            <div>
+                <span class="key-indicator" id="keyF">F</span>
+                <span class="key-indicator" id="keyG">G</span>
+                <span class="key-indicator" id="keyJ">J</span>
+                <span class="key-indicator" id="keyK">K</span>
+            </div>
+            <div style="font-size: 0.8rem; margin-top: 10px; color: rgba(255, 255, 255, 0.7);">
+                ESPACE: Pause | ESC: Menu | Notes roses: maintenir la touche
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container" style="display: none;" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Menu Overlay -->
+        <div class="overlay" id="menuOverlay">
+            <div class="overlay-content">
+                <h1 class="title-text">🎵 RHYTHM HERO</h1>
+                <p class="subtitle-text">Uploadez votre MP3 et jouez sur votre musique préférée !</p>
+                
+                <div class="upload-area" id="uploadArea">
+                    <i class="bi bi-cloud-upload upload-icon"></i>
+                    <div class="upload-text">Cliquez ou glissez votre fichier MP3 ici</div>
+                    <div class="upload-subtext">Formats acceptés: MP3, WAV, OGG</div>
+                </div>
+                
+                <input type="file" id="fileInput" accept=".mp3,.wav,.ogg,audio/*">
+                
+                <div style="margin-top: 2rem;">
+                    <p style="color: var(--neon-yellow); font-size: 1rem; margin-bottom: 1rem;">
+                        🎮 <strong>Comment jouer:</strong>
+                    </p>
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; line-height: 1.6;">
+                        Utilisez les touches <strong>F</strong>, <strong>G</strong>, <strong>J</strong>, <strong>K</strong> pour frapper les notes<br>
+                        au bon moment quand elles atteignent la ligne de frappe !
+                    </p>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <p style="color: var(--neon-cyan); font-size: 1rem; margin-bottom: 1rem;">
+                        🎯 <strong>Niveau de difficulté:</strong>
+                    </p>
+                    <div class="difficulty-selector">
+                        <button class="difficulty-btn" data-difficulty="easy">
+                            <i class="bi bi-star"></i> Facile
+                        </button>
+                        <button class="difficulty-btn active" data-difficulty="medium">
+                            <i class="bi bi-star-fill"></i> Moyen
+                        </button>
+                        <button class="difficulty-btn" data-difficulty="hard">
+                            <i class="bi bi-lightning"></i> Difficile
+                        </button>
+                        <button class="difficulty-btn" data-difficulty="expert">
+                            <i class="bi bi-fire"></i> Expert
+                        </button>
+                    </div>
+                    <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-top: 0.5rem; text-align: center;">
+                        Le jeu analyse automatiquement le rythme et adapte la densité des notes
+                    </p>
+                </div>
+
+                <!-- High Scores Section -->
+                <div class="high-scores" id="highScoresSection">
+                    <h4 style="color: var(--neon-yellow); margin-bottom: 15px;">🏆 Meilleurs Scores</h4>
+                    <div id="highScoresList">
+                        <!-- Sera rempli dynamiquement -->
+                    </div>
+                </div>
+                
+                <!-- Statistiques détaillées -->
+                <div style="margin-top: 20px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);">
+                    <div>Perfect: <span id="perfectCount">0</span> | Great: <span id="greatCount">0</span> | Good: <span id="goodCount">0</span></div>
+                    <div>Streak record: <span id="longestStreak">0</span> | Notes manquées: <span id="missedCount">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Processing Overlay -->
+        <div class="overlay" id="processingOverlay" style="display: none;">
+            <div class="overlay-content">
+                <h2 style="color: var(--neon-cyan); margin-bottom: 2rem;">🎵 Analyse de votre musique...</h2>
+                <div class="loading-spinner"></div>
+                <div class="processing-text" id="processingText">Génération des notes en cours...</div>
+                
+                <!-- Barre de progression -->
+                <div class="progress-container-overlay" style="margin: 2rem 0; width: 100%;">
+                    <div class="progress-bar-overlay">
+                        <div class="progress-fill-overlay" id="progressFillOverlay" style="width: 0%;"></div>
+                    </div>
+                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; margin-top: 0.5rem;">
+                        <span id="progressPercent">0%</span> - <span id="progressStep">Initialisation...</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    <div id="analysisInfo" style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">
+                        <div id="step1">📊 Analyse spectrale...</div>
+                        <div id="step2">🥁 Détection du BPM...</div>
+                        <div id="step3">🎯 Génération des beats...</div>
+                        <div id="step4">🎼 Adaptation à la difficulté...</div>
+                    </div>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-top: 2rem;">
+                    L'IA analyse le rythme, les fréquences et les instruments pour créer<br>
+                    une expérience de jeu parfaitement synchronisée avec votre musique
+                </p>
+                <p style="color: var(--neon-orange); font-size: 0.8rem; margin-top: 1rem;">
+                    ⏱️ L'analyse prend 10-30 secondes selon la longueur du fichier<br>
+                    💡 Pour des résultats plus rapides, utilisez des fichiers MP3 < 5 minutes
+                </p>
+            </div>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div class="overlay" id="gameOverOverlay" style="display: none;">
+            <div class="overlay-content">
+                <h2 style="color: var(--neon-pink); margin-bottom: 2rem;">🎊 Partie Terminée !</h2>
+                
+                <div style="margin: 2rem 0;">
+                    <div style="font-size: 2rem; color: var(--neon-cyan); margin-bottom: 1rem;">
+                        Score Final: <span id="finalScore">0</span>
+                    </div>
+                    <div style="font-size: 1.2rem; color: var(--neon-yellow);">
+                        Meilleur Combo: <span id="finalCombo">0</span>
+                    </div>
+                    <div style="font-size: 1rem; color: var(--neon-green); margin-top: 1rem;">
+                        Précision: <span id="accuracy">0</span>%
+                    </div>
+                </div>
+                
+                <div>
+                    <button class="btn-cyber" onclick="restartGame()">
+                        <i class="bi bi-arrow-clockwise"></i> Rejouer
+                    </button>
+                    <button class="btn-cyber" onclick="goToMenu()">
+                        <i class="bi bi-house"></i> Nouvelle Musique
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pause Overlay -->
+        <div class="overlay" id="pauseOverlay" style="display: none;">
+            <div class="overlay-content">
+                <h2 style="color: var(--neon-yellow); margin-bottom: 2rem;">⏸️ Pause</h2>
+                
+                <div>
+                    <button class="btn-cyber" onclick="resumeGame()">
+                        <i class="bi bi-play"></i> Continuer
+                    </button>
+                    <button class="btn-cyber" onclick="goToMenu()">
+                        <i class="bi bi-house"></i> Menu Principal
+                    </button>
+                </div>
+                
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-top: 2rem;">
+                    Appuyez sur <strong>ESPACE</strong> ou <strong>ÉCHAP</strong> pour reprendre
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Game Script -->
+    <script src="rhythm.js"></script>
+
+    <!-- Enhanced JavaScript for UI -->
+    <script>
+        // Fonctions globales pour l'interface améliorée
+        function restartGame() {
+            if (window.rhythmGame) {
+                window.rhythmGame.restartGame();
+            }
+        }
+        
+        function goToMenu() {
+            if (window.rhythmGame) {
+                window.rhythmGame.goToMenu();
+            }
+        }
+        
+        // Gestion des paramètres
+        document.addEventListener('DOMContentLoaded', () => {
+            // Bouton paramètres
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsPanel = document.getElementById('settingsPanel');
+            
+            if (settingsBtn && settingsPanel) {
+                settingsBtn.addEventListener('click', () => {
+                    settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+            
+            // Sliders de paramètres
+            const speedSlider = document.getElementById('speedSlider');
+            const offsetSlider = document.getElementById('offsetSlider');
+            const trailsToggle = document.getElementById('trailsToggle');
+            const particlesToggle = document.getElementById('particlesToggle');
+            const shakeToggle = document.getElementById('shakeToggle');
+            
+            if (speedSlider) {
+                speedSlider.addEventListener('input', (e) => {
+                    document.getElementById('speedValue').textContent = e.target.value;
+                    if (window.rhythmGame) {
+                        window.rhythmGame.gameSettings.noteSpeed = parseInt(e.target.value);
+                        window.rhythmGame.saveSettings();
+                    }
+                });
+            }
+            
+            if (offsetSlider) {
+                offsetSlider.addEventListener('input', (e) => {
+                    document.getElementById('offsetValue').textContent = e.target.value;
+                    if (window.rhythmGame) {
+                        window.rhythmGame.gameSettings.audioOffset = parseInt(e.target.value);
+                        window.rhythmGame.saveSettings();
+                    }
+                });
+            }
+            
+            if (trailsToggle) {
+                trailsToggle.addEventListener('change', (e) => {
+                    if (window.rhythmGame) {
+                        window.rhythmGame.gameSettings.showTrails = e.target.checked;
+                        window.rhythmGame.saveSettings();
+                    }
+                });
+            }
+            
+            if (particlesToggle) {
+                particlesToggle.addEventListener('change', (e) => {
+                    if (window.rhythmGame) {
+                        window.rhythmGame.gameSettings.showParticles = e.target.checked;
+                        window.rhythmGame.saveSettings();
+                    }
+                });
+            }
+            
+            if (shakeToggle) {
+                shakeToggle.addEventListener('change', (e) => {
+                    if (window.rhythmGame) {
+                        window.rhythmGame.gameSettings.screenShake = e.target.checked;
+                        window.rhythmGame.saveSettings();
+                    }
+                });
+            }
+            
+            // Afficher les high scores
+            displayHighScores();
+            
+            // Afficher les contrôles
+            setTimeout(() => {
+                const controlsHint = document.getElementById('controlsHint');
+                if (controlsHint) {
+                    controlsHint.style.display = 'block';
+                    setTimeout(() => {
+                        controlsHint.style.display = 'none';
+                    }, 5000);
+                }
+            }, 2000);
+        });
+        
+        function displayHighScores() {
+            const highScoresList = document.getElementById('highScoresList');
+            if (!highScoresList) return;
+            
+            try {
+                const scores = JSON.parse(localStorage.getItem('rhythmHero_highScores') || '[]');
+                
+                if (scores.length === 0) {
+                    highScoresList.innerHTML = '<div style="color: rgba(255, 255, 255, 0.5);">Aucun score enregistré</div>';
+                    return;
+                }
+                
+                highScoresList.innerHTML = scores.slice(0, 5).map((score, index) => `
+                    <div class="score-entry">
+                        <span>${index + 1}. ${score.score.toLocaleString()}</span>
+                        <span>${score.accuracy}% | ${score.difficulty}</span>
+                        <span>${new Date(score.date).toLocaleDateString()}</span>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.warn('Erreur affichage scores:', e);
+            }
+        }
+        
+        // Mise à jour des statistiques finales
+        function updateFinalStats() {
+            if (!window.rhythmGame) return;
+            
+            const stats = window.rhythmGame.gameStats;
+            
+            // Mettre à jour les compteurs détaillés
+            const perfectCount = document.getElementById('perfectCount');
+            const greatCount = document.getElementById('greatCount');
+            const goodCount = document.getElementById('goodCount');
+            const longestStreak = document.getElementById('longestStreak');
+            const missedCount = document.getElementById('missedCount');
+            
+            if

@@ -6,8 +6,8 @@
     
     <!-- SEO Meta Tags -->
     <title>Jeux - João - Développeur & Créateur d'Expériences Numériques</title>
-    <meta name="description" content="Collection de jeux modernes créés par João - Breakout, Pong, Hexagon avec style cyberpunk.">
-    <meta name="keywords" content="João, jeux cyberpunk, breakout, pong, hexagon, jeux javascript, jeux en ligne, neon">
+    <meta name="description" content="Collection de jeux modernes créés par João - Breakout, Pong, Hexagon, Rhythm Hero avec style cyberpunk.">
+    <meta name="keywords" content="João, jeux cyberpunk, breakout, pong, hexagon, rhythm hero, rythme, mp3, jeux javascript, jeux en ligne, neon">
     <meta name="author" content="João">
     <meta name="robots" content="index, follow">
     <meta name="language" content="fr">
@@ -23,7 +23,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://oaojfr.github.io/games.html">
     <meta property="og:title" content="Jeux - João - Développeur & Créateur d'Expériences Numériques">
-    <meta property="og:description" content="Collection de jeux modernes créés par João - Breakout, Pong, Hexagon avec style cyberpunk.">
+    <meta property="og:description" content="Collection de jeux modernes créés par João - Breakout, Pong, Hexagon, Rhythm Hero avec style cyberpunk.">
     <meta property="og:image" content="https://oaojfr.github.io/preview.jpg">
     <meta property="og:site_name" content="João Portfolio">
     <meta property="og:locale" content="fr_FR">
@@ -32,7 +32,7 @@
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://oaojfr.github.io/games.html">
     <meta property="twitter:title" content="Jeux - João - Développeur & Créateur d'Expériences Numériques">
-    <meta property="twitter:description" content="Collection de jeux modernes créés par João - Breakout, Pong, Hexagon avec style cyberpunk.">
+    <meta property="twitter:description" content="Collection de jeux modernes créés par João - Breakout, Pong, Hexagon, Rhythm Hero avec style cyberpunk.">
     <meta property="twitter:image" content="https://oaojfr.github.io/preview.jpg">
     
     <!-- Favicon -->
@@ -459,7 +459,7 @@
                     <div class="game-card-content">
                         <h2 class="game-card-title pixel-font" data-translate="games.breakout.name">🧱 BREAKOUT</h2>
                         <p class="game-card-description" data-translate="games.breakout.description">
-                            Cassez toutes les briques avec votre balle en la gardant en mouvement avec votre palette.
+                            Cassez toutes les briques avec des power-ups, effets visuels et 8 pistes musicales générées.
                         </p>
                         <a href="games/breakout/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
@@ -476,7 +476,7 @@
                     <div class="game-card-content">
                         <h2 class="game-card-title pixel-font" data-translate="games.pong.name">🏓 PONG</h2>
                         <p class="game-card-description" data-translate="games.pong.description">
-                            Le classique jeu de tennis de table en mode cyberpunk. Jouez contre l'IA ou en mode 2 joueurs.
+                            Tennis de table cyberpunk avec IA adaptive, effets néon et 6 pistes d'ambiance électronique.
                         </p>
                         <a href="games/pong/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
@@ -493,9 +493,26 @@
                     <div class="game-card-content">
                         <h2 class="game-card-title pixel-font" data-translate="games.hexagon.name">⬢ HEXAGON</h2>
                         <p class="game-card-description" data-translate="games.hexagon.description">
-                            Un jeu de réflexes hyper intense.
+                            Jeu de réflexes extrême avec 4 niveaux de difficulté, rotation du monde et musique Super Hexagon.
                         </p>
                         <a href="games/hexagon/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rhythm Hero Game Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="game-card">
+                    <div class="game-preview">
+                        <canvas class="game-canvas" id="rhythmPreview"></canvas>
+                        <div class="glow" style="background: radial-gradient(circle, rgba(255,107,107,0.3), transparent);"></div>
+                    </div>
+                    <div class="game-card-content">
+                        <h2 class="game-card-title pixel-font" data-translate="games.rhythm.name">🎵 RHYTHM HERO</h2>
+                        <p class="game-card-description" data-translate="games.rhythm.description">
+                            Analysez vos MP3 et jouez avec détection BPM auto, 4 difficultés, notes longues et fever mode !
+                        </p>
+                        <a href="games/rhythm/index.html" class="btn btn-play" data-translate="games.play">JOUER</a>
                     </div>
                 </div>
             </div>
@@ -538,11 +555,13 @@
                 'games.title': 'SALLE DE JEUX',
                 'games.description': 'DÉCOUVREZ MA COLLECTION DE JEUX RÉTRO CRÉÉS EN JAVASCRIPT',
                 'games.breakout.name': '🧱 BREAKOUT',
-                'games.breakout.description': 'Cassez les briques avec la balle. Power-ups et niveaux multiples.',
+                'games.breakout.description': 'Cassez toutes les briques avec des power-ups, effets visuels et 8 pistes musicales générées.',
                 'games.pong.name': '🏓 PONG',
-                'games.pong.description': 'Pong classique avec design cyberpunk. Mode solo contre IA ou 2 joueurs.',
+                'games.pong.description': 'Tennis de table cyberpunk avec IA adaptive, effets néon et 6 pistes d\'ambiance électronique.',
                 'games.hexagon.name': '⬢ SUPER HEXAGON',
-                'games.hexagon.description': 'Évitez les murs qui se rapprochent. Survivez le plus longtemps possible.',
+                'games.hexagon.description': 'Jeu de réflexes extrême avec 4 niveaux de difficulté, rotation du monde et musique Super Hexagon.',
+                'games.rhythm.name': '🎵 RHYTHM HERO',
+                'games.rhythm.description': 'Analysez vos MP3 et jouez avec détection BPM auto, 4 difficultés, notes longues et fever mode !',
                 'games.play': 'JOUER',
                 'footer.copyright': '© 2025 João. Tous droits réservés. Fait avec',
                 'footer.made': 'et Bootstrap.'
@@ -558,11 +577,13 @@
                 'games.title': 'GAME ROOM',
                 'games.description': 'DISCOVER MY COLLECTION OF RETRO GAMES CREATED IN JAVASCRIPT',
                 'games.breakout.name': '🧱 BREAKOUT',
-                'games.breakout.description': 'Break bricks with the ball. Power-ups and multiple levels.',
+                'games.breakout.description': 'Break all bricks with power-ups, visual effects and 8 generated music tracks.',
                 'games.pong.name': '🏓 PONG',
-                'games.pong.description': 'Classic Pong with cyberpunk design. Solo vs AI or 2 players.',
+                'games.pong.description': 'Cyberpunk table tennis with adaptive AI, neon effects and 6 electronic ambient tracks.',
                 'games.hexagon.name': '⬢ SUPER HEXAGON',
-                'games.hexagon.description': 'Avoid approaching walls. Survive as long as possible.',
+                'games.hexagon.description': 'Extreme reflex game with 4 difficulty levels, world rotation and Super Hexagon music.',
+                'games.rhythm.name': '🎵 RHYTHM HERO',
+                'games.rhythm.description': 'Analyze your MP3s and play with auto BPM detection, 4 difficulties, long notes and fever mode!',
                 'games.play': 'PLAY',
                 'footer.copyright': '© 2025 João. All rights reserved. Made with',
                 'footer.made': 'and Bootstrap.'
@@ -578,11 +599,13 @@
                 'games.title': 'SALA DE JOGOS',
                 'games.description': 'DESCUBRA MINHA COLEÇÃO DE JOGOS RETRÔ CRIADOS EM JAVASCRIPT',
                 'games.breakout.name': '🧱 BREAKOUT',
-                'games.breakout.description': 'Quebre tijolos com a bola. Power-ups e múltiplos níveis.',
+                'games.breakout.description': 'Quebre todos os tijolos com power-ups, efeitos visuais e 8 faixas musicais geradas.',
                 'games.pong.name': '🏓 PONG',
-                'games.pong.description': 'Pong clássico com design cyberpunk. Solo vs IA ou 2 jogadores.',
+                'games.pong.description': 'Tênis de mesa cyberpunk com IA adaptativa, efeitos neon e 6 faixas eletrônicas ambientes.',
                 'games.hexagon.name': '⬢ SUPER HEXÁGONO',
-                'games.hexagon.description': 'Evite paredes que se aproximam. Sobreviva o máximo possível.',
+                'games.hexagon.description': 'Jogo de reflexos extremo com 4 níveis de dificuldade, rotação do mundo e música Super Hexagon.',
+                'games.rhythm.name': '🎵 RHYTHM HERO',
+                'games.rhythm.description': 'Analise seus MP3s e jogue com detecção automática de BPM, 4 dificuldades, notas longas e fever mode!',
                 'games.play': 'JOGAR',
                 'footer.copyright': '© 2025 João. Todos os direitos reservados. Feito com',
                 'footer.made': 'e Bootstrap.'
@@ -930,109 +953,508 @@
                 setInterval(drawPong, 16);
             }
 
-            // Hexagon Preview
+            // Hexagon Preview - Reproduction PARFAITE de Super Hexagon
             const hexagonCanvas = document.getElementById('hexagonPreview');
             if (hexagonCanvas) {
                 const hexagonCtx = hexagonCanvas.getContext('2d');
                 hexagonCanvas.width = 400;
                 hexagonCanvas.height = 225;
                 
-                let rotation = 0;
-                let pulseTime = 0;
-                let walls = [];
+                // Configuration fidèle au vrai jeu
+                const CENTER_X = 200;
+                const CENTER_Y = 112;
+                const HEX_RADIUS = 30; // Hexagone central plus visible
+                const PLAYER_RADIUS = HEX_RADIUS + 12; // Joueur très proche du centre
                 
-                // Generate initial walls
-                for (let i = 0; i < 8; i++) {
-                    walls.push({
-                        angle: (Math.PI * 2 / 6) * Math.floor(Math.random() * 6),
-                        distance: 150 + Math.random() * 50,
-                        speed: 0.5 + Math.random() * 0.5,
-                        color: `hsl(${180 + Math.random() * 180}, 80%, 60%)`
-                    });
+                let gameTime = 0;
+                let worldRotation = 0;
+                let colorShift = 0;
+                let spawnTimer = 0;
+                
+                // Player avec mouvement fluide et positions discrètes
+                let player = {
+                    position: 0, // Position discrète (0-5)
+                    targetPosition: 0,
+                    angle: 0,
+                    moveSpeed: 0.12,
+                    size: 5
+                };
+                
+                let walls = [];
+                let particles = [];
+                
+                // Patterns EXACTEMENT comme Super Hexagon
+                const wallPatterns = [
+                    [1, 1, 1, 1, 0, 1], // Une ouverture
+                    [1, 1, 0, 1, 1, 1], // Une ouverture décalée
+                    [0, 1, 1, 1, 1, 1], // Une ouverture au début
+                    [1, 0, 1, 1, 1, 1], // Une ouverture décalée
+                    [1, 1, 0, 0, 1, 1], // Deux ouvertures consécutives
+                    [0, 1, 1, 0, 1, 1], // Deux ouvertures séparées
+                    [1, 0, 1, 0, 1, 1], // Motif alternant
+                    [0, 0, 1, 1, 1, 1], // Deux ouvertures au début
+                    [1, 0, 1, 0, 1, 0], // Alterné parfait
+                    [0, 1, 0, 1, 1, 1]  // Complexe
+                ];
+                
+                // Couleurs dynamiques comme l'original
+                const hexagonColors = ['#00ffff', '#ff4444', '#ffff00', '#ff00ff', '#00ff00'];
+                
+                function spawnWallPattern() {
+                    const pattern = wallPatterns[Math.floor(Math.random() * wallPatterns.length)];
+                    const spawnDistance = 150;
+                    
+                    for (let segment = 0; segment < 6; segment++) {
+                        if (pattern[segment] === 1) { // 1 = mur bloqué
+                            walls.push({
+                                segment: segment,
+                                distance: spawnDistance,
+                                width: 20, // Épaisseur du mur
+                                speed: 1.5, // Vitesse vers le centre
+                                color: hexagonColors[Math.floor(Math.random() * hexagonColors.length)]
+                            });
+                        }
+                    }
                 }
                 
-                function drawHexagon() {
-                    // Gradient background
-                    const gradient = hexagonCtx.createRadialGradient(200, 112, 0, 200, 112, 200);
-                    gradient.addColorStop(0, '#001122');
-                    gradient.addColorStop(1, '#000000');
-                    hexagonCtx.fillStyle = gradient;
+                function updatePlayer() {
+                    // Mouvement automatique fluide pour la démo
+                    if (Math.random() < 0.015) { // Change direction parfois
+                        const direction = Math.random() > 0.5 ? 1 : -1;
+                        player.targetPosition = (player.targetPosition + direction + 6) % 6;
+                    }
+                    
+                    // Interpolation fluide vers la position cible
+                    let diff = player.targetPosition - player.position;
+                    
+                    // Ajuster pour le chemin le plus court autour du cercle
+                    if (diff > 3) diff -= 6;
+                    if (diff < -3) diff += 6;
+                    
+                    player.position += diff * player.moveSpeed;
+                    
+                    // Normaliser la position
+                    if (player.position < 0) player.position += 6;
+                    if (player.position >= 6) player.position -= 6;
+                    
+                    // Calculer l'angle pour le rendu
+                    player.angle = (player.position * Math.PI) / 3;
+                }
+                
+                function updateWalls() {
+                    for (let i = walls.length - 1; i >= 0; i--) {
+                        const wall = walls[i];
+                        wall.distance -= wall.speed;
+                        
+                        // Supprimer les murs qui atteignent le centre
+                        if (wall.distance <= HEX_RADIUS) {
+                            walls.splice(i, 1);
+                        }
+                    }
+                    
+                    // Spawn périodique de nouveaux patterns
+                    spawnTimer++;
+                    if (spawnTimer >= 120) { // Tous les 2 secondes
+                        spawnTimer = 0;
+                        spawnWallPattern();
+                    }
+                }
+                
+                function drawBackground() {
+                    // Background hypnotique avec dégradé radial rotatif
+                    const bgGradient = hexagonCtx.createRadialGradient(CENTER_X, CENTER_Y, 0, CENTER_X, CENTER_Y, 200);
+                    const hue1 = (colorShift * 0.7) % 360;
+                    const hue2 = (colorShift * 0.3 + 120) % 360;
+                    
+                    bgGradient.addColorStop(0, `hsl(${hue1}, 40%, 8%)`);
+                    bgGradient.addColorStop(0.5, `hsl(${hue2}, 50%, 4%)`);
+                    bgGradient.addColorStop(1, '#000012');
+                    
+                    hexagonCtx.fillStyle = bgGradient;
                     hexagonCtx.fillRect(0, 0, 400, 225);
                     
+                    // Effet de lignes rayonnantes tournantes
                     hexagonCtx.save();
-                    hexagonCtx.translate(200, 112);
+                    hexagonCtx.translate(CENTER_X, CENTER_Y);
+                    hexagonCtx.rotate(worldRotation * 0.3);
                     
-                    // Pulsing effect
-                    pulseTime += 0.05;
-                    const pulse = 1 + Math.sin(pulseTime * 4) * 0.1;
-                    
-                    // Draw outer glow
-                    hexagonCtx.shadowColor = '#00ffff';
-                    hexagonCtx.shadowBlur = 20;
-                    
-                    // Draw hexagon rings with different colors
-                    for (let i = 0; i < 4; i++) {
-                        const radius = (25 + i * 20) * pulse;
+                    for (let i = 0; i < 12; i++) {
+                        const angle = (i * Math.PI) / 6;
+                        const alpha = 0.03 + Math.sin(gameTime * 0.1 + i) * 0.02;
+                        
+                        hexagonCtx.strokeStyle = `hsla(${(colorShift + i * 30) % 360}, 60%, 50%, ${alpha})`;
+                        hexagonCtx.lineWidth = 1;
                         hexagonCtx.beginPath();
-                        for (let j = 0; j < 6; j++) {
-                            const angle = (j * Math.PI) / 3 + rotation;
-                            const x = Math.cos(angle) * radius;
-                            const y = Math.sin(angle) * radius;
-                            if (j === 0) hexagonCtx.moveTo(x, y);
+                        hexagonCtx.moveTo(0, 0);
+                        hexagonCtx.lineTo(Math.cos(angle) * 300, Math.sin(angle) * 300);
+                        hexagonCtx.stroke();
+                    }
+                    
+                    hexagonCtx.restore();
+                }
+                
+                function drawHexagonalWalls() {
+                    hexagonCtx.save();
+                    hexagonCtx.translate(CENTER_X, CENTER_Y);
+                    hexagonCtx.rotate(worldRotation);
+                    
+                    walls.forEach(wall => {
+                        const segmentAngle = (wall.segment * Math.PI) / 3;
+                        const angleStart = segmentAngle - Math.PI / 6;
+                        const angleEnd = segmentAngle + Math.PI / 6;
+                        
+                        // Points du segment hexagonal externe
+                        const outerStart = {
+                            x: Math.cos(angleStart) * wall.distance,
+                            y: Math.sin(angleStart) * wall.distance
+                        };
+                        const outerEnd = {
+                            x: Math.cos(angleEnd) * wall.distance,
+                            y: Math.sin(angleEnd) * wall.distance
+                        };
+                        
+                        // Points du segment hexagonal interne
+                        const innerDistance = wall.distance - wall.width;
+                        const innerStart = {
+                            x: Math.cos(angleStart) * innerDistance,
+                            y: Math.sin(angleStart) * innerDistance
+                        };
+                        const innerEnd = {
+                            x: Math.cos(angleEnd) * innerDistance,
+                            y: Math.sin(angleEnd) * innerDistance
+                        };
+                        
+                        // Dessiner le mur trapézoïdal
+                        hexagonCtx.fillStyle = wall.color;
+                        hexagonCtx.shadowColor = wall.color;
+                        hexagonCtx.shadowBlur = 8;
+                        
+                        hexagonCtx.beginPath();
+                        hexagonCtx.moveTo(outerStart.x, outerStart.y);
+                        hexagonCtx.lineTo(outerEnd.x, outerEnd.y);
+                        hexagonCtx.lineTo(innerEnd.x, innerEnd.y);
+                        hexagonCtx.lineTo(innerStart.x, innerStart.y);
+                        hexagonCtx.closePath();
+                        hexagonCtx.fill();
+                        
+                        hexagonCtx.shadowBlur = 0;
+                    });
+                    
+                    hexagonCtx.restore();
+                }
+                
+                function drawCentralHexagon() {
+                    hexagonCtx.save();
+                    hexagonCtx.translate(CENTER_X, CENTER_Y);
+                    hexagonCtx.rotate(worldRotation);
+                    
+                    // Pulsation hypnotique
+                    const pulse = 1 + Math.sin(gameTime * 0.15) * 0.15;
+                    const currentRadius = HEX_RADIUS * pulse;
+                    const mainHue = (colorShift * 1.5) % 360;
+                    
+                    // Hexagone central lumineux
+                    hexagonCtx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i * Math.PI) / 3;
+                        const x = Math.cos(angle) * currentRadius;
+                        const y = Math.sin(angle) * currentRadius;
+                        if (i === 0) hexagonCtx.moveTo(x, y);
+                        else hexagonCtx.lineTo(x, y);
+                    }
+                    hexagonCtx.closePath();
+                    
+                    hexagonCtx.strokeStyle = `hsl(${mainHue}, 100%, 85%)`;
+                    hexagonCtx.lineWidth = 4;
+                    hexagonCtx.shadowColor = `hsl(${mainHue}, 100%, 85%)`;
+                    hexagonCtx.shadowBlur = 20;
+                    hexagonCtx.stroke();
+                    hexagonCtx.shadowBlur = 0;
+                    
+                    // Anneaux concentriques pour l'effet tunnel
+                    for (let ring = 1; ring <= 3; ring++) {
+                        const ringRadius = currentRadius + ring * 25;
+                        const ringHue = (mainHue + ring * 80) % 360;
+                        const alpha = 0.4 - ring * 0.1;
+                        
+                        hexagonCtx.beginPath();
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i * Math.PI) / 3;
+                            const x = Math.cos(angle) * ringRadius;
+                            const y = Math.sin(angle) * ringRadius;
+                            if (i === 0) hexagonCtx.moveTo(x, y);
                             else hexagonCtx.lineTo(x, y);
                         }
                         hexagonCtx.closePath();
                         
-                        const hue = (280 + i * 40 + rotation * 50) % 360;
-                        hexagonCtx.strokeStyle = `hsl(${hue}, 80%, 60%)`;
-                        hexagonCtx.lineWidth = 3 - i * 0.5;
+                        hexagonCtx.strokeStyle = `hsla(${ringHue}, 80%, 60%, ${alpha})`;
+                        hexagonCtx.lineWidth = 2;
                         hexagonCtx.stroke();
                     }
                     
-                    // Draw walls
-                    hexagonCtx.shadowBlur = 10;
-                    walls.forEach((wall, index) => {
-                        const x = Math.cos(wall.angle) * wall.distance;
-                        const y = Math.sin(wall.angle) * wall.distance;
+                    hexagonCtx.restore();
+                }
+                
+                function drawPlayer() {
+                    hexagonCtx.save();
+                    hexagonCtx.translate(CENTER_X, CENTER_Y);
+                    hexagonCtx.rotate(worldRotation);
+                    
+                    // Position du joueur autour de l'hexagone
+                    const playerX = Math.cos(player.angle) * PLAYER_RADIUS;
+                    const playerY = Math.sin(player.angle) * PLAYER_RADIUS;
+                    
+                    hexagonCtx.save();
+                    hexagonCtx.translate(playerX, playerY);
+                    hexagonCtx.rotate(player.angle + Math.PI / 2); // Orienter vers le centre
+                    
+                    // Triangle blanc lumineux
+                    hexagonCtx.fillStyle = '#ffffff';
+                    hexagonCtx.shadowColor = '#ffffff';
+                    hexagonCtx.shadowBlur = 15;
+                    
+                    hexagonCtx.beginPath();
+                    hexagonCtx.moveTo(0, -player.size);
+                    hexagonCtx.lineTo(-player.size * 0.7, player.size);
+                    hexagonCtx.lineTo(player.size * 0.7, player.size);
+                    hexagonCtx.closePath();
+                    hexagonCtx.fill();
+                    
+                    hexagonCtx.shadowBlur = 0;
+                    hexagonCtx.restore();
+                    hexagonCtx.restore();
+                }
+                
+                function gameLoop() {
+                    gameTime += 1;
+                    worldRotation += 0.018; // Rotation constante et hypnotique
+                    colorShift += 1.2;
+                    
+                    updatePlayer();
+                    updateWalls();
+                    
+                    // Rendu
+                    drawBackground();
+                    drawHexagonalWalls();
+                    drawCentralHexagon();
+                    drawPlayer();
+                }
+                
+                // Spawn initial de patterns
+                spawnWallPattern();
+                setTimeout(() => spawnWallPattern(), 1000);
+                
+                setInterval(gameLoop, 16); // 60 FPS
+            }
+
+            // Rhythm Preview - Simulation du vrai jeu avec notes qui tombent et lanes
+            const rhythmCanvas = document.getElementById('rhythmPreview');
+            if (rhythmCanvas) {
+                const rhythmCtx = rhythmCanvas.getContext('2d');
+                rhythmCanvas.width = 400;
+                rhythmCanvas.height = 225;
+                
+                let notes = [];
+                let time = 0;
+                let beatTime = 0;
+                let lanes = [{ active: false }, { active: false }, { active: false }, { active: false }];
+                let hitEffects = [];
+                let feverMode = false;
+                let feverTime = 0;
+                
+                const laneColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4']; // F, G, J, K
+                const laneWidth = 80;
+                const hitZoneY = 180;
+                
+                // Generate realistic falling notes
+                function spawnNote() {
+                    if (Math.random() < 0.3) { // 30% chance per frame
+                        const lane = Math.floor(Math.random() * 4);
+                        const isLongNote = Math.random() < 0.2; // 20% chance for long notes
                         
-                        hexagonCtx.fillStyle = wall.color;
-                        hexagonCtx.shadowColor = wall.color;
-                        hexagonCtx.fillRect(x - 15, y - 4, 30, 8);
+                        notes.push({
+                            lane: lane,
+                            x: 60 + lane * laneWidth,
+                            y: -20,
+                            speed: 3,
+                            color: laneColors[lane],
+                            isLong: isLongNote,
+                            length: isLongNote ? 40 + Math.random() * 60 : 0,
+                            hit: false,
+                            spawned: true
+                        });
+                    }
+                }
+                
+                function addHitEffect(x, y, color) {
+                    hitEffects.push({
+                        x: x, y: y,
+                        particles: Array.from({length: 8}, () => ({
+                            dx: (Math.random() - 0.5) * 8,
+                            dy: (Math.random() - 0.5) * 8 - 2,
+                            life: 20,
+                            size: Math.random() * 4 + 2
+                        })),
+                        color: color,
+                        time: 0
+                    });
+                }
+                
+                function drawRhythm() {
+                    time += 1;
+                    beatTime += 0.1;
+                    
+                    // Dynamic background with beat reaction
+                    const beatPulse = Math.sin(beatTime * 2) * 0.3 + 0.7;
+                    const bgGradient = rhythmCtx.createLinearGradient(0, 0, 0, 225);
+                    
+                    if (feverMode) {
+                        bgGradient.addColorStop(0, `rgba(50, 0, 50, ${beatPulse})`);
+                        bgGradient.addColorStop(0.5, `rgba(80, 0, 40, ${beatPulse * 0.8})`);
+                        bgGradient.addColorStop(1, '#000000');
+                        feverTime--;
+                        if (feverTime <= 0) feverMode = false;
+                    } else {
+                        bgGradient.addColorStop(0, `rgba(10, 10, 15, ${beatPulse})`);
+                        bgGradient.addColorStop(0.5, `rgba(5, 15, 25, ${beatPulse * 0.8})`);
+                        bgGradient.addColorStop(1, '#000000');
+                    }
+                    
+                    rhythmCtx.fillStyle = bgGradient;
+                    rhythmCtx.fillRect(0, 0, 400, 225);
+                    
+                    // Draw lanes with beat-reactive glow
+                    for (let i = 0; i < 4; i++) {
+                        const x = 60 + i * laneWidth;
+                        const laneGlow = lanes[i].active ? 1 : 0.3;
                         
-                        // Move wall towards center
-                        wall.distance -= wall.speed;
+                        // Lane background
+                        rhythmCtx.fillStyle = `rgba(${laneColors[i].slice(1, 3)}, ${laneColors[i].slice(3, 5)}, ${laneColors[i].slice(5, 7)}, 0.1)`;
+                        rhythmCtx.fillRect(x - laneWidth/2, 0, laneWidth, 225);
                         
-                        // Reset wall if it reaches center
-                        if (wall.distance < 20) {
-                            wall.distance = 150 + Math.random() * 50;
-                            wall.angle = (Math.PI * 2 / 6) * Math.floor(Math.random() * 6);
-                            wall.color = `hsl(${180 + Math.random() * 180}, 80%, 60%)`;
+                        // Lane borders
+                        rhythmCtx.strokeStyle = `${laneColors[i]}${Math.floor(laneGlow * 255).toString(16).padStart(2, '0')}`;
+                        rhythmCtx.lineWidth = 2;
+                        rhythmCtx.beginPath();
+                        rhythmCtx.moveTo(x - laneWidth/2, 0);
+                        rhythmCtx.lineTo(x - laneWidth/2, 225);
+                        rhythmCtx.moveTo(x + laneWidth/2, 0);
+                        rhythmCtx.lineTo(x + laneWidth/2, 225);
+                        rhythmCtx.stroke();
+                        
+                        lanes[i].active = false;
+                    }
+                    
+                    // Hit zone (where notes should be hit)
+                    rhythmCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                    rhythmCtx.fillRect(0, hitZoneY - 15, 400, 30);
+                    
+                    // Lane hit zones
+                    for (let i = 0; i < 4; i++) {
+                        const x = 60 + i * laneWidth;
+                        rhythmCtx.strokeStyle = laneColors[i];
+                        rhythmCtx.lineWidth = 3;
+                        rhythmCtx.strokeRect(x - laneWidth/2 + 5, hitZoneY - 15, laneWidth - 10, 30);
+                    }
+                    
+                    // Spawn notes periodically
+                    if (time % 20 === 0) spawnNote();
+                    
+                    // Draw and update notes
+                    notes.forEach((note, index) => {
+                        note.y += note.speed;
+                        
+                        // Draw long note body
+                        if (note.isLong) {
+                            rhythmCtx.fillStyle = note.color + '88';
+                            rhythmCtx.fillRect(note.x - 25, note.y, 50, note.length);
+                            
+                            // Long note borders
+                            rhythmCtx.strokeStyle = note.color;
+                            rhythmCtx.lineWidth = 2;
+                            rhythmCtx.strokeRect(note.x - 25, note.y, 50, note.length);
+                        }
+                        
+                        // Draw note head
+                        rhythmCtx.fillStyle = note.color;
+                        rhythmCtx.shadowColor = note.color;
+                        rhythmCtx.shadowBlur = 10;
+                        rhythmCtx.fillRect(note.x - 25, note.y - 10, 50, 20);
+                        rhythmCtx.shadowBlur = 0;
+                        
+                        // Note glow effect
+                        rhythmCtx.strokeStyle = '#ffffff';
+                        rhythmCtx.lineWidth = 1;
+                        rhythmCtx.strokeRect(note.x - 25, note.y - 10, 50, 20);
+                        
+                        // Auto-hit simulation near hit zone
+                        if (!note.hit && note.y >= hitZoneY - 20 && note.y <= hitZoneY + 20) {
+                            note.hit = true;
+                            lanes[note.lane].active = true;
+                            addHitEffect(note.x, hitZoneY, note.color);
+                            
+                            // Random fever mode activation
+                            if (Math.random() < 0.1) {
+                                feverMode = true;
+                                feverTime = 100;
+                            }
+                        }
+                        
+                        // Remove notes that are off-screen
+                        if (note.y > 250) {
+                            notes.splice(index, 1);
                         }
                     });
                     
-                    // Draw central player with glow
-                    hexagonCtx.shadowColor = '#ffffff';
-                    hexagonCtx.shadowBlur = 15;
-                    hexagonCtx.fillStyle = '#ffffff';
-                    hexagonCtx.beginPath();
-                    hexagonCtx.arc(0, 0, 4, 0, Math.PI * 2);
-                    hexagonCtx.fill();
+                    // Draw hit effects
+                    hitEffects.forEach((effect, index) => {
+                        effect.time++;
+                        
+                        effect.particles.forEach(particle => {
+                            particle.x = effect.x + particle.dx * effect.time;
+                            particle.y = effect.y + particle.dy * effect.time;
+                            particle.life--;
+                            
+                            if (particle.life > 0) {
+                                const alpha = particle.life / 20;
+                                rhythmCtx.fillStyle = effect.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                                rhythmCtx.beginPath();
+                                rhythmCtx.arc(particle.x, particle.y, particle.size * alpha, 0, Math.PI * 2);
+                                rhythmCtx.fill();
+                            }
+                        });
+                        
+                        if (effect.time > 20) {
+                            hitEffects.splice(index, 1);
+                        }
+                    });
                     
-                    // Player position on hexagon
-                    const playerAngle = pulseTime * 2;
-                    const playerX = Math.cos(playerAngle) * 30;
-                    const playerY = Math.sin(playerAngle) * 30;
+                    // Fever mode indicator
+                    if (feverMode) {
+                        rhythmCtx.fillStyle = '#ff6b6b';
+                        rhythmCtx.font = 'bold 16px Arial';
+                        rhythmCtx.fillText('FEVER MODE!', 150, 30);
+                        
+                        // Screen border glow
+                        rhythmCtx.strokeStyle = '#ff6b6b';
+                        rhythmCtx.lineWidth = 5;
+                        rhythmCtx.strokeRect(2, 2, 396, 221);
+                    }
                     
-                    hexagonCtx.shadowBlur = 8;
-                    hexagonCtx.fillStyle = '#00ffff';
-                    hexagonCtx.fillRect(playerX - 2, playerY - 2, 4, 4);
-                    
-                    hexagonCtx.restore();
-                    
-                    rotation += 0.015;
+                    // Key indicators (F G J K)
+                    const keys = ['F', 'G', 'J', 'K'];
+                    for (let i = 0; i < 4; i++) {
+                        const x = 60 + i * laneWidth;
+                        const alpha = lanes[i].active ? 1 : 0.5;
+                        
+                        rhythmCtx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                        rhythmCtx.font = 'bold 20px Arial';
+                        rhythmCtx.textAlign = 'center';
+                        rhythmCtx.fillText(keys[i], x, 210);
+                    }
                 }
                 
-                setInterval(drawHexagon, 16);
+                setInterval(drawRhythm, 16);
             }
         }
 
