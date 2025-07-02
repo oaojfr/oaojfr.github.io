@@ -185,6 +185,36 @@
             border-color: var(--neon-cyan);
         }
 
+        .music-toggle {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px 15px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .music-toggle:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 25px var(--neon-cyan);
+        }
+
+        .music-toggle.disabled {
+            opacity: 0.5;
+            border-color: #666;
+            color: #666;
+        }
+
+        .music-toggle.disabled:hover {
+            background: transparent;
+            color: #666;
+            box-shadow: none;
+        }
+
         .btn-neon {
             background: transparent;
             border: 2px solid var(--neon-cyan);
@@ -289,6 +319,63 @@
             animation: glow 3s infinite;
         }
 
+        .difficulty-selection {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .difficulty-title {
+            font-size: 1.2rem;
+            color: var(--neon-yellow);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 5px;
+            min-width: 150px;
+            position: relative;
+        }
+
+        .difficulty-btn.active {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 25px var(--neon-cyan);
+        }
+
+        .difficulty-btn:hover:not(.active) {
+            border-color: var(--neon-yellow);
+            color: var(--neon-yellow);
+            box-shadow: 0 0 15px var(--neon-yellow);
+        }
+
+        .start-btn {
+            margin-top: 20px;
+            font-size: 1.3rem;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            border: none;
+            color: var(--dark-bg);
+            text-shadow: none;
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-cyan));
+            transform: scale(1.1);
+            box-shadow: 0 0 40px var(--neon-cyan);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .game-header {
@@ -313,6 +400,20 @@
             .menu-description {
                 font-size: 1rem;
                 padding: 0 20px;
+            }
+
+            .difficulty-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .difficulty-btn {
+                min-width: 200px;
+                font-size: 0.9rem;
+            }
+
+            .difficulty-title {
+                font-size: 1rem;
             }
 
             #gameCanvas {
@@ -364,7 +465,27 @@
             <div class="menu-description" data-translate="game.description">
                 Évitez les murs qui se rapprochent ! Un jeu de réflexes extrême.
             </div>
-            <button class="btn-neon" onclick="game.startGame()" data-translate="game.start">Commencer</button>
+            
+            <!-- Difficulty Selection -->
+            <div class="difficulty-selection">
+                <div class="difficulty-title" data-translate="game.difficulty.select">Choisir la difficulté :</div>
+                <div class="difficulty-buttons">
+                    <button class="btn-neon difficulty-btn active" data-difficulty="easy" onclick="game.selectDifficulty('easy')">
+                        <span data-translate="game.difficulty.easy">HEXAGON</span>
+                    </button>
+                    <button class="btn-neon difficulty-btn" data-difficulty="normal" onclick="game.selectDifficulty('normal')">
+                        <span data-translate="game.difficulty.normal">HEXAGONER</span>
+                    </button>
+                    <button class="btn-neon difficulty-btn" data-difficulty="hard" onclick="game.selectDifficulty('hard')">
+                        <span data-translate="game.difficulty.hard">HEXAGONEST</span>
+                    </button>
+                    <button class="btn-neon difficulty-btn" data-difficulty="insane" onclick="game.selectDifficulty('insane')">
+                        <span data-translate="game.difficulty.insane">HYPER HEXAGONEST</span>
+                    </button>
+                </div>
+            </div>
+            
+            <button class="btn-neon start-btn" onclick="game.startGame()" data-translate="game.start">Commencer</button>
         </div>
         
         <!-- Game Over Overlay -->
@@ -377,7 +498,7 @@
                 </div>
             </div>
             <button class="btn-neon" onclick="game.restartGame()" data-translate="game.restart">Redémarrer</button>
-            <button class="btn-neon" onclick="game.showMenu()" data-translate="game.menu">Menu</button>
+            <button class="btn-neon" onclick="goToMenu()" data-translate="game.menu">Menu</button>
         </div>
         
         <!-- Controls Info -->
@@ -393,6 +514,11 @@
             <i class="bi bi-arrow-left-circle-fill"></i>
             <span data-translate="nav.games">Jeux</span>
         </a>
+
+        <!-- Music Toggle -->
+        <button class="music-toggle" onclick="game.toggleMusic()" id="musicToggle">
+            <i class="bi bi-music-note-beamed" id="musicIcon"></i>
+        </button>
 
         <!-- Language Selector -->
         <div class="language-selector">
@@ -430,9 +556,13 @@
                 'game.finalScore': 'Score final: ',
                 'game.finalTime': 'Temps final: ',
                 'game.newRecord': '🏆 NOUVEAU RECORD ! 🏆',
+                'game.difficulty.select': 'Choisir la difficulté :',
+                'game.difficulty.easy': 'HEXAGON',
+                'game.difficulty.normal': 'HEXAGONER',
+                'game.difficulty.hard': 'HEXAGONEST',
+                'game.difficulty.insane': 'HYPER HEXAGONEST',
                 'game.difficulty.begin': 'Commencer',
                 'game.difficulty.hard': 'Difficile', 
-                'game.difficulty.harder': 'Plus Difficile',
                 'game.difficulty.hardest': 'Le Plus Difficile',
                 'game.difficulty.hardestCongrats': 'Félicitations ! Niveau maximum atteint !'
             },
@@ -451,9 +581,13 @@
                 'game.finalScore': 'Final score: ',
                 'game.finalTime': 'Final time: ',
                 'game.newRecord': '🏆 NEW RECORD! 🏆',
+                'game.difficulty.select': 'Choose difficulty:',
+                'game.difficulty.easy': 'HEXAGON',
+                'game.difficulty.normal': 'HEXAGONER',
+                'game.difficulty.hard': 'HEXAGONEST',
+                'game.difficulty.insane': 'HYPER HEXAGONEST',
                 'game.difficulty.begin': 'Begin',
                 'game.difficulty.hard': 'Hard',
-                'game.difficulty.harder': 'Harder',
                 'game.difficulty.hardest': 'Hardest',
                 'game.difficulty.hardestCongrats': 'Congratulations! Maximum level reached!'
             },
@@ -472,9 +606,13 @@
                 'game.finalScore': 'Pontuação final: ',
                 'game.finalTime': 'Tempo final: ',
                 'game.newRecord': '🏆 NOVO RECORDE! 🏆',
+                'game.difficulty.select': 'Escolher dificuldade:',
+                'game.difficulty.easy': 'HEXAGON',
+                'game.difficulty.normal': 'HEXAGONER',
+                'game.difficulty.hard': 'HEXAGONEST',
+                'game.difficulty.insane': 'HYPER HEXAGONEST',
                 'game.difficulty.begin': 'Começar',
                 'game.difficulty.hard': 'Difícil',
-                'game.difficulty.harder': 'Mais Difícil',
                 'game.difficulty.hardest': 'O Mais Difícil',
                 'game.difficulty.hardestCongrats': 'Parabéns! Nível máximo alcançado!'
             }

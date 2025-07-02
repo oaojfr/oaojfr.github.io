@@ -72,6 +72,25 @@ class ModernBreakout {
         // Audio
         this.audioContext = null;
         this.sounds = {};
+        this.music = {
+            enabled: localStorage.getItem('breakoutMusicEnabled') !== 'false',
+            currentTrack: null,
+            volume: 0.3,
+            isPlaying: false,
+            currentTrackIndex: -1
+        };
+        
+        // Collection de 8 pistes énergiques pour Breakout
+        this.musicTracks = [
+            { name: 'Arcade Thunder', tempo: 130, style: 'classic', baseFreq: 220 },
+            { name: 'Neon Bricks', tempo: 140, style: 'cyberpunk', baseFreq: 196 },
+            { name: 'Retro Pulse', tempo: 125, style: 'retro', baseFreq: 261 },
+            { name: 'Power Surge', tempo: 150, style: 'intense', baseFreq: 174 },
+            { name: 'Digital Break', tempo: 135, style: 'electronic', baseFreq: 233 },
+            { name: 'Neon Runner', tempo: 145, style: 'fast', baseFreq: 208 },
+            { name: 'Cyber Bounce', tempo: 128, style: 'groove', baseFreq: 185 },
+            { name: 'Electric Wave', tempo: 142, style: 'wave', baseFreq: 247 }
+        ];
         
         this.init();
     }
@@ -80,6 +99,7 @@ class ModernBreakout {
         this.setupEventListeners();
         this.initAudio();
         this.resizeCanvas();
+        this.updateMusicButton();
         this.gameLoop();
     }
     
@@ -221,6 +241,9 @@ class ModernBreakout {
         if (this.audioContext && this.audioContext.state === 'suspended') {
             this.audioContext.resume();
         }
+        
+        // Démarrer la musique de fond
+        this.startMusic();
     }
     
     createLevel() {
@@ -315,74 +338,82 @@ class ModernBreakout {
     }
     
     updateBalls() {
-        for (let i = this.balls.length - 1; i >= 0; i--) {
-            const ball = this.balls[i];
-            
-            if (ball.stuck) {
-                // Balle collée à la raquette
-                ball.x = this.paddle.x + this.paddle.width / 2;
-                ball.y = this.paddle.y - ball.size;
-                continue;
-            }
-            
-            // Mouvement
-            ball.x += ball.dx;
-            ball.y += ball.dy;
-            
-            // Trail
-            ball.trail.push({ x: ball.x, y: ball.y });
-            if (ball.trail.length > 8) {
-                ball.trail.shift();
-            }
-            
-            // Collisions avec les murs
-            if (ball.x <= ball.size || ball.x >= this.canvas.width - ball.size) {
-                ball.dx = -ball.dx;
-                this.createImpactParticles(ball.x, ball.y, '#00ffff');
-                this.sounds.wallHit?.();
-            }
-            
-            if (ball.y <= ball.size) {
-                ball.dy = -ball.dy;
-                this.createImpactParticles(ball.x, ball.y, '#00ffff');
-                this.sounds.wallHit?.();
-            }
-            
-            // Balle perdue
-            if (ball.y > this.canvas.height + ball.size) {
-                this.balls.splice(i, 1);
+        try {
+            for (let i = this.balls.length - 1; i >= 0; i--) {
+                const ball = this.balls[i];
                 
-                if (this.balls.length === 0) {
-                    this.loseLife();
+                if (ball.stuck) {
+                    // Balle collée à la raquette
+                    ball.x = this.paddle.x + this.paddle.width / 2;
+                    ball.y = this.paddle.y - ball.size;
+                    continue;
+                }
+                
+                // Mouvement
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+                
+                // Trail
+                ball.trail.push({ x: ball.x, y: ball.y });
+                if (ball.trail.length > 8) {
+                    ball.trail.shift();
+                }
+                
+                // Collisions avec les murs
+                if (ball.x <= ball.size || ball.x >= this.canvas.width - ball.size) {
+                    ball.dx = -ball.dx;
+                    this.createImpactParticles(ball.x, ball.y, '#00ffff');
+                    this.sounds.wallHit?.();
+                }
+                
+                if (ball.y <= ball.size) {
+                    ball.dy = -ball.dy;
+                    this.createImpactParticles(ball.x, ball.y, '#00ffff');
+                    this.sounds.wallHit?.();
+                }
+                
+                // Balle perdue
+                if (ball.y > this.canvas.height + ball.size) {
+                    this.balls.splice(i, 1);
+                    
+                    if (this.balls.length === 0) {
+                        this.loseLife();
+                    }
                 }
             }
+        } catch (error) {
+            console.warn('Erreur lors de la mise à jour des balles:', error);
         }
     }
     
     updatePowerUps() {
-        for (let i = this.powerUps.length - 1; i >= 0; i--) {
-            const powerUp = this.powerUps[i];
-            
-            powerUp.y += powerUp.speed;
-            powerUp.rotation += powerUp.rotationSpeed;
-            
-            // Collision avec la raquette
-            if (powerUp.x < this.paddle.x + this.paddle.width &&
-                powerUp.x + powerUp.size > this.paddle.x &&
-                powerUp.y < this.paddle.y + this.paddle.height &&
-                powerUp.y + powerUp.size > this.paddle.y) {
+        try {
+            for (let i = this.powerUps.length - 1; i >= 0; i--) {
+                const powerUp = this.powerUps[i];
                 
-                this.activatePowerUp(powerUp.type);
-                this.createPowerUpParticles(powerUp.x, powerUp.y);
-                this.sounds.powerUp?.();
-                this.powerUps.splice(i, 1);
-                continue;
+                powerUp.y += powerUp.speed;
+                powerUp.rotation += powerUp.rotationSpeed;
+                
+                // Collision avec la raquette
+                if (powerUp.x < this.paddle.x + this.paddle.width &&
+                    powerUp.x + powerUp.size > this.paddle.x &&
+                    powerUp.y < this.paddle.y + this.paddle.height &&
+                    powerUp.y + powerUp.size > this.paddle.y) {
+                    
+                    this.activatePowerUp(powerUp.type);
+                    this.createPowerUpParticles(powerUp.x, powerUp.y);
+                    this.sounds.powerUp?.();
+                    this.powerUps.splice(i, 1);
+                    continue;
+                }
+                
+                // Supprimer si hors écran
+                if (powerUp.y > this.canvas.height) {
+                    this.powerUps.splice(i, 1);
+                }
             }
-            
-            // Supprimer si hors écran
-            if (powerUp.y > this.canvas.height) {
-                this.powerUps.splice(i, 1);
-            }
+        } catch (error) {
+            console.warn('Erreur lors de la mise à jour des power-ups:', error);
         }
     }
     
@@ -514,59 +545,63 @@ class ModernBreakout {
     }
     
     activatePowerUp(type) {
-        const duration = 600; // 10 secondes à 60 FPS
-        
-        switch (type) {
-            case 'bigPaddle':
-                if (this.activePowerUps.bigPaddle === 0) {
-                    this.paddle.width *= 1.5;
-                }
-                this.activePowerUps.bigPaddle = duration;
-                break;
-                
-            case 'multiball':
-                this.balls.forEach(ball => {
-                    if (!ball.stuck) {
-                        // Créer 2 balles supplémentaires
-                        for (let i = 0; i < 2; i++) {
-                            const newBall = {
-                                x: ball.x,
-                                y: ball.y,
-                                dx: ball.dx * (0.7 + Math.random() * 0.6),
-                                dy: ball.dy * (0.7 + Math.random() * 0.6),
-                                size: ball.size,
-                                trail: [],
-                                stuck: false
-                            };
-                            this.balls.push(newBall);
-                        }
+        try {
+            const duration = 600; // 10 secondes à 60 FPS
+            
+            switch (type) {
+                case 'bigPaddle':
+                    if (this.activePowerUps.bigPaddle === 0) {
+                        this.paddle.width *= 1.5;
                     }
-                });
-                break;
-                
-            case 'fastBall':
-                this.balls.forEach(ball => {
-                    ball.dx *= 1.5;
-                    ball.dy *= 1.5;
-                });
-                this.activePowerUps.fastBall = duration;
-                break;
-                
-            case 'slowBall':
-                this.balls.forEach(ball => {
-                    ball.dx *= 0.7;
-                    ball.dy *= 0.7;
-                });
-                this.activePowerUps.slowBall = duration;
-                break;
-                
-            case 'extraLife':
-                this.lives++;
-                break;
+                    this.activePowerUps.bigPaddle = duration;
+                    break;
+                    
+                case 'multiball':
+                    this.balls.forEach(ball => {
+                        if (!ball.stuck) {
+                            // Créer 2 balles supplémentaires
+                            for (let i = 0; i < 2; i++) {
+                                const newBall = {
+                                    x: ball.x,
+                                    y: ball.y,
+                                    dx: ball.dx * (0.7 + Math.random() * 0.6),
+                                    dy: ball.dy * (0.7 + Math.random() * 0.6),
+                                    size: ball.size,
+                                    trail: [],
+                                    stuck: false
+                                };
+                                this.balls.push(newBall);
+                            }
+                        }
+                    });
+                    break;
+                    
+                case 'fastBall':
+                    this.balls.forEach(ball => {
+                        ball.dx *= 1.5;
+                        ball.dy *= 1.5;
+                    });
+                    this.activePowerUps.fastBall = duration;
+                    break;
+                    
+                case 'slowBall':
+                    this.balls.forEach(ball => {
+                        ball.dx *= 0.7;
+                        ball.dy *= 0.7;
+                    });
+                    this.activePowerUps.slowBall = duration;
+                    break;
+                    
+                case 'extraLife':
+                    this.lives++;
+                    break;
+            }
+            
+            this.showPowerUpIndicator(type);
+            this.updateUI();
+        } catch (error) {
+            console.warn('Erreur lors de l\'activation du power-up:', error);
         }
-        
-        this.showPowerUpIndicator(type);
-        this.updateUI();
     }
     
     deactivatePowerUp(type) {
@@ -709,6 +744,10 @@ class ModernBreakout {
     
     gameOver() {
         this.gameState = 'gameOver';
+        
+        // Arrêter complètement la musique et tous les sons
+        this.stopMusic();
+        
         document.getElementById('resultText').textContent = 'GAME OVER!';
         document.getElementById('finalStatsText').textContent = 
             `Score final: ${this.score} | Niveau atteint: ${this.level}`;
@@ -723,6 +762,189 @@ class ModernBreakout {
             }
         });
         this.powerUps = [];
+    }
+    
+    startMusic() {
+        if (!this.music.enabled || !this.audioContext || this.music.isPlaying) return;
+        
+        this.stopMusic();
+        
+        // Sélectionner une piste aléatoire différente de la précédente
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * this.musicTracks.length);
+        } while (randomIndex === this.music.currentTrackIndex && this.musicTracks.length > 1);
+        
+        this.music.currentTrackIndex = randomIndex;
+        const selectedTrack = this.musicTracks[randomIndex];
+        
+        console.log(`🧱 Musique Breakout: ${selectedTrack.name} (${selectedTrack.tempo} BPM - ${selectedTrack.style})`);
+        
+        this.music.currentTrack = this.createBackgroundMusic(selectedTrack);
+        this.music.isPlaying = true;
+    }
+    
+    stopMusic() {
+        if (this.music.currentTrack) {
+            try {
+                // Arrêter tous les composants audio
+                if (this.music.currentTrack.oscillator1) {
+                    this.music.currentTrack.oscillator1.stop();
+                }
+                if (this.music.currentTrack.oscillator2) {
+                    this.music.currentTrack.oscillator2.stop();
+                }
+                if (this.music.currentTrack.gainNode) {
+                    this.music.currentTrack.gainNode.disconnect();
+                }
+                if (this.music.currentTrack.filter) {
+                    this.music.currentTrack.filter.disconnect();
+                }
+            } catch (e) {
+                // Ignore errors when stopping music
+            }
+            this.music.currentTrack = null;
+        }
+        this.music.isPlaying = false;
+    }
+    
+    toggleMusic() {
+        this.music.enabled = !this.music.enabled;
+        localStorage.setItem('breakoutMusicEnabled', this.music.enabled.toString());
+        
+        const musicToggle = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+        
+        if (this.music.enabled) {
+            musicToggle.classList.remove('disabled');
+            musicIcon.className = 'bi bi-music-note-beamed';
+            if (this.gameState === 'playing') {
+                this.startMusic();
+            }
+        } else {
+            musicToggle.classList.add('disabled');
+            musicIcon.className = 'bi bi-music-note-beamed-off';
+            this.stopMusic();
+        }
+    }
+    
+    updateMusicButton() {
+        const musicToggle = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+        
+        if (musicToggle && musicIcon) {
+            if (this.music.enabled) {
+                musicToggle.classList.remove('disabled');
+                musicIcon.className = 'bi bi-music-note-beamed';
+            } else {
+                musicToggle.classList.add('disabled');
+                musicIcon.className = 'bi bi-music-note-beamed-off';
+            }
+        }
+    }
+
+    createBackgroundMusic(trackInfo = null) {
+        if (!this.audioContext) return null;
+        
+        // Utiliser une piste par défaut si aucune n'est fournie
+        if (!trackInfo) {
+            trackInfo = this.musicTracks[0];
+        }
+        
+        try {
+            // Créer les nœuds audio
+            const oscillator1 = this.audioContext.createOscillator();
+            const oscillator2 = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            const filter = this.audioContext.createBiquadFilter();
+            
+            // Configuration du filtre selon le style
+            filter.type = 'lowpass';
+            const filterFreq = trackInfo.style === 'cyberpunk' ? 1500 : 
+                              trackInfo.style === 'intense' ? 1800 : 1200;
+            filter.frequency.setValueAtTime(filterFreq, this.audioContext.currentTime);
+            
+            // Configuration du gain (volume faible pour la musique de fond)
+            gainNode.gain.setValueAtTime(this.music.volume * 0.3, this.audioContext.currentTime);
+            
+            // Configuration des oscillateurs selon le style
+            if (trackInfo.style === 'cyberpunk' || trackInfo.style === 'electronic') {
+                oscillator1.type = 'sawtooth';
+                oscillator2.type = 'square';
+            } else if (trackInfo.style === 'retro' || trackInfo.style === 'classic') {
+                oscillator1.type = 'sine';
+                oscillator2.type = 'triangle';
+            } else {
+                oscillator1.type = 'triangle';
+                oscillator2.type = 'sine';
+            }
+            
+            // Connexion des nœuds
+            oscillator1.connect(filter);
+            oscillator2.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            // Mélodie adaptée au style et à la fréquence de base
+            const baseFreq = trackInfo.baseFreq;
+            let currentTime = this.audioContext.currentTime;
+            const noteDuration = 0.4;
+            
+            // Séquence mélodique simple
+            const notes = [
+                1.0,   // La
+                1.125, // Si
+                1.33,  // Mi
+                1.0,   // La
+                0.75,  // Fa#
+                1.0,   // La
+                1.5,   // Mi aigu
+                1.33   // Mi
+            ];
+            
+            notes.forEach((multiplier, index) => {
+                const freq = baseFreq * multiplier;
+                const time = currentTime + (index * noteDuration);
+                
+                // Oscillateur principal
+                oscillator1.frequency.setValueAtTime(freq, time);
+                
+                // Harmonie (quinte)
+                oscillator2.frequency.setValueAtTime(freq * 1.5, time);
+                
+                // Petit fade in/out pour chaque note
+                gainNode.gain.setValueAtTime(this.music.volume * 0.1, time);
+                gainNode.gain.exponentialRampToValueAtTime(this.music.volume * 0.3, time + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(this.music.volume * 0.1, time + noteDuration - 0.05);
+            });
+            
+            oscillator1.start();
+            oscillator2.start();
+            
+            const loopDuration = notes.length * noteDuration * 1000;
+            
+            // Arrêter les oscillateurs à la fin de la boucle
+            setTimeout(() => {
+                try {
+                    oscillator1.stop();
+                    oscillator2.stop();
+                } catch (e) {
+                    // Ignore errors
+                }
+            }, loopDuration);
+            
+            // Redémarrer automatiquement la musique
+            setTimeout(() => {
+                if (this.music.isPlaying && this.gameState === 'playing') {
+                    this.startMusic();
+                }
+            }, loopDuration);
+            
+            return { oscillator1, oscillator2, gainNode, filter };
+        } catch (error) {
+            console.warn('Erreur lors de la création de la musique:', error);
+            return null;
+        }
     }
     
     render() {
@@ -906,22 +1128,28 @@ class ModernBreakout {
     
     updateUI() {
         // Mettre à jour les affichages si les éléments existent
-        const scoreEl = document.getElementById('scoreDisplay');
-        const levelEl = document.getElementById('levelDisplay');
-        const livesEl = document.getElementById('livesDisplay');
-        
-        if (scoreEl) scoreEl.textContent = this.score;
-        if (levelEl) levelEl.textContent = this.level;
-        if (livesEl) livesEl.textContent = this.lives;
+        try {
+            const scoreEl = document.getElementById('scoreDisplay');
+            const levelEl = document.getElementById('levelDisplay');
+            const livesEl = document.getElementById('livesDisplay');
+            
+            if (scoreEl) scoreEl.textContent = this.score;
+            if (levelEl) levelEl.textContent = this.level;
+            if (livesEl) livesEl.textContent = this.lives;
+        } catch (error) {
+            console.warn('Erreur lors de la mise à jour de l\'UI:', error);
+        }
     }
     
     pauseGame() {
         this.gameState = 'paused';
+        this.stopMusic(); // Arrêter la musique en pause
         document.getElementById('pauseOverlay').style.display = 'flex';
     }
     
     resumeGame() {
         this.gameState = 'playing';
+        this.startMusic(); // Redémarrer la musique
         document.getElementById('pauseOverlay').style.display = 'none';
     }
     
@@ -932,6 +1160,7 @@ class ModernBreakout {
     
     showMenu() {
         this.gameState = 'menu';
+        this.stopMusic(); // Arrêter la musique au menu
         this.hideGameOver();
         this.hidePause();
         document.getElementById('menuOverlay').style.display = 'flex';
@@ -950,9 +1179,15 @@ class ModernBreakout {
     }
     
     gameLoop() {
-        this.update();
-        this.render();
-        requestAnimationFrame(() => this.gameLoop());
+        try {
+            this.update();
+            this.render();
+        } catch (error) {
+            console.error('Erreur dans la boucle du jeu:', error);
+            // En cas d'erreur, on essaie de continuer
+        } finally {
+            requestAnimationFrame(() => this.gameLoop());
+        }
     }
 }
 

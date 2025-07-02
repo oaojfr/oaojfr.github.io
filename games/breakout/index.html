@@ -288,6 +288,36 @@
             border-color: var(--neon-orange);
         }
 
+        .music-toggle {
+            background: transparent;
+            border: 2px solid var(--neon-orange);
+            color: var(--neon-orange);
+            padding: 10px 15px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .music-toggle:hover {
+            background: var(--neon-orange);
+            color: var(--dark-bg);
+            box-shadow: 0 0 25px var(--neon-orange);
+        }
+
+        .music-toggle.disabled {
+            opacity: 0.5;
+            border-color: #666;
+            color: #666;
+        }
+
+        .music-toggle.disabled:hover {
+            background: transparent;
+            color: #666;
+            box-shadow: none;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -391,6 +421,16 @@
             <button class="btn-neon" onclick="game.restartGame()" data-translate="game.restart">Redémarrer</button>
         </div>
         
+        <!-- Game Over Overlay -->
+        <div class="menu-overlay" id="gameOverOverlay" style="display: none;">
+            <div class="menu-title" id="resultText" data-translate="game.gameover">GAME OVER</div>
+            <div class="menu-description" id="finalStatsText">
+                Score final: 0 | Niveau atteint: 1
+            </div>
+            <button class="btn-neon" onclick="game.restartGame()" data-translate="game.restart">Redémarrer</button>
+            <button class="btn-neon" onclick="game.showMenu()" data-translate="game.menu">Menu</button>
+        </div>
+        
         <!-- Controls Info -->
         <div class="controls-info" data-translate="game.controls">
             Souris pour déplacer la raquette • ESPACE pour pause • R pour redémarrer
@@ -404,6 +444,11 @@
             <i class="bi bi-arrow-left-circle-fill"></i>
             <span data-translate="nav.games">Jeux</span>
         </a>
+
+        <!-- Music Toggle -->
+        <button class="music-toggle" onclick="game.toggleMusic()" id="musicToggle">
+            <i class="bi bi-music-note-beamed" id="musicIcon"></i>
+        </button>
 
         <!-- Language Selector -->
         <div class="language-selector">
@@ -440,6 +485,7 @@
                 'game.paused': 'PAUSE',
                 'game.resume': 'Reprendre',
                 'game.restart': 'Redémarrer',
+                'game.menu': 'Menu',
                 'game.gameover': 'Jeu Terminé !',
                 'game.victory': 'Victoire !',
                 'game.finalScore': 'Score final: ',
@@ -464,6 +510,7 @@
                 'game.paused': 'PAUSED',
                 'game.resume': 'Resume',
                 'game.restart': 'Restart',
+                'game.menu': 'Menu',
                 'game.gameover': 'Game Over!',
                 'game.victory': 'Victory!',
                 'game.finalScore': 'Final score: ',
@@ -488,6 +535,7 @@
                 'game.paused': 'PAUSADO',
                 'game.resume': 'Continuar',
                 'game.restart': 'Reiniciar',
+                'game.menu': 'Menu',
                 'game.gameover': 'Fim de Jogo!',
                 'game.victory': 'Vitória!',
                 'game.finalScore': 'Pontuação final: ',

@@ -16,7 +16,7 @@ class SuperHexagon {
         
         // État du jeu
         this.gameState = 'menu'; // menu, playing, paused, gameOver
-        this.difficulty = 'normal';
+        this.difficulty = 'easy';
         this.time = 0;
         this.patternIndex = 0;
         
@@ -60,11 +60,24 @@ class SuperHexagon {
         this.screenShake = { x: 0, y: 0, intensity: 0 };
         this.backgroundLines = [];
         
-        // Système audio
+        // Système audio moderne avec fichier MP3
         this.audioContext = null;
         this.musicEnabled = localStorage.getItem('hexagonMusicEnabled') !== 'false'; // Par défaut activé
-        this.currentTrack = null;
-        this.musicVolume = 0.3;
+        this.currentAudio = null;
+        this.musicVolume = 0.5;
+        this.musicBuffer = null;
+        this.musicSource = null;
+        
+        // Fichier musical principal
+        this.musicFile = '../../assets/music/superhexagon.mp3';
+        
+        // Multiplicateurs de vitesse selon la difficulté
+        this.difficultySpeedMultipliers = {
+            easy: 1.0,      // Vitesse normale
+            normal: 1.15,   // 15% plus rapide
+            hard: 1.35,     // 35% plus rapide  
+            insane: 1.6     // 60% plus rapide (très intense)
+        };
         
         // Paramètres de difficulté (comme l'original)
         this.difficultySettings = {
@@ -122,12 +135,13 @@ class SuperHexagon {
         this.initializeGame();
     }
     
-    initializeGame() {
+    async initializeGame() {
         this.setupEventListeners();
         this.resizeCanvas();
         this.updateBestTimeDisplay();
+        this.updateMusicButton();
         this.generateBackgroundLines();
-        this.initializeAudio();
+        await this.initializeAudio(); // Attendre le chargement de la musique
         window.addEventListener('resize', () => this.resizeCanvas());
         this.gameLoop();
     }
@@ -217,6 +231,13 @@ class SuperHexagon {
         const targetBtn = document.querySelector(`[data-difficulty="${difficulty}"]`);
         if (targetBtn) targetBtn.classList.add('active');
         
+        // Mettre à jour la vitesse de la musique si elle est en cours
+        if (this.audioElement && !this.audioElement.paused) {
+            const tempoMultiplier = this.difficultySpeedMultipliers[this.difficulty] || 1.0;
+            this.audioElement.playbackRate = tempoMultiplier;
+            console.log(`🎵 Vitesse de musique mise à jour: x${tempoMultiplier} (difficulté: ${this.difficulty})`);
+        }
+        
         this.updateBestTimeDisplay();
     }
     
@@ -281,6 +302,13 @@ class SuperHexagon {
         this.startGame();
     }
     
+    goToMenu() {
+        this.gameState = 'menu';
+        this.hideAllOverlays();
+        this.stopMusic();
+        document.getElementById('menuOverlay').style.display = 'flex';
+    }
+    
     showMenu() {
         this.gameState = 'menu';
         this.hideAllOverlays();
@@ -297,6 +325,8 @@ class SuperHexagon {
     
     gameOver() {
         this.gameState = 'gameOver';
+        
+        // Arrêter complètement la musique et tous les sons
         this.stopMusic();
         
         // Vérifier nouveau record
@@ -321,252 +351,128 @@ class SuperHexagon {
         this.createDeathEffect();
         this.shakeScreen(30);
         this.updateBestTimeDisplay();
-        
-        // Arrêter la musique
-        this.stopMusic();
+    }
+
+    async initializeAudio() {
+        try {
+            // Charger le fichier MP3 directement via l'élément HTML audio
+            if (this.musicEnabled) {
+                await this.loadMusicFile();
+            }
+        } catch (error) {
+            console.log('Erreur lors de l\'initialisation audio:', error);
+            this.musicEnabled = false;
+        }
     }
     
-    initializeAudio() {
+    async loadMusicFile() {
         try {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('🎵 Chargement de la musique Super Hexagon...');
+            
+            // Utiliser seulement l'élément audio HTML pour éviter les problèmes CORS en local
+            this.audioElement = new Audio(this.musicFile);
+            this.audioElement.loop = true;
+            this.audioElement.volume = this.musicVolume;
+            this.audioElement.preload = 'auto';
+            
+            // Attendre que l'audio soit prêt
+            return new Promise((resolve, reject) => {
+                this.audioElement.addEventListener('canplaythrough', () => {
+                    console.log('✅ Musique chargée avec succès!');
+                    resolve();
+                });
+                
+                this.audioElement.addEventListener('error', (e) => {
+                    console.error('❌ Erreur lors du chargement de la musique:', e);
+                    this.musicEnabled = false;
+                    reject(e);
+                });
+                
+                // Déclencher le chargement
+                this.audioElement.load();
+            });
+            
         } catch (error) {
-            console.log('Web Audio API non supportée');
+            console.error('❌ Erreur lors du chargement de la musique:', error);
             this.musicEnabled = false;
         }
     }
     
     startMusic() {
-        if (!this.musicEnabled || !this.audioContext) return;
+        if (!this.musicEnabled || !this.audioElement) return;
         
-        // Arrêter la musique précédente
-        this.stopMusic();
+        try {
+            // Appliquer le multiplicateur de vitesse selon la difficulté
+            const tempoMultiplier = this.difficultySpeedMultipliers[this.difficulty] || 1.0;
+            this.audioElement.playbackRate = tempoMultiplier;
+            this.audioElement.volume = this.musicVolume;
+            
+            console.log(`🎵 Lancement de la musique Super Hexagon (vitesse: x${tempoMultiplier} - difficulté: ${this.difficulty})`);
+            
+            // Démarrer la lecture
+            const playPromise = this.audioElement.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('Note: Interaction utilisateur requise pour jouer l\'audio');
+                });
+            }
+            
+        } catch (error) {
+            console.error('❌ Erreur lors du démarrage de la musique:', error);
+        }
         
-        // Créer une nouvelle track selon la difficulté
-        this.currentTrack = this.createCyberpunkTrack();
-        this.currentTrack.start();
+        // Mettre à jour l'interface
+        this.updateMusicButton();
     }
     
     stopMusic() {
-        if (this.currentTrack) {
-            this.currentTrack.stop();
-            this.currentTrack = null;
+        if (this.audioElement) {
+            try {
+                this.audioElement.pause();
+                this.audioElement.currentTime = 0;
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'arrêt de la musique:', error);
+            }
         }
-    }
-    
-    createCyberpunkTrack() {
-        const settings = this.difficultySettings[this.difficulty];
-        const bpm = 120 + (Object.keys(this.difficultySettings).indexOf(this.difficulty) * 20);
         
-        // Créer les oscillateurs pour une musique électronique
-        const kick = this.createKickDrum(bpm);
-        const bass = this.createBassline(bpm);
-        const lead = this.createLeadSynth(bpm);
-        const pad = this.createPad(bpm);
-        
-        return {
-            start: () => {
-                kick.start();
-                bass.start();
-                lead.start();
-                pad.start();
-            },
-            stop: () => {
-                kick.stop();
-                bass.stop();
-                lead.stop();
-                pad.stop();
-            }
-        };
-    }
-    
-    createKickDrum(bpm) {
-        const interval = 60 / bpm; // Intervalle en secondes
-        let nextTime = this.audioContext.currentTime;
-        
-        const schedule = () => {
-            if (this.gameState !== 'playing') return;
-            
-            // Créer un kick drum
-            const osc = this.audioContext.createOscillator();
-            const gain = this.audioContext.createGain();
-            const filter = this.audioContext.createBiquadFilter();
-            
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(60, nextTime);
-            osc.frequency.exponentialRampToValueAtTime(20, nextTime + 0.1);
-            
-            filter.type = 'lowpass';
-            filter.frequency.value = 200;
-            
-            gain.gain.setValueAtTime(this.musicVolume * 0.8, nextTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, nextTime + 0.3);
-            
-            osc.connect(filter);
-            filter.connect(gain);
-            gain.connect(this.audioContext.destination);
-            
-            osc.start(nextTime);
-            osc.stop(nextTime + 0.3);
-            
-            nextTime += interval;
-            setTimeout(schedule, (interval * 1000) / 2);
-        };
-        
-        return {
-            start: schedule,
-            stop: () => {}
-        };
-    }
-    
-    createBassline(bpm) {
-        const interval = 60 / bpm / 2; // Double vitesse pour la bassline
-        let nextTime = this.audioContext.currentTime;
-        const notes = [55, 65, 73, 82]; // Notes de basse
-        let noteIndex = 0;
-        
-        const schedule = () => {
-            if (this.gameState !== 'playing') return;
-            
-            const osc = this.audioContext.createOscillator();
-            const gain = this.audioContext.createGain();
-            const filter = this.audioContext.createBiquadFilter();
-            
-            osc.type = 'sawtooth';
-            osc.frequency.value = notes[noteIndex % notes.length];
-            
-            filter.type = 'lowpass';
-            filter.frequency.value = 300;
-            filter.Q.value = 10;
-            
-            gain.gain.setValueAtTime(this.musicVolume * 0.3, nextTime);
-            gain.gain.setValueAtTime(this.musicVolume * 0.3, nextTime + interval * 0.9);
-            gain.gain.exponentialRampToValueAtTime(0.001, nextTime + interval);
-            
-            osc.connect(filter);
-            filter.connect(gain);
-            gain.connect(this.audioContext.destination);
-            
-            osc.start(nextTime);
-            osc.stop(nextTime + interval);
-            
-            noteIndex++;
-            nextTime += interval;
-            setTimeout(schedule, interval * 1000);
-        };
-        
-        return {
-            start: schedule,
-            stop: () => {}
-        };
-    }
-    
-    createLeadSynth(bpm) {
-        const interval = 60 / bpm / 4; // Mélodie rapide
-        let nextTime = this.audioContext.currentTime;
-        const melody = [220, 246, 277, 311, 277, 246]; // Mélodie cyberpunk
-        let noteIndex = 0;
-        
-        const schedule = () => {
-            if (this.gameState !== 'playing') return;
-            
-            // Jouer une note de temps en temps
-            if (Math.random() > 0.3) {
-                const osc = this.audioContext.createOscillator();
-                const gain = this.audioContext.createGain();
-                const filter = this.audioContext.createBiquadFilter();
-                
-                osc.type = 'square';
-                osc.frequency.value = melody[noteIndex % melody.length];
-                
-                filter.type = 'bandpass';
-                filter.frequency.value = 1000;
-                filter.Q.value = 5;
-                
-                gain.gain.setValueAtTime(0, nextTime);
-                gain.gain.linearRampToValueAtTime(this.musicVolume * 0.2, nextTime + 0.01);
-                gain.gain.exponentialRampToValueAtTime(0.001, nextTime + interval * 2);
-                
-                osc.connect(filter);
-                filter.connect(gain);
-                gain.connect(this.audioContext.destination);
-                
-                osc.start(nextTime);
-                osc.stop(nextTime + interval * 2);
-            }
-            
-            noteIndex++;
-            nextTime += interval;
-            setTimeout(schedule, interval * 1000);
-        };
-        
-        return {
-            start: schedule,
-            stop: () => {}
-        };
-    }
-    
-    createPad(bpm) {
-        const interval = 60 / bpm * 4; // Accord long
-        let nextTime = this.audioContext.currentTime;
-        const chords = [
-            [220, 277, 330], // Accord Am
-            [196, 246, 294], // Accord G
-            [174, 220, 261], // Accord F
-            [196, 246, 294]  // Accord G
-        ];
-        let chordIndex = 0;
-        
-        const schedule = () => {
-            if (this.gameState !== 'playing') return;
-            
-            const chord = chords[chordIndex % chords.length];
-            
-            chord.forEach((freq, i) => {
-                const osc = this.audioContext.createOscillator();
-                const gain = this.audioContext.createGain();
-                const filter = this.audioContext.createBiquadFilter();
-                
-                osc.type = 'sawtooth';
-                osc.frequency.value = freq;
-                
-                filter.type = 'lowpass';
-                filter.frequency.value = 800;
-                
-                gain.gain.setValueAtTime(0, nextTime);
-                gain.gain.linearRampToValueAtTime(this.musicVolume * 0.1, nextTime + 0.5);
-                gain.gain.setValueAtTime(this.musicVolume * 0.1, nextTime + interval - 0.5);
-                gain.gain.linearRampToValueAtTime(0, nextTime + interval);
-                
-                osc.connect(filter);
-                filter.connect(gain);
-                gain.connect(this.audioContext.destination);
-                
-                osc.start(nextTime);
-                osc.stop(nextTime + interval);
-            });
-            
-            chordIndex++;
-            nextTime += interval;
-            setTimeout(schedule, interval * 1000);
-        };
-        
-        return {
-            start: schedule,
-            stop: () => {}
-        };
+        // Mettre à jour l'interface
+        this.updateMusicButton();
     }
     
     toggleMusic() {
         this.musicEnabled = !this.musicEnabled;
+        localStorage.setItem('hexagonMusicEnabled', this.musicEnabled.toString());
         
-        if (!this.musicEnabled) {
-            this.stopMusic();
-        } else if (this.gameState === 'playing') {
+        if (this.musicEnabled && this.gameState === 'playing') {
             this.startMusic();
+        } else {
+            this.stopMusic();
         }
         
-        // Sauvegarder la préférence
-        localStorage.setItem('hexagonMusicEnabled', this.musicEnabled.toString());
+        this.updateMusicButton();
+    }
+    
+    updateMusicButton() {
+        const musicBtn = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+        if (musicBtn && musicIcon) {
+            const isPlaying = this.audioElement && !this.audioElement.paused;
+            
+            // Icône selon l'état (activé/désactivé ET en cours de lecture)
+            if (this.musicEnabled && isPlaying) {
+                musicIcon.className = 'bi bi-volume-up-fill';
+                musicBtn.title = 'Musique en cours - Cliquer pour désactiver';
+                musicBtn.style.color = '#00ff88'; // Vert pour indication qu'elle joue
+            } else if (this.musicEnabled) {
+                musicIcon.className = 'bi bi-volume-down-fill';
+                musicBtn.title = 'Musique activée mais en pause - Cliquer pour désactiver';
+                musicBtn.style.color = '#ffaa00'; // Orange pour activée mais pas en cours
+            } else {
+                musicIcon.className = 'bi bi-volume-mute-fill';
+                musicBtn.title = 'Musique désactivée - Cliquer pour activer';
+                musicBtn.style.color = '#666'; // Gris pour désactivée
+            }
+        }
     }
     
     update() {
@@ -1085,7 +991,13 @@ function restart() {
 
 function showMenu() {
     if (window.game) {
-        window.game.showMenu();
+        window.game.goToMenu();
+    }
+}
+
+function goToMenu() {
+    if (window.game) {
+        window.game.goToMenu();
     }
 }
 

@@ -66,12 +66,35 @@ class PongGame {
         this.screenShake = { x: 0, y: 0, intensity: 0 };
         this.glowIntensity = 0;
         
+        // Système audio
+        this.audioContext = null;
+        this.sounds = {};
+        this.music = {
+            enabled: localStorage.getItem('pongMusicEnabled') !== 'false',
+            currentTrack: null,
+            volume: 0.3,
+            isPlaying: false,
+            currentTrackIndex: -1
+        };
+        
+        // Collection de 6 pistes cyberpunk pour Pong
+        this.musicTracks = [
+            { name: 'Cyber Pong Classic', tempo: 120, style: 'classic', baseFreq: 110 },
+            { name: 'Neon Table Tennis', tempo: 140, style: 'energetic', baseFreq: 98 },
+            { name: 'Digital Paddle', tempo: 130, style: 'ambient', baseFreq: 123 },
+            { name: 'Electric Rally', tempo: 150, style: 'intense', baseFreq: 87 },
+            { name: 'Cyber Arena', tempo: 125, style: 'flowing', baseFreq: 104 },
+            { name: 'Holographic Match', tempo: 135, style: 'hypnotic', baseFreq: 116 }
+        ];
+        
         this.initializeGame();
     }
     
     initializeGame() {
         console.log('Initializing game...');
         this.setupEventListeners();
+        this.initAudio();
+        this.updateMusicButton();
         this.updateScoreDisplay();
         this.gameLoop();
     }
@@ -164,6 +187,9 @@ class PongGame {
     
     gameOver(winner) {
         this.gameState = 'gameOver';
+        
+        // Arrêter complètement la musique et tous les sons
+        this.stopMusic();
         
         const winnerText = winner === 1 ? this.player1.name : this.player2.name;
         const winnerEl = document.getElementById('winnerText');
@@ -268,6 +294,8 @@ class PongGame {
             
             const hitPos = (this.ball.y - this.player1.y) / this.PADDLE_HEIGHT - 0.5;
             this.ball.dy += hitPos * 3;
+            
+            this.sounds.paddleHit();
         }
         
         // Collision paddle 2
@@ -282,6 +310,8 @@ class PongGame {
             
             const hitPos = (this.ball.y - this.player2.y) / this.PADDLE_HEIGHT - 0.5;
             this.ball.dy += hitPos * 3;
+            
+            this.sounds.paddleHit();
         }
     }
     
@@ -384,6 +414,200 @@ class PongGame {
         this.update();
         this.render();
         requestAnimationFrame(() => this.gameLoop());
+    }
+    
+    // Système Audio
+    initAudio() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.createSounds();
+        } catch (e) {
+            console.log('Audio non supporté');
+        }
+    }
+    
+    createSounds() {
+        if (!this.audioContext) return;
+        
+        // Sons du jeu
+        this.sounds.paddleHit = () => this.playTone(220, 0.1, 0.1);
+        this.sounds.wallHit = () => this.playTone(180, 0.15, 0.08);
+        this.sounds.goal = () => {
+            this.playTone(150, 0.3, 0.1);
+            setTimeout(() => this.playTone(120, 0.4, 0.2), 150);
+        };
+    }
+    
+    playTone(frequency, volume, duration) {
+        if (!this.audioContext) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        
+        oscillator.connect(gain);
+        gain.connect(this.audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        gain.gain.setValueAtTime(volume, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+        
+        oscillator.start();
+        oscillator.stop(this.audioContext.currentTime + duration);
+    }
+    
+    startMusic() {
+        if (!this.music.enabled || !this.audioContext || this.music.isPlaying) return;
+        
+        this.stopMusic();
+        
+        // Sélectionner une piste aléatoire différente de la précédente
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * this.musicTracks.length);
+        } while (randomIndex === this.music.currentTrackIndex && this.musicTracks.length > 1);
+        
+        this.music.currentTrackIndex = randomIndex;
+        const selectedTrack = this.musicTracks[randomIndex];
+        
+        console.log(`🏓 Musique Pong: ${selectedTrack.name} (${selectedTrack.tempo} BPM - ${selectedTrack.style})`);
+        
+        this.music.currentTrack = this.createBackgroundMusic(selectedTrack);
+        this.music.isPlaying = true;
+    }
+    
+    stopMusic() {
+        if (this.music.currentTrack) {
+            try {
+                if (this.music.currentTrack.oscillator1) {
+                    this.music.currentTrack.oscillator1.stop();
+                }
+                if (this.music.currentTrack.oscillator2) {
+                    this.music.currentTrack.oscillator2.stop();
+                }
+                if (this.music.currentTrack.gainNode) {
+                    this.music.currentTrack.gainNode.disconnect();
+                }
+            } catch (e) {
+                // Ignore errors
+            }
+            this.music.currentTrack = null;
+        }
+        this.music.isPlaying = false;
+    }
+    
+    createBackgroundMusic(trackInfo = null) {
+        if (!this.audioContext) return null;
+        
+        // Utiliser une piste par défaut si aucune n'est fournie
+        if (!trackInfo) {
+            trackInfo = this.musicTracks[0];
+        }
+        
+        try {
+            const oscillator1 = this.audioContext.createOscillator();
+            const oscillator2 = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            const filter = this.audioContext.createBiquadFilter();
+            
+            filter.type = 'lowpass';
+            
+            // Configuration selon le style de la piste
+            if (trackInfo.style === 'classic' || trackInfo.style === 'ambient') {
+                oscillator1.type = 'sine';
+                oscillator2.type = 'triangle';
+                filter.frequency.setValueAtTime(800, this.audioContext.currentTime);
+            } else if (trackInfo.style === 'intense' || trackInfo.style === 'energetic') {
+                oscillator1.type = 'sawtooth';
+                oscillator2.type = 'square';
+                filter.frequency.setValueAtTime(1200, this.audioContext.currentTime);
+            } else {
+                oscillator1.type = 'square';
+                oscillator2.type = 'sawtooth';
+                filter.frequency.setValueAtTime(1000, this.audioContext.currentTime);
+            }
+            
+            gainNode.gain.setValueAtTime(this.music.volume * 0.4, this.audioContext.currentTime);
+            
+            oscillator1.connect(filter);
+            oscillator2.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            // Fréquences basées sur la piste sélectionnée
+            const baseFreq = trackInfo.baseFreq;
+            
+            // Musique adaptée au style de la piste
+            let currentTime = this.audioContext.currentTime;
+            const noteDuration = 0.8;
+            
+            const notes = [1.0, 1.5, 1.0, 1.33, 1.0, 1.25, 1.5, 1.0];
+            
+            notes.forEach((multiplier, index) => {
+                const freq = baseFreq * multiplier;
+                const time = currentTime + (index * noteDuration);
+                
+                oscillator1.frequency.setValueAtTime(freq, time);
+                oscillator2.frequency.setValueAtTime(freq * 0.5, time);
+            });
+            
+            oscillator1.start();
+            oscillator2.start();
+            
+            const loopDuration = notes.length * noteDuration * 1000;
+            
+            setTimeout(() => {
+                try {
+                    oscillator1.stop();
+                    oscillator2.stop();
+                } catch (e) {}
+            }, loopDuration);
+            
+            setTimeout(() => {
+                if (this.music.isPlaying && this.gameState === 'playing') {
+                    this.startMusic();
+                }
+            }, loopDuration);
+            
+            return { oscillator1, oscillator2, gainNode, filter };
+        } catch (error) {
+            console.warn('Erreur lors de la création de la musique:', error);
+            return null;
+        }
+    }
+    
+    toggleMusic() {
+        this.music.enabled = !this.music.enabled;
+        localStorage.setItem('pongMusicEnabled', this.music.enabled.toString());
+        
+        const musicToggle = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+        
+        if (this.music.enabled) {
+            musicToggle.classList.remove('disabled');
+            musicIcon.className = 'bi bi-music-note-beamed';
+            if (this.gameState === 'playing') {
+                this.startMusic();
+            }
+        } else {
+            musicToggle.classList.add('disabled');
+            musicIcon.className = 'bi bi-music-note-beamed-off';
+            this.stopMusic();
+        }
+    }
+    
+    updateMusicButton() {
+        const musicToggle = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+        
+        if (musicToggle && musicIcon) {
+            if (this.music.enabled) {
+                musicToggle.classList.remove('disabled');
+                musicIcon.className = 'bi bi-music-note-beamed';
+            } else {
+                musicToggle.classList.add('disabled');
+                musicIcon.className = 'bi bi-music-note-beamed-off';
+            }
+        }
     }
 }
 
