@@ -49,13 +49,59 @@
             color: var(--neon-cyan);
             margin: 0;
             padding: 0;
-            height: 100vh;
             overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--neon-cyan);
+            backdrop-filter: blur(10px);
+        }
+
+        .game-title {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            color: var(--neon-yellow);
+            text-shadow: 0 0 15px var(--neon-yellow);
         }
 
         .game-container {
+            flex: 1;
             width: 100%;
-            height: 100vh;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -96,20 +142,22 @@
             background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(139, 0, 255, 0.1));
             border: 2px solid var(--neon-cyan);
             border-radius: 20px;
-            padding: 3rem;
+            padding: 2rem;
             text-align: center;
             box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
             backdrop-filter: blur(10px);
-            max-width: 600px;
-            margin: 2rem;
+            max-width: 500px;
+            max-height: 80vh;
+            margin: 1rem;
+            overflow-y: auto;
         }
 
         .title-text {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 900;
             color: var(--neon-cyan);
             text-shadow: 0 0 20px var(--neon-cyan);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             animation: titlePulse 2s ease-in-out infinite alternate;
         }
 
@@ -119,9 +167,9 @@
         }
 
         .subtitle-text {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: var(--neon-yellow);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             opacity: 0.9;
         }
 
@@ -129,12 +177,12 @@
         .upload-area {
             border: 3px dashed var(--neon-purple);
             border-radius: 15px;
-            padding: 3rem;
-            margin: 2rem 0;
+            padding: 2rem;
+            margin: 1.5rem 0;
             background: linear-gradient(45deg, rgba(139, 0, 255, 0.1), rgba(255, 0, 127, 0.1));
             transition: all 0.3s ease;
             cursor: pointer;
-            min-height: 150px;
+            min-height: 120px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -204,19 +252,12 @@
             top: 20px;
             left: 20px;
             right: 20px;
-            display: none;
+            display: block; /* Toujours visible maintenant */
             z-index: 10;
         }
 
         .game-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--neon-cyan);
-            border-radius: 10px;
-            padding: 10px 20px;
-            backdrop-filter: blur(10px);
+            display: none; /* Maintenant géré par le header */
         }
 
         .score-display {
@@ -453,28 +494,108 @@
             color: var(--neon-green);
         }
 
-        /* Back Button */
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: linear-gradient(45deg, rgba(255, 0, 127, 0.8), rgba(139, 0, 255, 0.8));
-            color: white;
-            border: 2px solid var(--neon-pink);
-            padding: 0.75rem 1.5rem;
-            border-radius: 25px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
+        /* Game Footer Styles */
+        .game-footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid var(--neon-cyan);
             backdrop-filter: blur(10px);
-            z-index: 200;
+            z-index: 1000; /* Au-dessus du canvas */
+            position: relative;
         }
 
-        .back-button:hover {
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 0, 127, 0.4);
+        .home-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--neon-cyan);
             text-decoration: none;
+            padding: 10px 20px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            background: rgba(0, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            font-weight: 700;
+        }
+
+        .home-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: var(--neon-yellow);
+            border-color: var(--neon-yellow);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .music-toggle {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .music-toggle:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .language-selector .dropdown-toggle {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 10px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .language-selector .dropdown-toggle:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .language-selector .dropdown-menu {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 9999 !important; /* Assurer qu'il passe au-dessus du canvas */
+        }
+
+        .language-selector .dropdown-item {
+            color: var(--neon-cyan);
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .language-selector .dropdown-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: var(--neon-yellow);
+        }
+
+        .controls-info {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-size: 0.9rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
         }
 
         /* Responsive */
@@ -501,35 +622,40 @@
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <!-- Back Button -->
-        <a href="../../games.html" class="back-button">
-            <i class="bi bi-arrow-left"></i> Retour aux Jeux
-        </a>
+    <!-- Game Header -->
+    <div class="game-header">
+        <div class="game-title" data-translate="game.title">🎵 RHYTHM HERO</div>
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.score">Score</div>
+                <div class="stat-value" id="scoreValue">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.combo">Combo</div>
+                <div class="stat-value" id="comboValue">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.bpm">BPM</div>
+                <div class="stat-value" id="bpmDisplay">--</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label" data-translate="game.difficulty">Difficulté</div>
+                <div class="stat-value" id="difficultyDisplay">--</div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Game Container -->
+    <div class="game-container">
         <!-- Game Canvas -->
         <canvas id="gameCanvas" width="1200" height="700"></canvas>
 
         <!-- Game UI with enhanced features -->
-        <div id="gameUI" style="display: none;">
-            <div class="game-info">
-                <div class="score-display">
-                    Score: <span id="scoreValue">0</span>
-                </div>
-                <div class="combo-display">
-                    Combo: <span id="comboValue">0</span>
-                </div>
-                <div class="fever-indicator" id="feverIndicator">
-                    Fever!
-                </div>
-                <div style="color: var(--neon-green);">
-                    <span id="bpmDisplay">BPM: --</span> | 
-                    <span id="difficultyDisplay">Niveau: --</span>
-                </div>
-            </div>
+        <div id="gameUI">
+            <!-- La game-info est maintenant dans le header -->
             
             <!-- Settings Panel -->
-            <div class="settings-panel" id="settingsPanel">
+            <div class="settings-panel" id="settingsPanel" style="display: none;">
                 <h4 style="color: var(--neon-purple); margin-bottom: 15px;">⚙️ Paramètres</h4>
                 <div class="setting-item">
                     <label>Vitesse des notes:</label>
@@ -556,8 +682,8 @@
             </div>
             
             <!-- Settings Button -->
-            <button id="settingsBtn" style="position: absolute; top: 20px; right: 20px; background: rgba(139, 0, 255, 0.8); border: 1px solid var(--neon-purple); color: white; padding: 10px; border-radius: 5px;">
-                ⚙️
+            <button id="settingsBtn" style="position: absolute; top: 20px; right: 20px; background: rgba(139, 0, 255, 0.8); border: 1px solid var(--neon-purple); color: white; padding: 10px; border-radius: 5px; display: none;">
+                ⚙️ Paramètres
             </button>
         </div>
         
@@ -585,53 +711,53 @@
         <!-- Menu Overlay -->
         <div class="overlay" id="menuOverlay">
             <div class="overlay-content">
-                <h1 class="title-text">🎵 RHYTHM HERO</h1>
-                <p class="subtitle-text">Uploadez votre MP3 et jouez sur votre musique préférée !</p>
+                <h1 class="title-text" data-translate="game.title">🎵 RHYTHM HERO</h1>
+                <p class="subtitle-text" data-translate="game.subtitle">Uploadez votre MP3 et jouez sur votre musique préférée !</p>
                 
                 <div class="upload-area" id="uploadArea">
                     <i class="bi bi-cloud-upload upload-icon"></i>
-                    <div class="upload-text">Cliquez ou glissez votre fichier MP3 ici</div>
-                    <div class="upload-subtext">Formats acceptés: MP3, WAV, OGG</div>
+                    <div class="upload-text" data-translate="upload.text">Cliquez ou glissez votre fichier MP3 ici</div>
+                    <div class="upload-subtext" data-translate="upload.subtext">Formats acceptés: MP3, WAV, OGG</div>
                 </div>
                 
                 <input type="file" id="fileInput" accept=".mp3,.wav,.ogg,audio/*">
                 
                 <div style="margin-top: 2rem;">
-                    <p style="color: var(--neon-yellow); font-size: 1rem; margin-bottom: 1rem;">
+                    <p style="color: var(--neon-yellow); font-size: 1rem; margin-bottom: 1rem;" data-translate="howto.title">
                         🎮 <strong>Comment jouer:</strong>
                     </p>
-                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; line-height: 1.6;">
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; line-height: 1.6;" data-translate="howto.description">
                         Utilisez les touches <strong>F</strong>, <strong>G</strong>, <strong>J</strong>, <strong>K</strong> pour frapper les notes<br>
                         au bon moment quand elles atteignent la ligne de frappe !
                     </p>
                 </div>
                 
                 <div style="margin-top: 2rem;">
-                    <p style="color: var(--neon-cyan); font-size: 1rem; margin-bottom: 1rem;">
+                    <p style="color: var(--neon-cyan); font-size: 1rem; margin-bottom: 1rem;" data-translate="difficulty.title">
                         🎯 <strong>Niveau de difficulté:</strong>
                     </p>
                     <div class="difficulty-selector">
-                        <button class="difficulty-btn" data-difficulty="easy">
+                        <button class="difficulty-btn" data-difficulty="easy" data-translate="difficulty.easy">
                             <i class="bi bi-star"></i> Facile
                         </button>
-                        <button class="difficulty-btn active" data-difficulty="medium">
+                        <button class="difficulty-btn active" data-difficulty="medium" data-translate="difficulty.medium">
                             <i class="bi bi-star-fill"></i> Moyen
                         </button>
-                        <button class="difficulty-btn" data-difficulty="hard">
+                        <button class="difficulty-btn" data-difficulty="hard" data-translate="difficulty.hard">
                             <i class="bi bi-lightning"></i> Difficile
                         </button>
-                        <button class="difficulty-btn" data-difficulty="expert">
+                        <button class="difficulty-btn" data-difficulty="expert" data-translate="difficulty.expert">
                             <i class="bi bi-fire"></i> Expert
                         </button>
                     </div>
-                    <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-top: 0.5rem; text-align: center;">
+                    <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-top: 0.5rem; text-align: center;" data-translate="difficulty.description">
                         Le jeu analyse automatiquement le rythme et adapte la densité des notes
                     </p>
                 </div>
 
                 <!-- High Scores Section -->
                 <div class="high-scores" id="highScoresSection">
-                    <h4 style="color: var(--neon-yellow); margin-bottom: 15px;">🏆 Meilleurs Scores</h4>
+                    <h4 style="color: var(--neon-yellow); margin-bottom: 15px;" data-translate="scores.title">🏆 Meilleurs Scores</h4>
                     <div id="highScoresList">
                         <!-- Sera rempli dynamiquement -->
                     </div>
@@ -639,8 +765,8 @@
                 
                 <!-- Statistiques détaillées -->
                 <div style="margin-top: 20px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7);">
-                    <div>Perfect: <span id="perfectCount">0</span> | Great: <span id="greatCount">0</span> | Good: <span id="goodCount">0</span></div>
-                    <div>Streak record: <span id="longestStreak">0</span> | Notes manquées: <span id="missedCount">0</span></div>
+                    <div><span data-translate="stats.perfect">Perfect:</span> <span id="perfectCount">0</span> | <span data-translate="stats.great">Great:</span> <span id="greatCount">0</span> | <span data-translate="stats.good">Good:</span> <span id="goodCount">0</span></div>
+                    <div><span data-translate="stats.streak">Streak record:</span> <span id="longestStreak">0</span> | <span data-translate="stats.missed">Notes manquées:</span> <span id="missedCount">0</span></div>
                 </div>
             </div>
         </div>
@@ -648,9 +774,9 @@
         <!-- Processing Overlay -->
         <div class="overlay" id="processingOverlay" style="display: none;">
             <div class="overlay-content">
-                <h2 style="color: var(--neon-cyan); margin-bottom: 2rem;">🎵 Analyse de votre musique...</h2>
+                <h2 style="color: var(--neon-cyan); margin-bottom: 2rem;" data-translate="processing.title">🎵 Analyse de votre musique...</h2>
                 <div class="loading-spinner"></div>
-                <div class="processing-text" id="processingText">Génération des notes en cours...</div>
+                <div class="processing-text" id="processingText" data-translate="processing.text">Génération des notes en cours...</div>
                 
                 <!-- Barre de progression -->
                 <div class="progress-container-overlay" style="margin: 2rem 0; width: 100%;">
@@ -684,25 +810,25 @@
         <!-- Game Over Overlay -->
         <div class="overlay" id="gameOverOverlay" style="display: none;">
             <div class="overlay-content">
-                <h2 style="color: var(--neon-pink); margin-bottom: 2rem;">🎊 Partie Terminée !</h2>
+                <h2 style="color: var(--neon-pink); margin-bottom: 2rem;" data-translate="gameover.title">🎊 Partie Terminée !</h2>
                 
                 <div style="margin: 2rem 0;">
                     <div style="font-size: 2rem; color: var(--neon-cyan); margin-bottom: 1rem;">
-                        Score Final: <span id="finalScore">0</span>
+                        <span data-translate="gameover.finalscore">Score Final:</span> <span id="finalScore">0</span>
                     </div>
                     <div style="font-size: 1.2rem; color: var(--neon-yellow);">
-                        Meilleur Combo: <span id="finalCombo">0</span>
+                        <span data-translate="gameover.bestcombo">Meilleur Combo:</span> <span id="finalCombo">0</span>
                     </div>
                     <div style="font-size: 1rem; color: var(--neon-green); margin-top: 1rem;">
-                        Précision: <span id="accuracy">0</span>%
+                        <span data-translate="gameover.accuracy">Précision:</span> <span id="accuracy">0</span>%
                     </div>
                 </div>
                 
                 <div>
-                    <button class="btn-cyber" onclick="restartGame()">
+                    <button class="btn-cyber" onclick="restartGame()" data-translate="gameover.replay">
                         <i class="bi bi-arrow-clockwise"></i> Rejouer
                     </button>
-                    <button class="btn-cyber" onclick="goToMenu()">
+                    <button class="btn-cyber" onclick="goToMenu()" data-translate="gameover.newmusic">
                         <i class="bi bi-house"></i> Nouvelle Musique
                     </button>
                 </div>
@@ -712,23 +838,228 @@
         <!-- Pause Overlay -->
         <div class="overlay" id="pauseOverlay" style="display: none;">
             <div class="overlay-content">
-                <h2 style="color: var(--neon-yellow); margin-bottom: 2rem;">⏸️ Pause</h2>
+                <h2 style="color: var(--neon-yellow); margin-bottom: 2rem;" data-translate="pause.title">⏸️ Pause</h2>
                 
                 <div>
-                    <button class="btn-cyber" onclick="resumeGame()">
+                    <button class="btn-cyber" onclick="resumeGame()" data-translate="pause.continue">
                         <i class="bi bi-play"></i> Continuer
                     </button>
-                    <button class="btn-cyber" onclick="goToMenu()">
+                    <button class="btn-cyber" onclick="goToMenu()" data-translate="pause.mainmenu">
                         <i class="bi bi-house"></i> Menu Principal
                     </button>
                 </div>
                 
-                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-top: 2rem;">
+                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; margin-top: 2rem;" data-translate="pause.instructions">
                     Appuyez sur <strong>ESPACE</strong> ou <strong>ÉCHAP</strong> pour reprendre
                 </p>
             </div>
         </div>
+
+        <!-- Controls Info -->
+        <div class="controls-info" data-translate="game.controls">
+            F G J K pour les lanes • ESPACE pour pause • R pour redémarrer
+        </div>
     </div>
+
+    <!-- Game Footer -->
+    <div class="game-footer">
+        <!-- Home Button -->
+        <a href="../../games.html" class="home-button">
+            <i class="bi bi-arrow-left-circle-fill"></i>
+            <span data-translate="nav.games">Jeux</span>
+        </a>
+
+        <!-- Music Toggle -->
+        <button class="music-toggle" onclick="toggleMusic()" id="musicToggle">
+            <i class="bi bi-music-note-beamed" id="musicIcon"></i>
+        </button>
+
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-globe"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Translations -->
+    <script>
+        const translations = {
+            fr: {
+                'nav.games': 'Jeux',
+                'game.title': '🎵 RHYTHM HERO',
+                'game.subtitle': 'Uploadez votre MP3 et jouez sur votre musique préférée !',
+                'game.score': 'Score',
+                'game.combo': 'Combo',
+                'game.bpm': 'BPM',
+                'game.controls': 'F G J K pour les lanes • ESPACE pour pause • R pour redémarrer',
+                'game.start': 'Démarrer',
+                'game.pause': 'Pause',
+                'game.resume': 'Reprendre',
+                'game.restart': 'Redémarrer',
+                'game.menu': 'Menu',
+                'game.upload': 'Uploader MP3',
+                'game.difficulty': 'Difficulté',
+                'upload.text': 'Cliquez ou glissez votre fichier MP3 ici',
+                'upload.subtext': 'Formats acceptés: MP3, WAV, OGG',
+                'howto.title': '🎮 Comment jouer:',
+                'howto.description': 'Utilisez les touches F, G, J, K pour frapper les notes au bon moment quand elles atteignent la ligne de frappe !',
+                'difficulty.title': '🎯 Niveau de difficulté:',
+                'difficulty.easy': 'Facile',
+                'difficulty.medium': 'Moyen',
+                'difficulty.hard': 'Difficile',
+                'difficulty.expert': 'Expert',
+                'difficulty.description': 'Le jeu analyse automatiquement le rythme et adapte la densité des notes',
+                'scores.title': '🏆 Meilleurs Scores',
+                'stats.perfect': 'Perfect:',
+                'stats.great': 'Great:',
+                'stats.good': 'Good:',
+                'stats.streak': 'Streak record:',
+                'stats.missed': 'Notes manquées:',
+                'processing.title': '🎵 Analyse de votre musique...',
+                'processing.text': 'Génération des notes en cours...',
+                'gameover.title': '🎊 Partie Terminée !',
+                'gameover.finalscore': 'Score Final:',
+                'gameover.bestcombo': 'Meilleur Combo:',
+                'gameover.accuracy': 'Précision:',
+                'gameover.replay': 'Rejouer',
+                'gameover.newmusic': 'Nouvelle Musique',
+                'pause.title': '⏸️ Pause',
+                'pause.continue': 'Continuer',
+                'pause.mainmenu': 'Menu Principal',
+                'pause.instructions': 'Appuyez sur ESPACE ou ÉCHAP pour reprendre'
+            },
+            en: {
+                'nav.games': 'Games',
+                'game.title': '🎵 RHYTHM HERO',
+                'game.subtitle': 'Upload your MP3 and play to your favorite music!',
+                'game.score': 'Score',
+                'game.combo': 'Combo',
+                'game.bpm': 'BPM',
+                'game.controls': 'F G J K for lanes • SPACE to pause • R to restart',
+                'game.start': 'Start',
+                'game.pause': 'Pause',
+                'game.resume': 'Resume',
+                'game.restart': 'Restart',
+                'game.menu': 'Menu',
+                'game.upload': 'Upload MP3',
+                'game.difficulty': 'Difficulty',
+                'upload.text': 'Click or drag your MP3 file here',
+                'upload.subtext': 'Accepted formats: MP3, WAV, OGG',
+                'howto.title': '🎮 How to play:',
+                'howto.description': 'Use F, G, J, K keys to hit notes at the right moment when they reach the hit line!',
+                'difficulty.title': '🎯 Difficulty level:',
+                'difficulty.easy': 'Easy',
+                'difficulty.medium': 'Medium',
+                'difficulty.hard': 'Hard',
+                'difficulty.expert': 'Expert',
+                'difficulty.description': 'The game automatically analyzes rhythm and adapts note density',
+                'scores.title': '🏆 High Scores',
+                'stats.perfect': 'Perfect:',
+                'stats.great': 'Great:',
+                'stats.good': 'Good:',
+                'stats.streak': 'Longest streak:',
+                'stats.missed': 'Missed notes:',
+                'processing.title': '🎵 Analyzing your music...',
+                'processing.text': 'Generating notes in progress...',
+                'gameover.title': '🎊 Game Over!',
+                'gameover.finalscore': 'Final Score:',
+                'gameover.bestcombo': 'Best Combo:',
+                'gameover.accuracy': 'Accuracy:',
+                'gameover.replay': 'Play Again',
+                'gameover.newmusic': 'New Music',
+                'pause.title': '⏸️ Paused',
+                'pause.continue': 'Continue',
+                'pause.mainmenu': 'Main Menu',
+                'pause.instructions': 'Press SPACE or ESC to resume'
+            },
+            pt: {
+                'nav.games': 'Jogos',
+                'game.title': '🎵 RHYTHM HERO',
+                'game.subtitle': 'Faça upload do seu MP3 e jogue com sua música favorita!',
+                'game.score': 'Pontos',
+                'game.combo': 'Combo',
+                'game.bpm': 'BPM',
+                'game.controls': 'F G J K para as faixas • ESPAÇO para pausar • R para reiniciar',
+                'game.start': 'Iniciar',
+                'game.pause': 'Pausar',
+                'game.resume': 'Continuar',
+                'game.restart': 'Reiniciar',
+                'game.menu': 'Menu',
+                'game.upload': 'Upload MP3',
+                'game.difficulty': 'Dificuldade',
+                'upload.text': 'Clique ou arraste seu arquivo MP3 aqui',
+                'upload.subtext': 'Formatos aceitos: MP3, WAV, OGG',
+                'howto.title': '🎮 Como jogar:',
+                'howto.description': 'Use as teclas F, G, J, K para acertar as notas no momento certo quando elas atingem a linha de acerto!',
+                'difficulty.title': '🎯 Nível de dificuldade:',
+                'difficulty.easy': 'Fácil',
+                'difficulty.medium': 'Médio',
+                'difficulty.hard': 'Difícil',
+                'difficulty.expert': 'Expert',
+                'difficulty.description': 'O jogo analisa automaticamente o ritmo e adapta a densidade das notas',
+                'scores.title': '🏆 Melhores Pontuações',
+                'stats.perfect': 'Perfeito:',
+                'stats.great': 'Ótimo:',
+                'stats.good': 'Bom:',
+                'stats.streak': 'Sequência recorde:',
+                'stats.missed': 'Notas perdidas:',
+                'processing.title': '🎵 Analisando sua música...',
+                'processing.text': 'Gerando notas em progresso...',
+                'gameover.title': '🎊 Jogo Finalizado!',
+                'gameover.finalscore': 'Pontuação Final:',
+                'gameover.bestcombo': 'Melhor Combo:',
+                'gameover.accuracy': 'Precisão:',
+                'gameover.replay': 'Jogar Novamente',
+                'gameover.newmusic': 'Nova Música',
+                'pause.title': '⏸️ Pausado',
+                'pause.continue': 'Continuar',
+                'pause.mainmenu': 'Menu Principal',
+                'pause.instructions': 'Pressione ESPAÇO ou ESC para continuar'
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('language') || 'fr';
+
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLanguage] && translations[currentLanguage][key]) {
+                    element.textContent = translations[currentLanguage][key];
+                }
+            });
+            
+            // Update document language
+            document.documentElement.lang = currentLanguage;
+        }
+
+        function toggleMusic() {
+            if (window.rhythmGame) {
+                // Si le jeu a une fonction de musique, l'appeler
+                // Sinon, on peut implémenter une logique simple
+                console.log('Toggle music functionality');
+            }
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+        });
+    </script>
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -869,4 +1200,148 @@
             const longestStreak = document.getElementById('longestStreak');
             const missedCount = document.getElementById('missedCount');
             
-            if
+            if (perfectCount) perfectCount.textContent = stats.perfectHits || 0;
+            if (greatCount) greatCount.textContent = stats.greatHits || 0;
+            if (goodCount) goodCount.textContent = stats.goodHits || 0;
+            if (longestStreak) longestStreak.textContent = stats.longestStreak || 0;
+            if (missedCount) missedCount.textContent = stats.missedNotes || 0;
+        }
+        
+        // Gestion de la musique et du son
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let musicBuffer, isPlaying = false, isPaused = false;
+        let noteHitSound, noteMissSound;
+        
+        function loadSounds() {
+            // Chargement des sons de note
+            const promises = [
+                loadSound('sounds/note_hit.mp3').then(buffer => { noteHitSound = buffer; }),
+                loadSound('sounds/note_miss.mp3').then(buffer => { noteMissSound = buffer; })
+            ];
+            
+            return Promise.all(promises);
+        }
+        
+        function loadSound(url) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'arraybuffer';
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        audioContext.decodeAudioData(xhr.response, resolve, reject);
+                    } else {
+                        reject(new Error('Erreur de chargement du son: ' + xhr.statusText));
+                    }
+                };
+                xhr.onerror = () => reject(new Error('Erreur de réseau lors du chargement du son'));
+                xhr.send();
+            });
+        }
+        
+        function playSound(buffer) {
+            if (!audioContext || !buffer) return;
+            
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start(0);
+        }
+        
+        // Gestion des événements de jeu
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const arrayBuffer = e.target.result;
+                // Traiter le fichier audio (analyse, génération de notes, etc.)
+                processAudioFile(arrayBuffer);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function processAudioFile(arrayBuffer) {
+            // Exemple d'analyse: détecter le BPM (Battements Par Minute)
+            detectBPM(arrayBuffer).then(bpm => {
+                console.log('BPM détecté:', bpm);
+                // Ajuster la vitesse des notes en fonction du BPM
+                const noteSpeed = Math.max(300, Math.min(800, 600 - (bpm - 120)));
+                document.getElementById('speedSlider').value = noteSpeed;
+                document.getElementById('speedValue').textContent = noteSpeed;
+                
+                if (window.rhythmGame) {
+                    window.rhythmGame.gameSettings.noteSpeed = noteSpeed;
+                    window.rhythmGame.saveSettings();
+                }
+            }).catch(err => {
+                console.error('Erreur de détection du BPM:', err);
+            });
+            
+            // Exemple de génération de notes
+            generateNotes(arrayBuffer).then(notes => {
+                console.log('Notes générées:', notes);
+                // Démarrer le jeu avec les notes générées
+                startGameWithNotes(notes);
+            }).catch(err => {
+                console.error('Erreur de génération des notes:', err);
+            });
+        }
+        
+        function detectBPM(arrayBuffer) {
+            return new Promise((resolve, reject) => {
+                // Analyse simplifiée: détecter le silence et estimer le BPM
+                const audioData = new Float32Array(arrayBuffer);
+                const threshold = 0.01;
+                let beatCount = 0, lastSample = 0;
+                
+                for (let i = 1; i < audioData.length; i++) {
+                    if (audioData[i] > threshold && audioData[lastSample] <= threshold) {
+                        beatCount++;
+                    }
+                    lastSample = i;
+                }
+                
+                // Estimer le BPM: 60 secondes / (nombre de battements * durée en secondes)
+                const durationInSeconds = audioData.length / audioContext.sampleRate;
+                const estimatedBPM = Math.round(60 / (beatCount / durationInSeconds));
+                
+                resolve(estimatedBPM);
+            });
+        }
+        
+        function generateNotes(arrayBuffer) {
+            return new Promise((resolve, reject) => {
+                // Génération simplifiée: créer des notes à intervalles réguliers
+                const audioData = new Float32Array(arrayBuffer);
+                const noteDuration = 0.2; // Durée de chaque note en secondes
+                const sampleRate = audioContext.sampleRate;
+                const notes = [];
+                
+                for (let i = 0; i < audioData.length; i += sampleRate * noteDuration) {
+                    notes.push({ time: i / sampleRate, value: audioData[i] });
+                }
+
+                resolve(notes);
+            });
+        }
+
+        // Exemple de fonction pour démarrer le jeu avec des notes générées
+        function startGameWithNotes(notes) {
+            if (!window.rhythmGame) return;
+            
+            // Réinitialiser le jeu
+            window.rhythmGame.resetGame();
+            
+            // Définir les notes générées
+            window.rhythmGame.setNotes(notes);
+            
+            // Démarrer le jeu
+            window.rhythmGame.startGame();
+        }
+    </script>
+</body>
+</html>
