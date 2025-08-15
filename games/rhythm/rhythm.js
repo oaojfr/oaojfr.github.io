@@ -1912,10 +1912,29 @@ class RhythmGame {
         if (shakeToggle) shakeToggle.checked = this.gameSettings.screenShake !== false;
     }
     
-    gameLoop() {
-        this.update();
-        this.render();
-        requestAnimationFrame(() => this.gameLoop());
+    gameLoop(timestamp) {
+        // Limiter la boucle à 60 FPS
+        if (!this._targetFPS) {
+            this._targetFPS = 60;
+            this._frameDuration = 1000 / this._targetFPS;
+        }
+
+        if (timestamp === undefined) {
+            return requestAnimationFrame((ts) => this.gameLoop(ts));
+        }
+
+        if (this._lastFrameTime === undefined) {
+            this._lastFrameTime = timestamp;
+        }
+
+        const delta = timestamp - this._lastFrameTime;
+        if (delta >= this._frameDuration) {
+            this._lastFrameTime = timestamp - (delta % this._frameDuration);
+            this.update();
+            this.render();
+        }
+
+        requestAnimationFrame((ts) => this.gameLoop(ts));
     }
 }
 

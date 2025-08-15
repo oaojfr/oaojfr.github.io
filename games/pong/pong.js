@@ -410,10 +410,29 @@ class PongGame {
         this.ctx.shadowBlur = 0;
     }
     
-    gameLoop() {
-        this.update();
-        this.render();
-        requestAnimationFrame(() => this.gameLoop());
+    gameLoop(timestamp) {
+        // Limiter à 60 FPS pour une vitesse de jeu constante
+        if (!this._targetFPS) {
+            this._targetFPS = 60;
+            this._frameDuration = 1000 / this._targetFPS;
+        }
+
+        if (timestamp === undefined) {
+            return requestAnimationFrame((ts) => this.gameLoop(ts));
+        }
+
+        if (this._lastFrameTime === undefined) {
+            this._lastFrameTime = timestamp;
+        }
+
+        const delta = timestamp - this._lastFrameTime;
+        if (delta >= this._frameDuration) {
+            this._lastFrameTime = timestamp - (delta % this._frameDuration);
+            this.update();
+            this.render();
+        }
+
+        requestAnimationFrame((ts) => this.gameLoop(ts));
     }
     
     // Système Audio

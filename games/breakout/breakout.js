@@ -1178,16 +1178,36 @@ class ModernBreakout {
         document.getElementById('pauseOverlay').style.display = 'none';
     }
     
-    gameLoop() {
-        try {
-            this.update();
-            this.render();
-        } catch (error) {
-            console.error('Erreur dans la boucle du jeu:', error);
-            // En cas d'erreur, on essaie de continuer
-        } finally {
-            requestAnimationFrame(() => this.gameLoop());
+    gameLoop(timestamp) {
+        // Boucle limitée à 60 FPS (évite d'accélérer sur écrans 120/144Hz)
+        if (!this._targetFPS) {
+            this._targetFPS = 60;
+            this._frameDuration = 1000 / this._targetFPS;
         }
+
+        // Démarrer correctement via requestAnimationFrame si appelée sans timestamp
+        if (timestamp === undefined) {
+            return requestAnimationFrame((ts) => this.gameLoop(ts));
+        }
+
+        if (this._lastFrameTime === undefined) {
+            this._lastFrameTime = timestamp;
+        }
+
+        const delta = timestamp - this._lastFrameTime;
+
+        if (delta >= this._frameDuration) {
+            // Conserver une horloge stable pour éviter la dérive
+            this._lastFrameTime = timestamp - (delta % this._frameDuration);
+            try {
+                this.update();
+                this.render();
+            } catch (error) {
+                console.error('Erreur dans la boucle du jeu:', error);
+            }
+        }
+
+        requestAnimationFrame((ts) => this.gameLoop(ts));
     }
 }
 
