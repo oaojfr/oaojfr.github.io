@@ -650,6 +650,41 @@
 
         // Game preview animations
         function initGamePreviews() {
+            // Helper: RAF loop with FPS cap and start/stop controls
+            function makePreviewLoop(drawFn, initialFPS = 60) {
+                let targetFPS = initialFPS;
+                let frameDuration = 1000 / targetFPS;
+                let last;
+                let running = false;
+
+                function setFPS(fps) {
+                    targetFPS = Math.max(1, fps | 0);
+                    frameDuration = 1000 / targetFPS;
+                }
+
+                function loop(ts) {
+                    if (!running) return;
+                    if (last === undefined) last = ts;
+                    const delta = ts - last;
+                    if (delta >= frameDuration) {
+                        // Stable clock to reduce drift
+                        last = ts - (delta % frameDuration);
+                        try { drawFn(); } catch (e) { /* ignore preview errors */ }
+                    }
+                    requestAnimationFrame(loop);
+                }
+
+                return {
+                    start() { if (!running) { running = true; last = undefined; requestAnimationFrame(loop); } },
+                    stop() { running = false; },
+                    setFPS
+                };
+            }
+
+            // Respect prefers-reduced-motion
+            const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const preferredFPS = prefersReduced ? 30 : 60;
+            const previewLoops = [];
             // Breakout Preview
             const breakoutCanvas = document.getElementById('breakoutPreview');
             if (breakoutCanvas) {
@@ -828,8 +863,14 @@
                     paddleX += Math.sin(Date.now() * 0.003) * 2;
                     paddleX = Math.max(0, Math.min(350, paddleX));
                 }
-                
-                setInterval(drawBreakout, 16);
+
+                const breakoutLoop = makePreviewLoop(drawBreakout, preferredFPS);
+                breakoutLoop.start();
+                previewLoops.push(breakoutLoop);
+                // Pause when offscreen
+                new IntersectionObserver((entries) => {
+                    entries.forEach(e => e.isIntersecting ? breakoutLoop.start() : breakoutLoop.stop());
+                }, { threshold: 0.1 }).observe(breakoutCanvas);
             }
 
             // Pong Preview
@@ -949,8 +990,13 @@
                     paddle1Y = Math.max(0, Math.min(180, paddle1Y));
                     paddle2Y = Math.max(0, Math.min(180, paddle2Y));
                 }
-                
-                setInterval(drawPong, 16);
+
+                const pongLoop = makePreviewLoop(drawPong, preferredFPS);
+                pongLoop.start();
+                previewLoops.push(pongLoop);
+                new IntersectionObserver((entries) => {
+                    entries.forEach(e => e.isIntersecting ? pongLoop.start() : pongLoop.stop());
+                }, { threshold: 0.1 }).observe(pongCanvas);
             }
 
             // Hexagon Preview - Reproduction PARFAITE de Super Hexagon
@@ -1244,7 +1290,12 @@
                 spawnWallPattern();
                 setTimeout(() => spawnWallPattern(), 1000);
                 
-                setInterval(gameLoop, 16); // 60 FPS
+                const hexagonLoop = makePreviewLoop(gameLoop, preferredFPS);
+                hexagonLoop.start();
+                previewLoops.push(hexagonLoop);
+                new IntersectionObserver((entries) => {
+                    entries.forEach(e => e.isIntersecting ? hexagonLoop.start() : hexagonLoop.stop());
+                }, { threshold: 0.1 }).observe(hexagonCanvas);
             }
 
             // Rhythm Preview - Simulation du vrai jeu avec notes qui tombent et lanes
@@ -1453,9 +1504,20 @@
                         rhythmCtx.fillText(keys[i], x, 210);
                     }
                 }
-                
-                setInterval(drawRhythm, 16);
+
+                const rhythmLoop = makePreviewLoop(drawRhythm, preferredFPS);
+                rhythmLoop.start();
+                previewLoops.push(rhythmLoop);
+                new IntersectionObserver((entries) => {
+                    entries.forEach(e => e.isIntersecting ? rhythmLoop.start() : rhythmLoop.stop());
+                }, { threshold: 0.1 }).observe(rhythmCanvas);
             }
+
+            // Pause all previews when tab is hidden to save resources
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) previewLoops.forEach(l => l.stop());
+                else previewLoops.forEach(l => l.start());
+            });
         }
 
         let currentTheme = 'light';
