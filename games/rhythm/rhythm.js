@@ -112,6 +112,10 @@ class RhythmGame {
         this.screenShake = 0;
         this.trails = []; // Traînées des notes
         this.backgroundBeats = []; // Effets de background réactifs
+
+    // Graphics quality presets and toast
+    this.graphics = this.initGraphics();
+    this._qualityToast = { text: '', shownUntil: 0 };
         
         // Statistiques et progression
         this.gameStats = {
@@ -128,6 +132,35 @@ class RhythmGame {
         
         this.initializeGame();
     }
+
+    // Graphics quality helpers
+    initGraphics() {
+        const saved = localStorage.getItem('rhythmQuality') || 'medium';
+        const presets = {
+            low:    { name: 'Low',    glow: 0.4, particles: 0.5, trails: 0.6, waveform: 0.5, shake: 0.6 },
+            medium: { name: 'Medium', glow: 0.8, particles: 0.9, trails: 1.0, waveform: 1.0, shake: 1.0 },
+            high:   { name: 'High',   glow: 1.2, particles: 1.2, trails: 1.2, waveform: 1.2, shake: 1.2 }
+        };
+        const level = ['low','medium','high'].includes(saved) ? saved : 'medium';
+        return { level, presets };
+    }
+
+    setQuality(level) {
+        if (!this.graphics.presets[level]) return;
+        this.graphics.level = level;
+        localStorage.setItem('rhythmQuality', level);
+        const p = this.qualityPreset();
+        this._qualityToast.text = `Graphics: ${p.name}`;
+        this._qualityToast.shownUntil = performance.now() + 1200;
+    }
+
+    cycleQuality() {
+        const order = ['low','medium','high'];
+        const idx = order.indexOf(this.graphics.level);
+        this.setQuality(order[(idx + 1) % order.length]);
+    }
+
+    qualityPreset() { return this.graphics.presets[this.graphics.level]; }
     
     // Système de sauvegarde
     loadSettings() {
@@ -219,6 +252,13 @@ class RhythmGame {
     setupEventListeners() {
         document.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
+
+            // Toggle graphics quality on 'Q' (avoid conflict with F/G/J/K)
+            if (key === 'q') {
+                this.cycleQuality();
+                e.preventDefault();
+                return;
+            }
             
             // Contrôles généraux
             if (key === ' ' || key === 'escape') {
@@ -1367,7 +1407,7 @@ class RhythmGame {
         
         // Screen shake pour les notes fortes
         if (note.type === 'strong' && this.gameSettings.screenShake) {
-            this.screenShake = 8;
+            this.screenShake = 8 * this.qualityPreset().shake;
         }
         
         console.log(`🎯 ${hitType} - Score: +${finalScore} (x${comboMultiplier.toFixed(1)})`);
@@ -1389,16 +1429,18 @@ class RhythmGame {
     
     createNoteTrail(note) {
         if (!this.gameSettings.showTrails) return;
-        
-        for (let i = 0; i < 5; i++) {
+        const q = this.qualityPreset();
+        const trailCount = Math.max(2, Math.round(5 * q.trails));
+        const baseLife = Math.max(8, Math.round(20 * q.trails));
+        for (let i = 0; i < trailCount; i++) {
             this.trails.push({
                 x: note.lane * this.laneWidth + this.laneWidth / 2,
                 y: note.y,
                 color: this.laneColors[note.lane],
-                life: 20,
-                maxLife: 20,
-                size: Math.max(1, 4 - i), // Assurer une taille minimum de 1
-                alpha: 1 - (i * 0.2)
+                life: baseLife,
+                maxLife: baseLife,
+                size: Math.max(1, 4 - i),
+                alpha: Math.max(0.1, 1 - (i * (1 / trailCount)))
             });
         }
     }
@@ -1419,18 +1461,22 @@ class RhythmGame {
             size: 1.5
         });
         
-        // Particules dorées
-        for (let i = 0; i < 20; i++) {
-            this.particles.push({
-                x: x + (Math.random() - 0.5) * 40,
-                y: y + (Math.random() - 0.5) * 40,
-                vx: (Math.random() - 0.5) * 8,
-                vy: (Math.random() - 0.5) * 8,
-                color: '#FFD700',
-                life: 60,
-                maxLife: 60,
-                size: Math.random() * 4 + 2
-            });
+        // Particules dorées (scaled by quality and user setting)
+        if (this.gameSettings.showParticles !== false) {
+            const q = this.qualityPreset();
+            const count = Math.max(6, Math.round(20 * q.particles));
+            for (let i = 0; i < count; i++) {
+                this.particles.push({
+                    x: x + (Math.random() - 0.5) * 40,
+                    y: y + (Math.random() - 0.5) * 40,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    color: '#FFD700',
+                    life: 60,
+                    maxLife: 60,
+                    size: Math.random() * 4 + 2
+                });
+            }
         }
     }
     
@@ -1453,18 +1499,21 @@ class RhythmGame {
     createFeverEffect() {
         // Effet visuel pour l'activation du fever mode
         this.backgroundPulse = 2;
-        
-        for (let i = 0; i < 50; i++) {
-            this.particles.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                vx: (Math.random() - 0.5) * 10,
-                vy: (Math.random() - 0.5) * 10,
-                color: '#FFD700',
-                life: 120,
-                maxLife: 120,
-                size: Math.random() * 6 + 3
-            });
+        if (this.gameSettings.showParticles !== false) {
+            const q = this.qualityPreset();
+            const count = Math.max(10, Math.round(50 * q.particles));
+            for (let i = 0; i < count; i++) {
+                this.particles.push({
+                    x: Math.random() * this.canvas.width,
+                    y: Math.random() * this.canvas.height,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    color: '#FFD700',
+                    life: 120,
+                    maxLife: 120,
+                    size: Math.random() * 6 + 3
+                });
+            }
         }
     }
     
@@ -1483,18 +1532,22 @@ class RhythmGame {
             size: 1
         });
         
-        // Particules
-        for (let i = 0; i < 10; i++) {
-            this.particles.push({
-                x: x + (Math.random() - 0.5) * 20,
-                y: y + (Math.random() - 0.5) * 20,
-                vx: (Math.random() - 0.5) * 5,
-                vy: (Math.random() - 0.5) * 5,
-                color: this.laneColors[lane],
-                life: 30,
-                maxLife: 30,
-                size: Math.random() * 3 + 2
-            });
+        // Particules (scaled by quality and user setting)
+        if (this.gameSettings.showParticles !== false) {
+            const q = this.qualityPreset();
+            const count = Math.max(4, Math.round(10 * q.particles));
+            for (let i = 0; i < count; i++) {
+                this.particles.push({
+                    x: x + (Math.random() - 0.5) * 20,
+                    y: y + (Math.random() - 0.5) * 20,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 0.5) * 5,
+                    color: this.laneColors[lane],
+                    life: 30,
+                    maxLife: 30,
+                    size: Math.random() * 3 + 2
+                });
+            }
         }
     }
     
@@ -1614,8 +1667,8 @@ class RhythmGame {
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
         
-        // Dessiner la waveform en arrière-plan
-        this.renderWaveform();
+    // Dessiner la waveform en arrière-plan
+    this.renderWaveform();
         
         if (this.gameState === 'playing' || this.gameState === 'paused') {
             this.renderTrails();
@@ -1629,6 +1682,18 @@ class RhythmGame {
         if (this.screenShake > 0) {
             this.ctx.restore();
         }
+
+        // Quality toast overlay
+        if (performance && performance.now() < (this._qualityToast?.shownUntil || 0)) {
+            this.ctx.save();
+            this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            this.ctx.fillRect(10, 10, 160, 30);
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '14px Orbitron, Arial';
+            this.ctx.textAlign = 'left';
+            this.ctx.fillText(this._qualityToast.text, 20, 30);
+            this.ctx.restore();
+        }
     }
     
     renderWaveform() {
@@ -1637,9 +1702,12 @@ class RhythmGame {
         this.ctx.save();
         this.ctx.globalAlpha = 0.3;
         
-        const barWidth = this.canvas.width / this.waveformData.length;
-        
-        for (let i = 0; i < this.waveformData.length; i++) {
+        const q = this.qualityPreset();
+        const sampleCount = Math.max(16, Math.round(this.waveformData.length * Math.min(1, q.waveform)));
+        const step = Math.max(1, Math.floor(this.waveformData.length / sampleCount));
+        const barWidth = this.canvas.width / (this.waveformData.length / step);
+        let drawIndex = 0;
+        for (let i = 0; i < this.waveformData.length; i += step) {
             const barHeight = (this.waveformData[i] / 255) * this.canvas.height * 0.5;
             
             // Gradient basé sur la fréquence
@@ -1647,11 +1715,12 @@ class RhythmGame {
             this.ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
             
             this.ctx.fillRect(
-                i * barWidth,
+                drawIndex * barWidth,
                 this.canvas.height - barHeight,
                 barWidth,
                 barHeight
             );
+            drawIndex++;
         }
         
         this.ctx.restore();
@@ -1718,15 +1787,15 @@ class RhythmGame {
             
             // Couleur et effet basés sur le type de note
             let noteColor = this.laneColors[note.lane];
-            let glowIntensity = 15;
+            let glowIntensity = 15 * this.qualityPreset().glow;
             let borderWidth = 2;
             
             if (note.type === 'strong') {
                 noteColor = '#FFD700'; // Or pour les notes fortes
-                glowIntensity = 25;
+                glowIntensity = 25 * this.qualityPreset().glow;
                 borderWidth = 3;
             } else if (note.type === 'medium') {
-                glowIntensity = 20;
+                glowIntensity = 20 * this.qualityPreset().glow;
                 borderWidth = 2.5;
             }
             

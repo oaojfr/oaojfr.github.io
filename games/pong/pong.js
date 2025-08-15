@@ -86,6 +86,10 @@ class PongGame {
             { name: 'Cyber Arena', tempo: 125, style: 'flowing', baseFreq: 104 },
             { name: 'Holographic Match', tempo: 135, style: 'hypnotic', baseFreq: 116 }
         ];
+
+    // Graphismes (Low/Medium/High)
+    this.graphics = this.initGraphics();
+    this._qualityToast = { text: '', shownUntil: 0 };
         
         this.initializeGame();
     }
@@ -111,12 +115,45 @@ class PongGame {
                     this.resumeGame();
                 }
             }
+
+            // Toggle quality
+            if (e.key && e.key.toLowerCase() === 'g') {
+                this.cycleQuality();
+            }
         });
         
         document.addEventListener('keyup', (e) => {
             this.keys[e.key.toLowerCase()] = false;
         });
     }
+
+    initGraphics() {
+        const saved = localStorage.getItem('pongQuality') || 'medium';
+        const presets = {
+            low:    { name: 'Low',    glow: 0.0, particles: 0.4, trail: 4, shadows: false },
+            medium: { name: 'Medium', glow: 0.6, particles: 0.8, trail: 8, shadows: true },
+            high:   { name: 'High',   glow: 1.0, particles: 1.0, trail: 12, shadows: true }
+        };
+        const level = ['low','medium','high'].includes(saved) ? saved : 'medium';
+        return { level, presets };
+    }
+
+    setQuality(level) {
+        if (!this.graphics.presets[level]) return;
+        this.graphics.level = level;
+        localStorage.setItem('pongQuality', level);
+        const p = this.graphics.presets[level];
+        this._qualityToast.text = `Graphics: ${p.name}`;
+        this._qualityToast.shownUntil = performance.now() + 1200;
+    }
+
+    cycleQuality() {
+        const order = ['low','medium','high'];
+        const idx = order.indexOf(this.graphics.level);
+        this.setQuality(order[(idx + 1) % order.length]);
+    }
+
+    qualityPreset() { return this.graphics.presets[this.graphics.level]; }
     
     startGame(mode) {
         console.log('Starting game with mode:', mode);
@@ -175,7 +212,7 @@ class PongGame {
         this.ball.y = this.canvas.height / 2;
         this.ball.dx = (Math.random() > 0.5 ? 1 : -1) * 5;
         this.ball.dy = (Math.random() - 0.5) * 6;
-        this.ball.trail = [];
+    this.ball.trail = [];
     }
     
     resetPaddles() {
@@ -358,6 +395,18 @@ class PongGame {
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             }
         }
+
+        // Toast qualité
+        if (performance && performance.now() < this._qualityToast.shownUntil) {
+            this.ctx.save();
+            this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            this.ctx.fillRect(10, 10, 160, 30);
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '14px Orbitron';
+            this.ctx.textAlign = 'left';
+            this.ctx.fillText(this._qualityToast.text, 20, 30);
+            this.ctx.restore();
+        }
     }
     
     renderBackground() {
@@ -375,14 +424,18 @@ class PongGame {
     renderPaddles() {
         // Paddle 1
         this.ctx.fillStyle = '#00ffff';
-        this.ctx.shadowColor = '#00ffff';
-        this.ctx.shadowBlur = 15;
+        if (this.qualityPreset().glow > 0) {
+            this.ctx.shadowColor = '#00ffff';
+            this.ctx.shadowBlur = 15 * this.qualityPreset().glow;
+        }
         this.ctx.fillRect(this.player1.x, this.player1.y, this.PADDLE_WIDTH, this.PADDLE_HEIGHT);
         
         // Paddle 2
         this.ctx.fillStyle = '#ff007f';
-        this.ctx.shadowColor = '#ff007f';
-        this.ctx.shadowBlur = 15;
+        if (this.qualityPreset().glow > 0) {
+            this.ctx.shadowColor = '#ff007f';
+            this.ctx.shadowBlur = 15 * this.qualityPreset().glow;
+        }
         this.ctx.fillRect(this.player2.x, this.player2.y, this.PADDLE_WIDTH, this.PADDLE_HEIGHT);
         
         this.ctx.shadowBlur = 0;
@@ -390,6 +443,8 @@ class PongGame {
     
     renderBall() {
         // Trail
+        const maxTrail = this.qualityPreset().trail;
+        while (this.ball.trail.length > maxTrail) this.ball.trail.shift();
         for (let i = 0; i < this.ball.trail.length; i++) {
             const trail = this.ball.trail[i];
             const alpha = (i / this.ball.trail.length) * 0.5;
@@ -403,8 +458,10 @@ class PongGame {
         
         // Balle
         this.ctx.fillStyle = '#39ff14';
-        this.ctx.shadowColor = '#39ff14';
-        this.ctx.shadowBlur = 20;
+        if (this.qualityPreset().glow > 0) {
+            this.ctx.shadowColor = '#39ff14';
+            this.ctx.shadowBlur = 20 * this.qualityPreset().glow;
+        }
         this.ctx.fillRect(this.ball.x - this.BALL_SIZE/2, this.ball.y - this.BALL_SIZE/2, this.BALL_SIZE, this.BALL_SIZE);
         
         this.ctx.shadowBlur = 0;

@@ -91,11 +91,15 @@ class SuperHexagon {
         
         // Multiplicateurs de vitesse selon la difficulté
         this.difficultySpeedMultipliers = {
-            easy: 1.0,      // Vitesse normale
-            normal: 1.15,   // 15% plus rapide
-            hard: 1.35,     // 35% plus rapide  
-            insane: 1.6     // 60% plus rapide (très intense)
+            easy: 1.0,
+            normal: 1.15,
+            hard: 1.35,
+            insane: 1.6
         };
+        
+        // Graphics quality presets
+        this.graphics = this.initGraphics();
+        this._qualityToast = { text: '', shownUntil: 0 };
         
         // Paramètres de difficulté (comme l'original)
         this.difficultySettings = {
@@ -177,6 +181,34 @@ class SuperHexagon {
         this.player.radius = this.HEX_RADIUS + 25; // Maintenir la distance rapprochée
     }
     
+    initGraphics() {
+        const saved = localStorage.getItem('hexagonQuality') || 'medium';
+        const presets = {
+            low:    { name: 'Low',    glow: 0.0, particles: 0.4, beams: 0.5, lines: 0.6 },
+            medium: { name: 'Medium', glow: 0.6, particles: 0.8, beams: 1.0, lines: 1.0 },
+            high:   { name: 'High',   glow: 1.0, particles: 1.0, beams: 1.2, lines: 1.2 }
+        };
+        const level = ['low','medium','high'].includes(saved) ? saved : 'medium';
+        return { level, presets };
+    }
+    
+    setQuality(level) {
+        if (!this.graphics.presets[level]) return;
+        this.graphics.level = level;
+        localStorage.setItem('hexagonQuality', level);
+        const p = this.qualityPreset();
+        this._qualityToast.text = `Graphics: ${p.name}`;
+        this._qualityToast.shownUntil = performance.now() + 1200;
+    }
+    
+    cycleQuality() {
+        const order = ['low','medium','high'];
+        const idx = order.indexOf(this.graphics.level);
+        this.setQuality(order[(idx + 1) % order.length]);
+    }
+    
+    qualityPreset() { return this.graphics.presets[this.graphics.level]; }
+    
     setupEventListeners() {
         // Variable pour tracker si l'audio a déjà été démarré suite à une interaction
         this.audioInitialized = false;
@@ -221,6 +253,11 @@ class SuperHexagon {
                 } else if (this.gameState === 'paused') {
                     this.resumeGame();
                 }
+            }
+            
+            // Toggle quality
+            if (e.key && e.key.toLowerCase() === 'g') {
+                this.cycleQuality();
             }
         });
         
@@ -426,12 +463,12 @@ class SuperHexagon {
     }
     
     createGameOverExplosion() {
-        // Explosion massive de particules depuis la position du joueur
         const playerX = this.CENTER_X + Math.cos(this.player.angle) * this.player.radius;
         const playerY = this.CENTER_Y + Math.sin(this.player.angle) * this.player.radius;
-        
-        for (let i = 0; i < 50; i++) {
-            const angle = (Math.PI * 2 / 50) * i;
+
+        const count = Math.max(12, Math.round(50 * this.qualityPreset().particles));
+        for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 / count) * i;
             const speed = Math.random() * 12 + 6;
             
             this.particles.push({
@@ -443,7 +480,7 @@ class SuperHexagon {
                 life: 60,
                 maxLife: 60,
                 opacity: 1,
-                color: `hsl(${Math.random() * 60}, 90%, 70%)` // Rouge/orange
+                color: `hsl(${Math.random() * 60}, 90%, 70%)`
             });
         }
     }
@@ -974,9 +1011,10 @@ class SuperHexagon {
     }
     
     addLightBeam() {
-        for (let i = 0; i < 8; i++) {
+        const beams = Math.max(3, Math.round(8 * this.qualityPreset().beams));
+        for (let i = 0; i < beams; i++) {
             this.lightBeams.push({
-                angle: (Math.PI * 2 / 8) * i,
+                angle: (Math.PI * 2 / beams) * i,
                 life: 30,
                 maxLife: 30,
                 width: Math.random() * 3 + 2,
@@ -1083,19 +1121,32 @@ class SuperHexagon {
         
         this.ctx.restore(); // Fin rotation du monde
         this.ctx.restore(); // Fin effets de caméra
+        
+        // Draw everything
+        // Quality toast
+        if (performance && performance.now() < this._qualityToast.shownUntil) {
+            this.ctx.save();
+            this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            this.ctx.fillRect(10, 10, 160, 30);
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '14px Orbitron';
+            this.ctx.textAlign = 'left';
+            this.ctx.fillText(this._qualityToast.text, 20, 30);
+            this.ctx.restore();
+        }
     }
     
     renderRotatingBackground() {
         this.ctx.save();
         this.ctx.translate(this.CENTER_X, this.CENTER_Y);
         this.ctx.rotate(this.backgroundRotation);
-        
-        // Lignes radiantes cyberpunk
+
         this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
         this.ctx.lineWidth = 1;
-        
-        for (let i = 0; i < 36; i++) {
-            const angle = (i / 36) * Math.PI * 2;
+        const lineCount = Math.max(12, Math.round(36 * this.qualityPreset().lines));
+
+        for (let i = 0; i < lineCount; i++) {
+            const angle = (i / lineCount) * Math.PI * 2;
             this.ctx.beginPath();
             this.ctx.moveTo(0, 0);
             this.ctx.lineTo(Math.cos(angle) * this.canvas.width, Math.sin(angle) * this.canvas.width);

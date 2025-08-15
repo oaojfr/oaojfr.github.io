@@ -91,8 +91,46 @@ class ModernBreakout {
             { name: 'Cyber Bounce', tempo: 128, style: 'groove', baseFreq: 185 },
             { name: 'Electric Wave', tempo: 142, style: 'wave', baseFreq: 247 }
         ];
+
+        // Graphismes (Low/Medium/High)
+        this.graphics = this.initGraphics();
+        this._qualityToast = { text: '', shownUntil: 0 };
         
         this.init();
+    }
+
+    initGraphics() {
+        const saved = localStorage.getItem('breakoutQuality') || 'medium';
+        const presets = {
+            low:    { name: 'Low',    glow: 0.0, particles: 0.4, trail: 3, shadows: false },
+            medium: { name: 'Medium', glow: 0.5, particles: 0.7, trail: 6, shadows: true },
+            high:   { name: 'High',   glow: 1.0, particles: 1.0, trail: 8, shadows: true }
+        };
+        const level = ['low','medium','high'].includes(saved) ? saved : 'medium';
+        return { level, presets };
+    }
+    
+    setQuality(level) {
+        if (!this.graphics.presets[level]) return;
+        this.graphics.level = level;
+        localStorage.setItem('breakoutQuality', level);
+        this.showQualityToast();
+    }
+    
+    cycleQuality() {
+        const order = ['low','medium','high'];
+        const idx = order.indexOf(this.graphics.level);
+        this.setQuality(order[(idx + 1) % order.length]);
+    }
+    
+    qualityPreset() {
+        return this.graphics.presets[this.graphics.level];
+    }
+    
+    showQualityToast() {
+        const p = this.qualityPreset();
+        this._qualityToast.text = `Graphics: ${p.name}`;
+        this._qualityToast.shownUntil = performance.now() + 1200;
     }
     
     init() {
@@ -138,6 +176,11 @@ class ModernBreakout {
                 if (this.gameState === 'playing' || this.gameState === 'paused') {
                     this.showMenu();
                 }
+            }
+
+            // Toggle quality
+            if (e.key.toLowerCase() === 'g') {
+                this.cycleQuality();
             }
         });
         
@@ -355,7 +398,8 @@ class ModernBreakout {
                 
                 // Trail
                 ball.trail.push({ x: ball.x, y: ball.y });
-                if (ball.trail.length > 8) {
+                const maxTrail = this.qualityPreset().trail;
+                if (ball.trail.length > maxTrail) {
                     ball.trail.shift();
                 }
                 
@@ -655,7 +699,8 @@ class ModernBreakout {
     }
     
     createImpactParticles(x, y, color) {
-        for (let i = 0; i < 5; i++) {
+    const count = Math.max(1, Math.round(5 * this.qualityPreset().particles));
+    for (let i = 0; i < count; i++) {
             this.particles.push({
                 x: x,
                 y: y,
@@ -670,7 +715,8 @@ class ModernBreakout {
     }
     
     createBrickParticles(x, y, color) {
-        for (let i = 0; i < 12; i++) {
+    const count = Math.max(2, Math.round(12 * this.qualityPreset().particles));
+    for (let i = 0; i < count; i++) {
             this.particles.push({
                 x: x,
                 y: y,
@@ -685,7 +731,8 @@ class ModernBreakout {
     }
     
     createPowerUpParticles(x, y) {
-        for (let i = 0; i < 20; i++) {
+    const count = Math.max(3, Math.round(20 * this.qualityPreset().particles));
+    for (let i = 0; i < count; i++) {
             this.particles.push({
                 x: x,
                 y: y,
@@ -971,6 +1018,18 @@ class ModernBreakout {
         if (this.balls.some(ball => ball.stuck)) {
             this.drawInstructions();
         }
+
+        // Toast qualité
+        if (performance && performance.now() < this._qualityToast.shownUntil) {
+            this.ctx.save();
+            this.ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            this.ctx.fillRect(10, 10, 160, 30);
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '14px Orbitron';
+            this.ctx.textAlign = 'left';
+            this.ctx.fillText(this._qualityToast.text, 20, 30);
+            this.ctx.restore();
+        }
     }
     
     drawBricks() {
@@ -978,18 +1037,22 @@ class ModernBreakout {
             if (!brick.visible) return;
             
             // Ombre
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            this.ctx.fillRect(brick.x + 2, brick.y + 2, brick.width, brick.height);
+            if (this.qualityPreset().shadows) {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                this.ctx.fillRect(brick.x + 2, brick.y + 2, brick.width, brick.height);
+            }
             
             // Brique principale
             this.ctx.fillStyle = brick.color;
             this.ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
             
             // Effet de glow
-            this.ctx.shadowColor = brick.color;
-            this.ctx.shadowBlur = 10;
-            this.ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
-            this.ctx.shadowBlur = 0;
+            if (this.qualityPreset().glow > 0) {
+                this.ctx.shadowColor = brick.color;
+                this.ctx.shadowBlur = 10 * this.qualityPreset().glow;
+                this.ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                this.ctx.shadowBlur = 0;
+            }
             
             // Bordure brillante
             if (brick.hits < brick.maxHits) {
@@ -1008,8 +1071,10 @@ class ModernBreakout {
     
     drawPaddle() {
         // Ombre
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        this.ctx.fillRect(this.paddle.x + 2, this.paddle.y + 2, this.paddle.width, this.paddle.height);
+        if (this.qualityPreset().shadows) {
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            this.ctx.fillRect(this.paddle.x + 2, this.paddle.y + 2, this.paddle.width, this.paddle.height);
+        }
         
         // Raquette principale
         const gradient = this.ctx.createLinearGradient(this.paddle.x, this.paddle.y, this.paddle.x, this.paddle.y + this.paddle.height);
@@ -1020,10 +1085,12 @@ class ModernBreakout {
         this.ctx.fillRect(this.paddle.x, this.paddle.y, this.paddle.width, this.paddle.height);
         
         // Effet de glow
-        this.ctx.shadowColor = '#ff6600';
-        this.ctx.shadowBlur = 15;
-        this.ctx.fillRect(this.paddle.x, this.paddle.y, this.paddle.width, this.paddle.height);
-        this.ctx.shadowBlur = 0;
+        if (this.qualityPreset().glow > 0) {
+            this.ctx.shadowColor = '#ff6600';
+            this.ctx.shadowBlur = 15 * this.qualityPreset().glow;
+            this.ctx.fillRect(this.paddle.x, this.paddle.y, this.paddle.width, this.paddle.height);
+            this.ctx.shadowBlur = 0;
+        }
         
         // Lignes de détail
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
@@ -1053,15 +1120,19 @@ class ModernBreakout {
             this.ctx.globalAlpha = 1;
             
             // Ombre
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            this.ctx.beginPath();
-            this.ctx.arc(ball.x + 2, ball.y + 2, ball.size, 0, Math.PI * 2);
-            this.ctx.fill();
+            if (this.qualityPreset().shadows) {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                this.ctx.beginPath();
+                this.ctx.arc(ball.x + 2, ball.y + 2, ball.size, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
             
             // Balle principale
             this.ctx.fillStyle = '#ffffff';
-            this.ctx.shadowColor = '#ffffff';
-            this.ctx.shadowBlur = 15;
+            if (this.qualityPreset().glow > 0) {
+                this.ctx.shadowColor = '#ffffff';
+                this.ctx.shadowBlur = 15 * this.qualityPreset().glow;
+            }
             this.ctx.beginPath();
             this.ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
             this.ctx.fill();
@@ -1082,15 +1153,21 @@ class ModernBreakout {
             this.ctx.rotate(powerUp.rotation);
             
             // Ombre
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            this.ctx.fillRect(-powerUp.size / 2 + 2, -powerUp.size / 2 + 2, powerUp.size, powerUp.size);
+            if (this.qualityPreset().shadows) {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                this.ctx.fillRect(-powerUp.size / 2 + 2, -powerUp.size / 2 + 2, powerUp.size, powerUp.size);
+            }
             
             // Power-up principal
             this.ctx.fillStyle = powerUp.color;
-            this.ctx.shadowColor = powerUp.color;
-            this.ctx.shadowBlur = 10;
-            this.ctx.fillRect(-powerUp.size / 2, -powerUp.size / 2, powerUp.size, powerUp.size);
-            this.ctx.shadowBlur = 0;
+            if (this.qualityPreset().glow > 0) {
+                this.ctx.shadowColor = powerUp.color;
+                this.ctx.shadowBlur = 10 * this.qualityPreset().glow;
+                this.ctx.fillRect(-powerUp.size / 2, -powerUp.size / 2, powerUp.size, powerUp.size);
+                this.ctx.shadowBlur = 0;
+            } else {
+                this.ctx.fillRect(-powerUp.size / 2, -powerUp.size / 2, powerUp.size, powerUp.size);
+            }
             
             // Symbole
             this.ctx.fillStyle = '#000000';
@@ -1107,8 +1184,10 @@ class ModernBreakout {
         this.particles.forEach(particle => {
             this.ctx.globalAlpha = particle.alpha;
             this.ctx.fillStyle = particle.color;
-            this.ctx.shadowColor = particle.color;
-            this.ctx.shadowBlur = 5;
+            if (this.qualityPreset().glow > 0) {
+                this.ctx.shadowColor = particle.color;
+                this.ctx.shadowBlur = 5 * this.qualityPreset().glow;
+            }
             
             this.ctx.beginPath();
             this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
