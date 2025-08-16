@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SEO Meta Tags -->
     <title>Pong - João</title>
     <meta name="description" content="Jeu Pong classique avec style cyberpunk">
     <meta name="keywords" content="pong, jeu rétro, cyberpunk, neon, javascript">
@@ -12,20 +11,20 @@
     <meta name="robots" content="index, follow">
     <meta name="language" content="fr">
     
-    <!-- Alternate language versions -->
+    
     <link rel="alternate" href="../../games/pong/index.html" hreflang="fr">
     <link rel="alternate" href="../../games/pong/index.html" hreflang="en">
     <link rel="alternate" href="../../games/pong/index.html" hreflang="pt">
     <link rel="alternate" href="../../games/pong/index.html" hreflang="x-default">
     
-    <!-- Favicon -->
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏓</text></svg>">
     
-    <!-- Bootstrap CSS -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Google Fonts -->
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400;700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -354,7 +353,7 @@
             box-shadow: none;
         }
 
-        /* Responsive */
+        
         @media (max-width: 768px) {
             .game-title { font-size: 1.5rem; }
             .game-stats { font-size: 1.2rem; gap: 20px; }
@@ -397,7 +396,7 @@
     <div class="game-container">
         <canvas id="gameCanvas" width="800" height="500"></canvas>
 
-        <!-- Menu Principal -->
+        
         <div class="menu-overlay" id="menuOverlay">
             <div class="menu-title">🏓 PONG</div>
             <div style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
@@ -410,7 +409,7 @@
             </div>
         </div>
 
-        <!-- Pause -->
+        
         <div class="pause-overlay" id="pauseOverlay">
             <div class="pause-content">
                 <h2 style="color: var(--neon-cyan); margin-bottom: 20px;">⏸️ <span data-translate="pause">PAUSE</span></h2>
@@ -419,7 +418,7 @@
             </div>
         </div>
 
-        <!-- Game Over -->
+        
         <div class="game-over-overlay" id="gameOverOverlay">
             <div class="game-over-content">
                 <div class="winner-text" id="winnerText" data-translate="victory">🏆 VICTOIRE!</div>
@@ -436,20 +435,20 @@
         </div>
     </div>
 
-    <!-- Game Footer -->
+    
     <div class="game-footer">
-        <!-- Home Button -->
+        
         <a href="../../games.html" class="home-button">
             <i class="bi bi-arrow-left-circle-fill"></i>
             <span data-translate="nav.games">Jeux</span>
         </a>
 
-        <!-- Music Toggle -->
+        
         <button class="music-toggle" onclick="game.toggleMusic()" id="musicToggle">
             <i class="bi bi-music-note-beamed" id="musicIcon"></i>
         </button>
 
-        <!-- Language Selector -->
+        
         <div class="language-selector">
             <div class="dropdown">
                 <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -464,10 +463,10 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Translation Script -->
+    
     <script>
         const translations = {
             fr: {
@@ -545,7 +544,7 @@
         });
     </script>
 
-    <!-- Game Script -->
+    
     <script src="pong.js"></script>
 </body>
 </html>

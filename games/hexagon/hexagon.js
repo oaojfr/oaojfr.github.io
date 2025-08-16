@@ -62,6 +62,7 @@ class SuperHexagon {
         this.lightBeams = [];
         this.backgroundPulse = 0;
         this.colorShift = 0;
+    this.backgroundRotation = 0;
         
         // Sons d'effets (optionnel)
         this.lastBeepTime = 0;
@@ -298,10 +299,9 @@ class SuperHexagon {
         if (targetBtn) targetBtn.classList.add('active');
         
         // Mettre à jour la vitesse de la musique si elle est en cours
-        if (this.audioElement && !this.audioElement.paused) {
+    if (this.audioElement && !this.audioElement.paused) {
             const tempoMultiplier = this.difficultySpeedMultipliers[this.difficulty] || 1.0;
             this.audioElement.playbackRate = tempoMultiplier;
-            console.log(`🎵 Vitesse de musique mise à jour: x${tempoMultiplier} (difficulté: ${this.difficulty})`);
         }
         
         this.updateBestTimeDisplay();
@@ -347,9 +347,6 @@ class SuperHexagon {
         
         // Démarrer la musique
         if (this.musicEnabled) {
-            console.log('🎮 Tentative de démarrage de la musique...');
-            console.log('🎵 État de l\'élément audio:', this.audioElement ? 'présent' : 'absent');
-            console.log('🎵 Musique activée:', this.musicEnabled);
             
             // Reprendre le contexte audio si nécessaire
             if (this.audioContext && this.audioContext.state === 'suspended') {
@@ -357,14 +354,11 @@ class SuperHexagon {
             }
             this.startMusic();
         } else {
-            console.log('🔇 Musique désactivée');
+            // Musique désactivée
         }
         
-        this.hideAllOverlays();
-        this.updateDisplay();
-        
-        // Démarrer la musique
-        this.startMusic();
+    this.hideAllOverlays();
+    this.updateDisplay();
     }
     
     pauseGame() {
@@ -459,7 +453,7 @@ class SuperHexagon {
             setTimeout(() => this.addLightBeam(), i * 100);
         }
         
-        console.log('💥 GAME OVER - Effets déclenchés!');
+    // Effets déclenchés
     }
     
     createGameOverExplosion() {
@@ -492,16 +486,14 @@ class SuperHexagon {
                 await this.loadMusicFile();
             }
         } catch (error) {
-            console.log('Erreur lors de l\'initialisation audio:', error);
+            console.error('Erreur lors de l\'initialisation audio:', error);
             this.musicEnabled = false;
         }
     }
     
     async loadMusicFile() {
         try {
-            console.log('🎵 Chargement de la musique Super Hexagon...');
-            console.log('📁 Chemin du fichier:', this.musicFile);
-            
+            // Chargement de la musique Super Hexagon
             // Utiliser seulement l'élément audio HTML pour éviter les problèmes CORS en local
             this.audioElement = new Audio(this.musicFile);
             this.audioElement.loop = true;
@@ -511,8 +503,6 @@ class SuperHexagon {
             // Attendre que l'audio soit prêt
             return new Promise((resolve, reject) => {
                 this.audioElement.addEventListener('canplaythrough', () => {
-                    console.log('✅ Musique chargée avec succès!');
-                    console.log('🎵 Durée:', this.audioElement.duration, 'secondes');
                     resolve();
                 });
                 
@@ -521,14 +511,6 @@ class SuperHexagon {
                     console.error('❌ Type d\'erreur:', this.audioElement.error);
                     this.musicEnabled = false;
                     reject(e);
-                });
-                
-                this.audioElement.addEventListener('loadstart', () => {
-                    console.log('📥 Début du chargement...');
-                });
-                
-                this.audioElement.addEventListener('progress', () => {
-                    console.log('📊 Progression du chargement...');
                 });
                 
                 // Déclencher le chargement
@@ -550,16 +532,13 @@ class SuperHexagon {
             this.audioElement.playbackRate = tempoMultiplier;
             this.audioElement.volume = this.musicVolume;
             
-            console.log(`🎵 Lancement de la musique Super Hexagon (vitesse: x${tempoMultiplier} - difficulté: ${this.difficulty})`);
-            
             // Démarrer la lecture
             const playPromise = this.audioElement.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
-                    console.log('✅ Musique démarrée avec succès');
                     this.updateMusicButton();
                 }).catch(error => {
-                    console.log('⚠️ Interaction utilisateur requise pour jouer l\'audio:', error.name);
+                    // Interaction utilisateur requise pour jouer l'audio
                     // Programmer un retry à la prochaine interaction
                     this.audioInitialized = false;
                 });
@@ -630,19 +609,17 @@ class SuperHexagon {
                 // Essayer de reprendre le contexte audio si nécessaire
                 if (this.audioContext && this.audioContext.state === 'suspended') {
                     this.audioContext.resume().then(() => {
-                        console.log('✅ Contexte audio repris');
                     });
                 }
                 
                 // Si le jeu est en cours, démarrer la musique
                 if (this.gameState === 'playing' && this.audioElement.paused) {
                     this.startMusic();
-                    console.log('🎵 Musique démarrée suite à interaction utilisateur');
                 }
                 
                 this.audioInitialized = true;
             } catch (error) {
-                console.log('Note: Interaction utilisateur nécessaire pour l\'audio:', error);
+                console.warn('Interaction utilisateur nécessaire pour l\'audio:', error);
             }
         }
     }
@@ -741,13 +718,6 @@ class SuperHexagon {
                 
                 // Collision uniquement si le joueur entre dans l'épaisseur du mur
                 if (playerDistance >= wallInnerEdge && playerDistance <= wallOuterEdge + this.player.size) {
-                    console.log('Collision detected!', {
-                        currentSegment,
-                        wallSegment: wall.segment,
-                        playerDistance,
-                        wallInnerEdge,
-                        wallOuterEdge
-                    });
                     this.gameOver();
                     return;
                 }
@@ -941,8 +911,6 @@ class SuperHexagon {
         
         // Effets visuels spectaculaires lors du changement
         this.triggerDirectionChangeEffect();
-        
-        console.log(`🔄 Changement de direction! Nouvelle direction: ${this.rotationDirection > 0 ? 'Droite' : 'Gauche'}`);
     }
     
     triggerDirectionChangeEffect() {
@@ -989,6 +957,8 @@ class SuperHexagon {
         
         // Décalage de couleur progressif
         this.colorShift = (this.time * 30) % 360;
+    // Rotation de fond douce
+    this.backgroundRotation += 0.002 * this.rotationDirection;
         
         // Mise à jour des rayons de lumière
         this.updateLightBeams();

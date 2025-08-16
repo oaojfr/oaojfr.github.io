@@ -3,11 +3,8 @@
  * Modes 1 joueur (vs IA) et 2 joueurs avec design cyberpunk
  */
 
-console.log('Starting Pong script load...');
-
 class PongGame {
     constructor() {
-        console.log('Creating PongGame instance...');
         this.canvas = document.getElementById('gameCanvas');
         if (!this.canvas) {
             console.error('Canvas not found!');
@@ -91,11 +88,10 @@ class PongGame {
     this.graphics = this.initGraphics();
     this._qualityToast = { text: '', shownUntil: 0 };
         
-        this.initializeGame();
+    this.initializeGame();
     }
     
     initializeGame() {
-        console.log('Initializing game...');
         this.setupEventListeners();
         this.initAudio();
         this.updateMusicButton();
@@ -156,7 +152,6 @@ class PongGame {
     qualityPreset() { return this.graphics.presets[this.graphics.level]; }
     
     startGame(mode) {
-        console.log('Starting game with mode:', mode);
         this.gameMode = mode;
         this.gameState = 'playing';
         this.score = { player1: 0, player2: 0 };
@@ -498,7 +493,7 @@ class PongGame {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.createSounds();
         } catch (e) {
-            console.log('Audio non supporté');
+            console.warn('Audio non supporté');
         }
     }
     
@@ -544,8 +539,6 @@ class PongGame {
         
         this.music.currentTrackIndex = randomIndex;
         const selectedTrack = this.musicTracks[randomIndex];
-        
-        console.log(`🏓 Musique Pong: ${selectedTrack.name} (${selectedTrack.tempo} BPM - ${selectedTrack.style})`);
         
         this.music.currentTrack = this.createBackgroundMusic(selectedTrack);
         this.music.isPlaying = true;
@@ -689,7 +682,6 @@ class PongGame {
 
 // Fonctions globales pour l'interface
 function startGame(mode) {
-    console.log('Global startGame called with mode:', mode);
     if (window.game) {
         window.game.startGame(mode);
     } else {
@@ -698,21 +690,18 @@ function startGame(mode) {
 }
 
 function resumeGame() {
-    console.log('Global resumeGame called');
     if (window.game) {
         window.game.resumeGame();
     }
 }
 
 function restartGame() {
-    console.log('Global restartGame called');
     if (window.game) {
         window.game.restartGame();
     }
 }
 
 function showMenu() {
-    console.log('Global showMenu called');
     if (window.game) {
         window.game.showMenu();
     }
@@ -720,13 +709,10 @@ function showMenu() {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, creating Pong game...');
     try {
         window.game = new PongGame();
-        console.log('Pong game created successfully:', !!window.game);
     } catch (error) {
         console.error('Error creating Pong game:', error);
     }
 });
 
-console.log('Pong script loaded successfully');

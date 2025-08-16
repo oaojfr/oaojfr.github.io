@@ -215,7 +215,7 @@ class ModernBreakout {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.createSounds();
         } catch (e) {
-            console.log('Audio non supporté');
+            console.warn('Audio non supporté');
         }
     }
     
@@ -824,8 +824,6 @@ class ModernBreakout {
         
         this.music.currentTrackIndex = randomIndex;
         const selectedTrack = this.musicTracks[randomIndex];
-        
-        console.log(`🧱 Musique Breakout: ${selectedTrack.name} (${selectedTrack.tempo} BPM - ${selectedTrack.style})`);
         
         this.music.currentTrack = this.createBackgroundMusic(selectedTrack);
         this.music.isPlaying = true;

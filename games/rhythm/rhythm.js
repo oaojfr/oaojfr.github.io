@@ -39,7 +39,7 @@ class RhythmGame {
         // Configuration avancée du gameplay
         this.audioOffset = 0; // Calibration audio en ms
         this.noteStreakBonus = 1; // Multiplicateur de streak
-        this.feverMode = false; // Mode fever temporaire
+    this.feverMode = false;
         this.feverTime = 0; // Temps restant en fever mode
         
         // Système de sauvegarde
@@ -110,7 +110,7 @@ class RhythmGame {
         this.backgroundPulse = 0;
         this.waveformData = [];
         this.screenShake = 0;
-        this.trails = []; // Traînées des notes
+    this.trails = [];
         this.backgroundBeats = []; // Effets de background réactifs
 
     // Graphics quality presets and toast
@@ -232,7 +232,7 @@ class RhythmGame {
         const container = this.canvas.parentElement;
         const rect = container.getBoundingClientRect();
         
-        // Garder un ratio 16:9 avec une taille maximale
+    // Conserve 16:9 ratio within bounds
         const maxWidth = Math.min(1200, rect.width - 40);
         const maxHeight = Math.min(700, rect.height - 40);
         
@@ -370,7 +370,7 @@ class RhythmGame {
             this.updateProcessingText('Chargement du fichier audio...');
             this.updateProgress(0, 'Chargement...', null);
             
-            // Initialiser AudioContext
+            // Init AudioContext
             if (!this.audioContext) {
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
@@ -406,7 +406,7 @@ class RhythmGame {
             console.log(`🎯 ${this.notes.length} notes générées`);
             this.updateProcessingText(`Prêt ! ${this.notes.length} notes générées`);
             
-            // Petit délai pour montrer le résultat
+            // Small delay to show the result
             await new Promise(resolve => setTimeout(resolve, 1000));
             
             // Démarrer le jeu
@@ -463,66 +463,156 @@ class RhythmGame {
     }
     
     async analyzeAudioAndGenerateNotes() {
-        console.log('🔬 Analyse audio avancée en cours...');
-        this.updateProgress(5, 'Initialisation de l\'analyse...', 1);
-        
-        // 1. Détection automatique du BPM (optimisée)
-        this.updateProcessingText('🥁 Détection du BPM automatique...');
+        this.updateProgress(5, "Initialisation de l'analyse...", 1);
+
+        // 1) BPM detection
+        this.updateProcessingText('Détection du BPM...');
         this.updateProgress(15, 'Détection du BPM...', 1);
         this.bpm = await this.detectBPMOptimized();
         this.beatInterval = 60 / this.bpm;
-        console.log(`🥁 BPM détecté: ${this.bpm} (${this.beatInterval.toFixed(2)}s par beat)`);
-        
-        // 2. Analyse audio simplifiée mais efficace
-        this.updateProcessingText('📊 Analyse du signal audio...');
-        this.updateProgress(35, 'Analyse des fréquences...', 2);
-        const audioAnalysis = await this.performSimplifiedAnalysis();
-        console.log('📊 Analyse audio terminée');
-        
-        // 3. Génération des beats basée sur l'énergie
-        this.updateProcessingText('🎯 Détection des beats musicaux...');
-        this.updateProgress(60, 'Génération des beats...', 3);
-        const beats = this.generateBeatsFromAnalysis(audioAnalysis);
-        console.log(`🎯 ${beats.length} beats générés`);
-        
-        // 4. Création des notes
-        this.updateProcessingText('🎼 Génération des notes de jeu...');
+
+        // 2) Simplified analysis (band energies)
+        this.updateProcessingText('Analyse du signal audio...');
+        this.updateProgress(35, 'Analyse du signal...', 2);
+        const analysis = await this.performSimplifiedAnalysis();
+
+        // 3) Spectral flux + onset picking + grid snapping
+        this.updateProcessingText('Détection des attaques...');
+        this.updateProgress(60, 'Détection des attaques...', 3);
+        const fluxFrames = this.computeFluxFromAnalysis(analysis);
+        const onsets = this.pickOnsetsFromFlux(fluxFrames, this.bpm);
+        const snappedOnsets = this.snapOnsetsToBeatGrid(onsets, this.bpm);
+
+        // 4) Notes from onsets
+        this.updateProcessingText('Génération des notes...');
         this.updateProgress(80, 'Création des notes...', 4);
-        this.notes = this.createNotesFromBeats(beats);
-        
-        // 5. Application de la difficulté
-        this.updateProcessingText(`⚙️ Adaptation au niveau ${this.difficultySettings[this.difficulty].name}...`);
+        this.notes = this.createNotesFromOnsets(snappedOnsets, analysis);
+
+        // 5) Difficulty and finalize
+        this.updateProcessingText(`Adaptation au niveau ${this.difficultySettings[this.difficulty].name}...`);
         this.updateProgress(95, 'Finalisation...', 4);
         this.applyDifficultyFilter();
-        
-        // Trier les notes par temps
+
         this.notes.sort((a, b) => a.time - b.time);
         this.totalNotes = this.notes.length;
-        
-        // S'assurer que toutes les notes ont la propriété 'spawned'
-        this.notes.forEach(note => {
-            if (note.spawned === undefined) {
-                note.spawned = false;
+        this.notes.forEach(n => { if (n.spawned === undefined) n.spawned = false; });
+
+        this.updateProgress(100, 'Terminé !', 4);
+    }
+    
+    // Compute simplified spectral flux (positive deltas across bands)
+    computeFluxFromAnalysis(analysis) {
+        const frames = [];
+        let prev = null;
+        for (let i = 0; i < analysis.length; i++) {
+            const a = analysis[i];
+            if (prev) {
+                const dLow = Math.max(0, a.low - prev.low);
+                const dMid = Math.max(0, a.mid - prev.mid);
+                const dHigh = Math.max(0, a.high - prev.high);
+                const flux = dLow + dMid + dHigh;
+                frames.push({ time: a.time, flux, dLow, dMid, dHigh });
+            }
+            prev = a;
+        }
+        return frames;
+    }
+
+    // Pick onsets with adaptive threshold and BPM-based min interval
+    pickOnsetsFromFlux(frames, bpm) {
+        if (!frames.length) return [];
+        const win = 32;
+        const k = 1.0;
+        const minInterval = Math.max(0.1, (60 / bpm) * 0.5);
+        const onsets = [];
+        let lastOnset = -Infinity;
+        for (let i = 2; i < frames.length - 2; i++) {
+            const start = Math.max(0, i - win);
+            const end = Math.min(frames.length, i + win);
+            let sum = 0, sum2 = 0, n = 0;
+            for (let j = start; j < end; j++) { sum += frames[j].flux; sum2 += frames[j].flux * frames[j].flux; n++; }
+            const mean = sum / n;
+            const std = Math.sqrt(Math.max(0, (sum2 / n) - mean * mean));
+            const thr = mean + k * std;
+            const f = frames[i].flux;
+            if (f > thr && f > frames[i-1].flux && f >= frames[i+1].flux) {
+                const t = frames[i].time;
+                if (t - lastOnset >= minInterval) {
+                    onsets.push({ time: t, flux: f, i });
+                    lastOnset = t;
+                }
+            }
+        }
+        return onsets;
+    }
+
+    // Slightly snap onsets to a BPM grid if close
+    snapOnsetsToBeatGrid(onsets, bpm) {
+        if (!onsets.length) return onsets;
+        const beat = 60 / bpm;
+        const tol = Math.min(0.08, beat * 0.25);
+        let bestPhase = 0, bestScore = -1;
+        const steps = 16;
+        for (let s = 0; s < steps; s++) {
+            const phase = (s / steps) * beat;
+            let score = 0;
+            for (const o of onsets) {
+                const k = Math.round((o.time - phase) / beat);
+                const grid = phase + k * beat;
+                if (Math.abs(o.time - grid) <= tol) score++;
+            }
+            if (score > bestScore) { bestScore = score; bestPhase = phase; }
+        }
+        return onsets.map(o => {
+            const k = Math.round((o.time - bestPhase) / beat);
+            const grid = bestPhase + k * beat;
+            if (Math.abs(o.time - grid) <= tol) return { ...o, time: grid };
+            return o;
+        });
+    }
+
+    // Create notes from onsets using band energies to choose lanes
+    createNotesFromOnsets(onsets, analysis) {
+        const notes = [];
+        const getFrameNear = (t) => {
+            let lo = 0, hi = analysis.length - 1;
+            while (lo <= hi) { const mid = (lo + hi) >> 1; if (analysis[mid].time < t) lo = mid + 1; else hi = mid - 1; }
+            const idx = Math.max(0, Math.min(analysis.length - 1, lo));
+            return analysis[idx];
+        };
+        onsets.forEach((o, idx) => {
+            const frame = getFrameNear(o.time);
+            const low = frame.low, mid = frame.mid, high = frame.high;
+            const maxE = Math.max(low, mid, high) || 1e-6;
+            const lanes = [];
+            const th = 0.6 * maxE;
+            if (low > th) lanes.push(0);
+            if (mid > th) lanes.push(1);
+            if (high > th) lanes.push(3);
+            if (lanes.length === 0) lanes.push(mid >= high ? 1 : 3);
+            const selected = lanes.slice(0, 2);
+            selected.forEach(lane => {
+                const energy = (low + mid + high) / 3;
+                notes.push({
+                    time: o.time,
+                    lane,
+                    hit: false,
+                    y: -this.noteHeight,
+                    intensity: energy,
+                    spawned: false,
+                    type: energy > 0.8 ? 'strong' : energy > 0.6 ? 'medium' : 'weak',
+                    isHold: false,
+                    holdDuration: 0,
+                    holdProgress: 0,
+                    isHolding: false
+                });
+            });
+            if (idx % 50 === 0) {
+                const p = 80 + (idx / onsets.length) * 15;
+                this.updateProgress(p, 'Création des notes...', 4);
             }
         });
-        
-        this.updateProgress(100, 'Terminé !', 4);
-        console.log(`🎼 Analyse terminée: ${this.notes.length} notes générées pour le niveau ${this.difficultySettings[this.difficulty].name}`);
-        
-        // Debug final: afficher quelques notes
-        if (this.notes.length > 0) {
-            console.log('📋 Résumé des notes générées:');
-            console.log(`   Total: ${this.notes.length} notes`);
-            console.log(`   Première note: time=${this.notes[0].time.toFixed(2)}s, lane=${this.notes[0].lane}`);
-            console.log(`   Dernière note: time=${this.notes[this.notes.length-1].time.toFixed(2)}s, lane=${this.notes[this.notes.length-1].lane}`);
-            
-            // Compter les notes par lane
-            const laneCount = [0, 0, 0, 0];
-            this.notes.forEach(note => laneCount[note.lane]++);
-            console.log(`   Distribution: F=${laneCount[0]}, G=${laneCount[1]}, J=${laneCount[2]}, K=${laneCount[3]}`);
-        } else {
-            console.error('❌ AUCUNE NOTE GÉNÉRÉE !');
-        }
+        return notes;
     }
     
     async detectBPMOptimized() {
@@ -618,7 +708,7 @@ class RhythmGame {
             if (processedWindows % (isLongFile ? 50 : 100) === 0) {
                 const progress = 35 + (processedWindows / totalWindows) * 25;
                 this.updateProgress(progress, `Analyse ${isLongFile ? 'rapide' : 'complète'}...`, 2);
-                await new Promise(resolve => setTimeout(resolve, 1)); // Permettre le rendu
+                await new Promise(resolve => setTimeout(resolve, 1));
             }
         }
         
@@ -689,7 +779,7 @@ class RhythmGame {
                             high: current.high
                         });
                         
-                        // Debug log pour les premiers beats
+                        
                         if (beats.length <= 10) {
                             console.log(`Beat ${beats.length}: time=${current.time.toFixed(2)}s, energy=${current.energy.toFixed(3)}`);
                         }
@@ -757,11 +847,11 @@ class RhythmGame {
                     isHold: isHoldNote,
                     holdDuration: holdDuration,
                     holdProgress: 0, // Pour les notes longues
-                    isHolding: false // État de maintien
+                    isHolding: false
                 });
             });
             
-            // Debug log périodique
+            
             if (index % 20 === 0) {
                 console.log(`Note ${index}: time=${beat.time.toFixed(2)}s, lanes=${selectedLanes}, energy=${beat.energy.toFixed(3)}`);
                 const progress = 80 + (index / beats.length) * 15;
@@ -897,7 +987,7 @@ class RhythmGame {
             }
             
             if (energyHistory.length >= historySize) {
-                // Calculer la moyenne et variance locale
+                // Compute local mean and variance
                 const mean = energyHistory.reduce((a, b) => a + b) / energyHistory.length;
                 const variance = energyHistory.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / energyHistory.length;
                 const threshold = mean + Math.sqrt(variance) * 1.5;
@@ -950,7 +1040,7 @@ class RhythmGame {
         if (bands.bass > threshold) lanes.push(0); // F - Basse
         if (bands.lowMid > threshold) lanes.push(1); // G - Médium bas
         if (bands.highMid > threshold) lanes.push(2); // J - Médium haut  
-        if (bands.treble > threshold) lanes.push(3); // K - Aigus
+    if (bands.treble > threshold) lanes.push(3);
         
         // S'assurer qu'au moins une lane est active
         if (lanes.length === 0) {
@@ -1097,7 +1187,7 @@ class RhythmGame {
         document.getElementById('bpmDisplay').textContent = `BPM: ${this.bpm}`;
         document.getElementById('difficultyDisplay').textContent = this.difficultySettings[this.difficulty].name;
         
-        // Debug: vérifier les notes
+        
         console.log(`🎮 Démarrage du jeu avec ${this.notes.length} notes`);
         if (this.notes.length > 0) {
             console.log('Premières notes:');
@@ -1158,7 +1248,7 @@ class RhythmGame {
         this.sourceNode.connect(this.analyser);
         this.analyser.connect(this.audioContext.destination);
         
-        // Reprendre là où on s'était arrêté
+    // Resume from where we left off
         this.sourceNode.start(0, this.currentTime);
         this.startTime = this.audioContext.currentTime - this.currentTime;
         this.isPlaying = true;
@@ -1246,9 +1336,10 @@ class RhythmGame {
     }
     
     spawnNotes() {
-        const spawnTime = this.currentTime + (this.canvas.height / this.noteSpeed); // Temps pour traverser l'écran
-        
-        // Chercher les notes à spawner
+        // Align spawn so the note arrives at hit zone when its time occurs
+        const speed = this.gameSettings.noteSpeed || this.noteSpeed;
+        const travelTime = (this.hitZoneY + this.noteHeight) / speed;
+        const spawnTime = this.currentTime + travelTime;
         let spawnedCount = 0;
         for (const note of this.notes) {
             if (!note.spawned && note.time <= spawnTime) {
@@ -1259,17 +1350,7 @@ class RhythmGame {
                 });
                 note.spawned = true;
                 spawnedCount++;
-                
-                // Debug pour les premières notes spawnées
-                if (this.activeNotes.length <= 5) {
-                    console.log(`🎵 Note spawnée: time=${note.time.toFixed(2)}s, lane=${note.lane}, currentTime=${this.currentTime.toFixed(2)}s`);
-                }
             }
-        }
-        
-        // Debug périodique
-        if (spawnedCount > 0) {
-            console.log(`📍 ${spawnedCount} notes spawnées, ${this.activeNotes.length} notes actives`);
         }
     }
     
@@ -1298,7 +1379,7 @@ class RhythmGame {
                     this.missNote();
                 }
             } else {
-                // Supprimer les notes touchées après un délai
+                // Remove hit notes after a delay
                 this.activeNotes.splice(i, 1);
             }
         }
@@ -1449,7 +1530,7 @@ class RhythmGame {
         const x = (lane + 0.5) * this.laneWidth;
         const y = this.hitZoneY;
         
-        // Effet spécial pour les notes longues réussies
+    // Effect for successful hold notes
         this.hitEffects.push({
             x: x,
             y: y,
@@ -1828,7 +1909,7 @@ class RhythmGame {
     }
     
     adjustColor(color, amount) {
-        // Fonction utilitaire pour ajuster la luminosité d'une couleur
+    // Utility: adjust color brightness
         if (color.startsWith('#')) {
             const hex = color.replace('#', '');
             const r = Math.max(0, Math.min(255, parseInt(hex.substring(0, 2), 16) + amount));
@@ -1849,7 +1930,7 @@ class RhythmGame {
             this.ctx.globalAlpha = trail.alpha;
             this.ctx.fillStyle = trail.color;
             this.ctx.beginPath();
-            // Assurer que la taille est positive pour éviter l'erreur "radius is negative"
+        // Ensure positive radius to avoid errors
             const radius = Math.max(0, trail.size);
             this.ctx.arc(trail.x, trail.y, radius, 0, Math.PI * 2);
             this.ctx.fill();
@@ -1909,7 +1990,7 @@ class RhythmGame {
             this.ctx.globalAlpha = particle.life / particle.maxLife;
             this.ctx.fillStyle = particle.color;
             this.ctx.beginPath();
-            // Assurer que la taille est positive pour éviter l'erreur "radius is negative"
+            // Ensure positive radius to avoid errors
             const radius = Math.max(0, particle.size);
             this.ctx.arc(particle.x, particle.y, radius, 0, Math.PI * 2);
             this.ctx.fill();
@@ -1938,7 +2019,7 @@ class RhythmGame {
     }
     
     updateFeverModeUI() {
-        // Mettre à jour l'UI du fever mode si nécessaire
+    // Update fever mode UI if needed
         const feverIndicator = document.getElementById('feverIndicator');
         if (feverIndicator) {
             if (this.feverMode) {
@@ -1962,7 +2043,7 @@ class RhythmGame {
         // Charger les paramètres dans l'interface
         const speedSlider = document.getElementById('speedSlider');
         const offsetSlider = document.getElementById('offsetSlider');
-        const trailsToggle = document.getElementById('trailsToggle');
+    const trailsToggle = document.getElementById('trailsToggle');
         const particlesToggle = document.getElementById('particlesToggle');
         const shakeToggle = document.getElementById('shakeToggle');
         
@@ -1976,7 +2057,7 @@ class RhythmGame {
             document.getElementById('offsetValue').textContent = offsetSlider.value;
         }
         
-        if (trailsToggle) trailsToggle.checked = this.gameSettings.showTrails !== false;
+    if (trailsToggle) trailsToggle.checked = this.gameSettings.showTrails !== false;
         if (particlesToggle) particlesToggle.checked = this.gameSettings.showParticles !== false;
         if (shakeToggle) shakeToggle.checked = this.gameSettings.screenShake !== false;
     }
@@ -2007,8 +2088,8 @@ class RhythmGame {
     }
 }
 
-// Initialiser le jeu quand la page est chargée
+// Init game on page load
 document.addEventListener('DOMContentLoaded', () => {
     window.rhythmGame = new RhythmGame();
-    console.log('🎮 Rhythm Hero initialisé avec succès !');
+    
 });

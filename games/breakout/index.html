@@ -10,16 +10,15 @@
     <meta name="robots" content="index, follow">
     <meta name="language" content="fr">
     
-    <!-- Alternate language versions -->
     <link rel="alternate" href="../../games/breakout/index.html" hreflang="fr">
     <link rel="alternate" href="../../games/breakout/index.html" hreflang="en">
     <link rel="alternate" href="../../games/breakout/index.html" hreflang="pt">
     <link rel="alternate" href="../../games/breakout/index.html" hreflang="x-default">
     
-    <!-- Favicon -->
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧱</text></svg>">
     
-    <!-- Bootstrap CSS -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -332,7 +331,7 @@
             animation: glow 3s infinite;
         }
 
-        /* Responsive Design */
+    
         @media (max-width: 768px) {
             .game-header {
                 padding: 10px 15px;
@@ -382,7 +381,7 @@
     </style>
 </head>
 <body>
-    <!-- Game Header -->
+    
     <div class="game-header">
         <div class="game-title" data-translate="game.title">🧱 BREAKOUT</div>
         <div class="game-stats">
@@ -401,11 +400,11 @@
         </div>
     </div>
 
-    <!-- Game Container -->
+    
     <div class="game-container">
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         
-        <!-- Menu Overlay -->
+        
         <div class="menu-overlay" id="menuOverlay">
             <div class="menu-title" data-translate="game.title">🧱 BREAKOUT</div>
             <div class="menu-description" data-translate="game.description">
@@ -414,14 +413,14 @@
             <button class="btn-neon" onclick="game.startGame()" data-translate="game.start">Démarrer</button>
         </div>
         
-        <!-- Pause Overlay -->
+        
         <div class="pause-overlay" id="pauseOverlay">
             <div class="menu-title" data-translate="game.paused">PAUSE</div>
             <button class="btn-neon" onclick="game.resumeGame()" data-translate="game.resume">Reprendre</button>
             <button class="btn-neon" onclick="game.restartGame()" data-translate="game.restart">Redémarrer</button>
         </div>
         
-        <!-- Game Over Overlay -->
+        
         <div class="menu-overlay" id="gameOverOverlay" style="display: none;">
             <div class="menu-title" id="resultText" data-translate="game.gameover">GAME OVER</div>
             <div class="menu-description" id="finalStatsText">
@@ -431,26 +430,26 @@
             <button class="btn-neon" onclick="game.showMenu()" data-translate="game.menu">Menu</button>
         </div>
         
-        <!-- Controls Info -->
+        
         <div class="controls-info" data-translate="game.controls">
             Souris pour déplacer la raquette • ESPACE pour pause • R pour redémarrer
         </div>
     </div>
 
-    <!-- Game Footer -->
+    
     <div class="game-footer">
-        <!-- Home Button -->
+        
         <a href="../../games.html" class="home-button">
             <i class="bi bi-arrow-left-circle-fill"></i>
             <span data-translate="nav.games">Jeux</span>
         </a>
 
-        <!-- Music Toggle -->
+        
         <button class="music-toggle" onclick="game.toggleMusic()" id="musicToggle">
             <i class="bi bi-music-note-beamed" id="musicIcon"></i>
         </button>
 
-        <!-- Language Selector -->
+        
         <div class="language-selector">
             <div class="dropdown">
                 <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -465,10 +464,10 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Translations -->
+    
     <script>
         const translations = {
             fr: {
@@ -575,7 +574,7 @@
         });
     </script>
     
-    <!-- Game Script -->
+    
     <script src="breakout.js"></script>
 </body>
 </html>
