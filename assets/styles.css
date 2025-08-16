@@ -282,7 +282,7 @@ body.page-pong {
   transition: background-color 0.3s ease, color 0.3s ease;
   display: flex; flex-direction: column;
 }
-.page-pong .game-container { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; padding: 20px; }
+.page-pong .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; padding: 20px; }
 .page-pong #gameCanvas { border: 3px solid #00ffff; border-radius: 15px; box-shadow: 0 0 30px #00ffff, inset 0 0 30px rgba(0,255,255,0.1); background: rgba(0,0,0,0.8); }
 .page-pong .game-header { background: rgba(0, 0, 0, 0.9); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ffff; backdrop-filter: blur(10px); }
 .page-pong .game-title { font-size: 2rem; font-weight: 900; background: linear-gradient(45deg, #00ffff, #8b00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 20px #00ffff; }
@@ -321,7 +321,7 @@ body.page-pong {
   .page-pong .game-stats { font-size: 1.2rem; gap: 20px; }
   .page-pong .menu-title { font-size: 2.5rem; }
   .page-pong .btn-neon { padding: 12px 30px; font-size: 1rem; }
-  .page-pong .game-footer { padding: 10px 15px; flex-direction: column; gap: 15px; }
+  .page-pong .game-footer { padding: 10px 15px calc(10px + env(safe-area-inset-bottom)); flex-direction: column; gap: 15px; }
   .page-pong .home-button { padding: 8px 12px; font-size: 1rem; }
   .page-pong .dropdown-toggle { padding: 8px 12px; font-size: 1rem; }
 }
@@ -346,7 +346,7 @@ body.page-breakout {
 .page-breakout .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .page-breakout .stat-label { font-size: 0.8rem; opacity: 0.8; }
 .page-breakout .stat-value { color: #ffff00; text-shadow: 0 0 15px #ffff00; }
-.page-breakout .game-container { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; background: radial-gradient(circle at 20% 50%, rgba(255,102,0,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(153,51,255,0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255,255,0,0.05) 0%, transparent 50%); }
+.page-breakout .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; background: radial-gradient(circle at 20% 50%, rgba(255,102,0,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(153,51,255,0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255,255,0,0.05) 0%, transparent 50%); }
 .page-breakout #gameCanvas { border: 3px solid #ff6600; border-radius: 15px; box-shadow: 0 0 50px #ff6600, inset 0 0 50px rgba(255,102,0,0.1); background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); }
 .page-breakout .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #ff6600; backdrop-filter: blur(10px); position: relative; z-index: 9999; }
 .page-breakout .home-button { background: transparent; border: 2px solid #ff6600; color: #ff6600; padding: 10px 15px; border-radius: 50px; text-decoration: none; font-size: 1.2rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px); }
@@ -371,7 +371,7 @@ body.page-breakout {
 .page-breakout .music-toggle.disabled:hover { background: transparent; color: #666; box-shadow: none; }
 @media (max-width: 768px) {
   .page-breakout .game-header { padding: 10px 15px; flex-direction: column; gap: 15px; }
-  .page-breakout .game-footer { padding: 10px 15px; flex-direction: column; gap: 15px; }
+  .page-breakout .game-footer { padding: 10px 15px calc(10px + env(safe-area-inset-bottom)); flex-direction: column; gap: 15px; }
   .page-breakout .game-title { font-size: 1.5rem; }
   .page-breakout .game-stats { gap: 20px; font-size: 1rem; }
   .page-breakout .menu-title { font-size: 2.5rem; }
@@ -391,7 +391,7 @@ body.page-hexagon {
   overflow-x: hidden; overflow-y: auto;
   transition: background-color 0.3s ease, color 0.3s ease; display: flex; flex-direction: column;
 }
-.page-hexagon .game-container { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; padding: 20px; }
+.page-hexagon .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; padding: 20px; }
 .page-hexagon #gameCanvas { border: 3px solid #00ffff; border-radius: 15px; box-shadow: 0 0 30px #00ffff, inset 0 0 30px rgba(0,255,255,0.1); background: rgba(0,0,0,0.8); }
 .page-hexagon .game-header { background: rgba(0,0,0,0.9); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ffff; backdrop-filter: blur(10px); }
 .page-hexagon .game-title { font-size: 2rem; font-weight: 900; background: linear-gradient(45deg, #00ffff, #8b00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 20px #00ffff; animation: hexagon-glow 3s infinite; }
@@ -439,7 +439,7 @@ body.page-hexagon {
   .page-hexagon .difficulty-btn { min-width: 200px; font-size: 0.9rem; }
   .page-hexagon .difficulty-title { font-size: 1rem; }
   .page-hexagon #gameCanvas { max-width: 90vw; height: auto; }
-  .page-hexagon .game-footer { padding: 10px 15px; flex-direction: column; gap: 15px; }
+  .page-hexagon .game-footer { padding: 10px 15px calc(10px + env(safe-area-inset-bottom)); flex-direction: column; gap: 15px; }
   .page-hexagon .home-button { padding: 8px 12px; font-size: 1rem; }
   .page-hexagon .dropdown-toggle { padding: 8px 12px; font-size: 1rem; }
 }
@@ -460,7 +460,7 @@ body.page-rhythm {
 .page-rhythm .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .page-rhythm .stat-label { font-size: 0.8rem; opacity: 0.8; }
 .page-rhythm .stat-value { color: #ffff00; text-shadow: 0 0 15px #ffff00; }
-.page-rhythm .game-container { flex: 1; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.page-rhythm .game-container { flex: 1 1 auto; min-height: 0; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .page-rhythm #gameCanvas { background: radial-gradient(circle at center, rgba(0,255,255,0.1), transparent); border: 2px solid #00ffff; border-radius: 10px; box-shadow: 0 0 30px #00ffff; animation: canvasGlow 2s ease-in-out infinite alternate; }
 @keyframes canvasGlow { from { box-shadow: 0 0 30px #00ffff; } to { box-shadow: 0 0 50px #00ffff, 0 0 80px rgba(0,255,255,0.3);} }
 .page-rhythm .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); }
