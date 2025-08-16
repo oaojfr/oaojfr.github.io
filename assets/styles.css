@@ -273,6 +273,7 @@ body.page-pong {
   font-family: 'Orbitron', monospace;
   background: linear-gradient(135deg, #0a0a0f, #000033);
   color: #00ffff;
+  --footer-h: 80px;
   margin: 0; padding: 0;
   min-height: 100vh; /* fallback */
   min-height: 100dvh; /* avoid mobile 100vh issues */
@@ -282,7 +283,7 @@ body.page-pong {
   transition: background-color 0.3s ease, color 0.3s ease;
   display: flex; flex-direction: column;
 }
-.page-pong .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; padding: 20px; }
+.page-pong .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; padding: 20px; padding-bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); }
 .page-pong #gameCanvas { border: 3px solid #00ffff; border-radius: 15px; box-shadow: 0 0 30px #00ffff, inset 0 0 30px rgba(0,255,255,0.1); background: rgba(0,0,0,0.8); }
 .page-pong .game-header { background: rgba(0, 0, 0, 0.9); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ffff; backdrop-filter: blur(10px); }
 .page-pong .game-title { font-size: 2rem; font-weight: 900; background: linear-gradient(45deg, #00ffff, #8b00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 20px #00ffff; }
@@ -290,20 +291,20 @@ body.page-pong {
 .page-pong .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .page-pong .stat-label { font-size: 0.8rem; opacity: 0.8; color: #ff6600; }
 .page-pong .stat-value { color: #ffff00; text-shadow: 0 0 15px #ffff00; font-size: 2rem; }
-.page-pong .menu-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
+.page-pong .menu-overlay { position: absolute; inset: 0; bottom: var(--footer-h, 80px); background: rgba(0,0,0,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
 .page-pong .menu-title { font-size: 4rem; font-weight: 900; margin-bottom: 2rem; background: linear-gradient(45deg, #00ffff, #8b00ff, #ffff00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: pong-glow 2s ease-in-out infinite alternate; }
 @keyframes pong-glow { from { filter: drop-shadow(0 0 5px #00ffff);} to { filter: drop-shadow(0 0 20px #8b00ff);} }
 .page-pong .btn-neon { background: transparent; border: 2px solid #00ffff; color: #00ffff; padding: 15px 40px; font-size: 1.2rem; font-weight: 700; font-family: 'Orbitron', monospace; cursor: pointer; position: relative; overflow: hidden; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; margin: 10px; }
 .page-pong .btn-neon:hover { color: #0a0a0f; background: #00ffff; box-shadow: 0 0 30px #00ffff; transform: scale(1.05); }
 .page-pong .btn-neon:before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: all 0.5s; }
 .page-pong .btn-neon:hover:before { left: 100%; }
-.page-pong .controls-info { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 15px 25px; border-radius: 10px; border: 1px solid #00ffff; font-size: 0.9rem; opacity: 0.8; text-align: center; }
-.page-pong .pause-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 50; }
+.page-pong .controls-info { position: absolute; bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 15px 25px; border-radius: 10px; border: 1px solid #00ffff; font-size: 0.9rem; opacity: 0.8; text-align: center; }
+.page-pong .pause-overlay { position: absolute; inset: 0; bottom: var(--footer-h, 80px); background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 50; }
 .page-pong .pause-content { text-align: center; background: rgba(0,0,0,0.9); padding: 40px; border-radius: 15px; border: 2px solid #00ffff; }
-.page-pong .game-over-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 200; }
+.page-pong .game-over-overlay { position: absolute; inset: 0; bottom: var(--footer-h, 80px); background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 200; }
 .page-pong .game-over-content { text-align: center; background: rgba(0,0,0,0.9); padding: 50px; border-radius: 20px; border: 3px solid #ffff00; box-shadow: 0 0 50px #ffff00; }
 .page-pong .winner-text { font-size: 3rem; font-weight: 900; margin-bottom: 20px; background: linear-gradient(45deg, #ffff00, #00ffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.page-pong .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #00ffff; backdrop-filter: blur(10px); position: relative; z-index: 9999; }
+.page-pong .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #00ffff; backdrop-filter: blur(10px); position: fixed; left: 0; right: 0; bottom: 0; width: 100%; z-index: 9999; }
 .page-pong .home-button { background: transparent; border: 2px solid #00ffff; color: #00ffff; padding: 10px 15px; border-radius: 50px; text-decoration: none; font-size: 1.2rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px); }
 .page-pong .home-button:hover { background: #00ffff; color: #0a0a0f; box-shadow: 0 0 25px #00ffff; text-decoration: none; }
 .page-pong .language-selector { z-index: 9999; }
@@ -333,6 +334,7 @@ body.page-breakout {
   font-family: 'Orbitron', monospace;
   background: linear-gradient(135deg, #0a0a0a, #050505);
   color: #ff6600;
+  --footer-h: 80px;
   overflow-x: hidden; overflow-y: auto;
   min-height: 100vh; /* fallback */
   min-height: 100dvh;
@@ -346,17 +348,17 @@ body.page-breakout {
 .page-breakout .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .page-breakout .stat-label { font-size: 0.8rem; opacity: 0.8; }
 .page-breakout .stat-value { color: #ffff00; text-shadow: 0 0 15px #ffff00; }
-.page-breakout .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; background: radial-gradient(circle at 20% 50%, rgba(255,102,0,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(153,51,255,0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255,255,0,0.05) 0%, transparent 50%); }
+.page-breakout .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; background: radial-gradient(circle at 20% 50%, rgba(255,102,0,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(153,51,255,0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255,255,0,0.05) 0%, transparent 50%); padding: 20px; padding-bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); }
 .page-breakout #gameCanvas { border: 3px solid #ff6600; border-radius: 15px; box-shadow: 0 0 50px #ff6600, inset 0 0 50px rgba(255,102,0,0.1); background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); }
-.page-breakout .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #ff6600; backdrop-filter: blur(10px); position: relative; z-index: 9999; }
+.page-breakout .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #ff6600; backdrop-filter: blur(10px); position: fixed; left: 0; right: 0; bottom: 0; width: 100%; z-index: 9999; }
 .page-breakout .home-button { background: transparent; border: 2px solid #ff6600; color: #ff6600; padding: 10px 15px; border-radius: 50px; text-decoration: none; font-size: 1.2rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px); }
 .page-breakout .home-button:hover { background: #ff6600; color: #0a0a0a; box-shadow: 0 0 25px #ff6600; text-decoration: none; }
 .page-breakout .btn-neon { background: transparent; border: 2px solid #ff6600; color: #ff6600; padding: 12px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: 700; font-family: 'Orbitron', monospace; cursor: pointer; position: relative; overflow: hidden; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; margin: 10px; }
 .page-breakout .btn-neon:hover { color: #0a0a0a; background: #ff6600; box-shadow: 0 0 30px #ff6600; transform: scale(1.05); }
 .page-breakout .btn-neon:before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: all 0.5s; }
 .page-breakout .btn-neon:hover:before { left: 100%; }
-.page-breakout .controls-info { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 15px 25px; border-radius: 10px; border: 1px solid #ff6600; font-size: 0.9rem; opacity: 0.8; text-align: center; }
-.page-breakout .pause-overlay, .page-breakout .menu-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; backdrop-filter: blur(10px); }
+.page-breakout .controls-info { position: absolute; bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 15px 25px; border-radius: 10px; border: 1px solid #ff6600; font-size: 0.9rem; opacity: 0.8; text-align: center; }
+.page-breakout .pause-overlay, .page-breakout .menu-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; backdrop-filter: blur(10px); bottom: var(--footer-h, 80px); }
 .page-breakout .menu-title { font-size: 4rem; font-weight: 900; background: linear-gradient(45deg, #ff6600, #9933ff, #ffff00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 30px #ff6600; margin-bottom: 30px; animation: pulse 2s infinite; }
 .page-breakout .menu-description { font-size: 1.3rem; color: #ffff00; text-align: center; margin-bottom: 40px; max-width: 600px; line-height: 1.6; }
 .page-breakout .language-selector { z-index: 9999; }
@@ -385,13 +387,13 @@ body.page-breakout {
 body.page-hexagon {
   font-family: 'Orbitron', monospace;
   background: linear-gradient(135deg, #0a0a0f, #000033);
-  color: #00ffff; margin: 0; padding: 0;
+  color: #00ffff; margin: 0; padding: 0; --footer-h: 80px;
   min-height: 100vh; /* fallback */
   min-height: 100dvh; height: auto;
   overflow-x: hidden; overflow-y: auto;
   transition: background-color 0.3s ease, color 0.3s ease; display: flex; flex-direction: column;
 }
-.page-hexagon .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; padding: 20px; }
+.page-hexagon .game-container { flex: 1 1 auto; min-height: 0; display: flex; justify-content: center; align-items: center; position: relative; padding: 20px; padding-bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); }
 .page-hexagon #gameCanvas { border: 3px solid #00ffff; border-radius: 15px; box-shadow: 0 0 30px #00ffff, inset 0 0 30px rgba(0,255,255,0.1); background: rgba(0,0,0,0.8); }
 .page-hexagon .game-header { background: rgba(0,0,0,0.9); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ffff; backdrop-filter: blur(10px); }
 .page-hexagon .game-title { font-size: 2rem; font-weight: 900; background: linear-gradient(45deg, #00ffff, #8b00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 20px #00ffff; animation: hexagon-glow 3s infinite; }
@@ -400,7 +402,7 @@ body.page-hexagon {
 .page-hexagon .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .page-hexagon .stat-label { font-size: 0.8rem; opacity: 0.8; }
 .page-hexagon .stat-value { color: #ffff00; text-shadow: 0 0 15px #ffff00; }
-.page-hexagon .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #00ffff; backdrop-filter: blur(10px); position: relative; z-index: 9999; }
+.page-hexagon .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #00ffff; backdrop-filter: blur(10px); position: fixed; left: 0; right: 0; bottom: 0; width: 100%; z-index: 9999; }
 .page-hexagon .home-button { background: transparent; border: 2px solid #00ffff; color: #00ffff; padding: 10px 15px; border-radius: 50px; text-decoration: none; font-size: 1.2rem; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px); }
 .page-hexagon .home-button:hover { background: #00ffff; color: #0a0a0f; box-shadow: 0 0 25px #00ffff; text-decoration: none; }
 .page-hexagon .language-selector { z-index: 9999; }
@@ -417,8 +419,8 @@ body.page-hexagon {
 .page-hexagon .btn-neon:hover { color: #0a0a0f; background: #00ffff; box-shadow: 0 0 30px #00ffff; transform: scale(1.05); }
 .page-hexagon .btn-neon:before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: all 0.5s; }
 .page-hexagon .btn-neon:hover:before { left: 100%; }
-.page-hexagon .controls-info { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 15px 25px; border-radius: 10px; border: 1px solid #00ffff; font-size: 0.9rem; opacity: 0.8; text-align: center; }
-.page-hexagon .menu-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; backdrop-filter: blur(10px); }
+.page-hexagon .controls-info { position: absolute; bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 15px 25px; border-radius: 10px; border: 1px solid #00ffff; font-size: 0.9rem; opacity: 0.8; text-align: center; }
+.page-hexagon .menu-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 1000; backdrop-filter: blur(10px); bottom: var(--footer-h, 80px); }
 .page-hexagon .menu-title { font-size: 4rem; font-weight: 900; background: linear-gradient(45deg, #00ffff, #8b00ff, #ffff00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 30px #00ffff; margin-bottom: 30px; animation: pulse 2s infinite; }
 .page-hexagon .menu-description { font-size: 1.3rem; color: #ffff00; text-align: center; margin-bottom: 40px; max-width: 600px; line-height: 1.6; }
 .page-hexagon .difficulty-selection { margin: 30px 0; text-align: center; }
@@ -448,7 +450,7 @@ body.page-hexagon {
 body.page-rhythm {
   font-family: 'Orbitron', monospace;
   background: linear-gradient(135deg, #0a0a0f, #000033);
-  color: #00ffff; margin: 0; padding: 0;
+  color: #00ffff; margin: 0; padding: 0; --footer-h: 80px;
   min-height: 100vh; /* fallback */
   min-height: 100dvh; height: auto;
   overflow-x: hidden; overflow-y: auto;
@@ -460,10 +462,10 @@ body.page-rhythm {
 .page-rhythm .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .page-rhythm .stat-label { font-size: 0.8rem; opacity: 0.8; }
 .page-rhythm .stat-value { color: #ffff00; text-shadow: 0 0 15px #ffff00; }
-.page-rhythm .game-container { flex: 1 1 auto; min-height: 0; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.page-rhythm .game-container { flex: 1 1 auto; min-height: 0; width: 100%; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); }
 .page-rhythm #gameCanvas { background: radial-gradient(circle at center, rgba(0,255,255,0.1), transparent); border: 2px solid #00ffff; border-radius: 10px; box-shadow: 0 0 30px #00ffff; animation: canvasGlow 2s ease-in-out infinite alternate; }
 @keyframes canvasGlow { from { box-shadow: 0 0 30px #00ffff; } to { box-shadow: 0 0 50px #00ffff, 0 0 80px rgba(0,255,255,0.3);} }
-.page-rhythm .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); }
+.page-rhythm .overlay { position: absolute; inset: 0; bottom: var(--footer-h, 80px); background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); }
 .page-rhythm .overlay-content { background: linear-gradient(135deg, rgba(0,255,255,0.1), rgba(139,0,255,0.1)); border: 2px solid #00ffff; border-radius: 20px; padding: 2rem; text-align: center; box-shadow: 0 0 40px rgba(0,255,255,0.3); backdrop-filter: blur(10px); max-width: 500px; max-height: 80vh; margin: 1rem; overflow-y: auto; }
 .page-rhythm .title-text { font-size: 2.5rem; font-weight: 900; color: #00ffff; text-shadow: 0 0 20px #00ffff; margin-bottom: 1.5rem; animation: titlePulse 2s ease-in-out infinite alternate; }
 @keyframes titlePulse { from { text-shadow: 0 0 20px #00ffff; } to { text-shadow: 0 0 30px #00ffff, 0 0 40px #00ffff; } }
@@ -492,7 +494,7 @@ body.page-rhythm {
 .page-rhythm .controls-hint { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); border: 1px solid #00ff88; border-radius: 10px; padding: 10px 20px; display: none; }
 .page-rhythm .key-indicator { display: inline-block; width: 30px; height: 30px; margin: 0 5px; background: rgba(255,255,255,0.1); border: 2px solid #00ffff; border-radius: 5px; text-align: center; line-height: 26px; transition: all 0.1s ease; }
 .page-rhythm .key-indicator.active { background: #00ffff; color: #000; box-shadow: 0 0 20px #00ffff; }
-.page-rhythm .progress-container { position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 50; }
+.page-rhythm .progress-container { position: absolute; bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); left: 20px; right: 20px; z-index: 50; }
 .page-rhythm .progress-bar { height: 8px; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; border: 1px solid #00ffff; }
 .page-rhythm .progress-fill { height: 100%; background: linear-gradient(90deg, #00ffff, #8b00ff); border-radius: 10px; transition: width 0.1s ease; box-shadow: 0 0 10px #00ffff; }
 .page-rhythm .loading-spinner { width: 60px; height: 60px; border: 4px solid rgba(0,255,255,0.3); border-top: 4px solid #00ffff; border-radius: 50%; animation: spin 1s linear infinite; margin: 2rem auto; }
@@ -510,7 +512,7 @@ body.page-rhythm {
 .page-rhythm #analysisInfo div { opacity: 0.5; transition: all 0.3s ease; margin: 0.3rem 0; }
 .page-rhythm #analysisInfo div.active { opacity: 1; color: #ffff00; transform: translateX(10px); }
 .page-rhythm #analysisInfo div.completed { opacity: 0.8; color: #00ff88; }
-.page-rhythm .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #00ffff; backdrop-filter: blur(10px); z-index: 1000; position: relative; }
+.page-rhythm .game-footer { background: rgba(0,0,0,0.8); padding: 15px 30px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #00ffff; backdrop-filter: blur(10px); z-index: 1000; position: fixed; left: 0; right: 0; bottom: 0; width: 100%; }
 .page-rhythm .home-button { display: flex; align-items: center; gap: 10px; color: #00ffff; text-decoration: none; padding: 10px 20px; border: 2px solid #00ffff; border-radius: 10px; background: rgba(0,255,255,0.1); transition: all 0.3s ease; font-weight: 700; }
 .page-rhythm .home-button:hover { background: rgba(0,255,255,0.2); color: #ffff00; border-color: #ffff00; box-shadow: 0 0 20px rgba(0,255,255,0.5); transform: translateY(-2px); }
 .page-rhythm .music-toggle { background: rgba(0,255,255,0.1); border: 2px solid #00ffff; color: #00ffff; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; font-size: 1.2rem; }
@@ -520,7 +522,7 @@ body.page-rhythm {
 .page-rhythm .language-selector .dropdown-menu { background: rgba(0,0,0,0.9); border: 2px solid #00ffff; border-radius: 10px; backdrop-filter: blur(10px); z-index: 9999 !important; }
 .page-rhythm .language-selector .dropdown-item { color: #00ffff; padding: 10px 20px; transition: all 0.3s ease; }
 .page-rhythm .language-selector .dropdown-item:hover { background: rgba(0,255,255,0.2); color: #ffff00; }
-.page-rhythm .controls-info { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px; border: 1px solid #00ffff; color: #00ffff; font-size: 0.9rem; text-align: center; backdrop-filter: blur(10px); }
+.page-rhythm .controls-info { position: absolute; bottom: calc(20px + var(--footer-h, 80px) + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px; border: 1px solid #00ffff; color: #00ffff; font-size: 0.9rem; text-align: center; backdrop-filter: blur(10px); }
 @media (max-width: 768px) {
   .page-rhythm .title-text { font-size: 2.5rem; }
   .page-rhythm .overlay-content { padding: 2rem; margin: 1rem; }
