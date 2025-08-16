@@ -38,82 +38,12 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
-  <style>
-    :root {
-      --primary-color: #667eea;
-      --secondary-color: #764ba2;
-      --accent-color: #ff6b6b;
-      --text-color: #333;
-      --bg-color: #fff;
-      --bg-secondary: #f8f9fa;
-      --card-bg: #fff;
-      --navbar-bg: rgba(102, 126, 234, 0.1);
-      --navbar-bg-scroll: rgba(102, 126, 234, 0.2);
-      --footer-bg: #2c3e50;
-    }
-    [data-theme="dark"] {
-      --text-color: #e0e0e0;
-      --bg-color: #121212;
-      --bg-secondary: #1e1e1e;
-      --card-bg: #2d2d2d;
-      --navbar-bg: rgba(45, 45, 45, 0.9);
-      --navbar-bg-scroll: rgba(45, 45, 45, 0.95);
-      --footer-bg: #1a1a1a;
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      transition: background-color 0.3s ease, color 0.3s ease;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .main-content { flex: 1; }
-
-    /* Navbar */
-    .navbar { backdrop-filter: blur(15px) !important; -webkit-backdrop-filter: blur(15px) !important; transition: all 0.3s ease !important; }
-    .navbar.scrolled { backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; }
-    .navbar-brand { font-weight: 700; font-size: 1.5rem; color: white !important; }
-    .theme-toggle { background: none; border: 2px solid rgba(255,255,255,0.3); color: white; border-radius: 50px; padding: 8px 15px; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
-    .theme-toggle:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
-
-    /* Footer */
-    .footer { background-color: var(--footer-bg); color: white; padding: 40px 0; text-align: center; }
-    .social-links { margin-bottom: 20px; }
-    .social-link { color: white; font-size: 1.5rem; margin: 0 15px; transition: all 0.3s ease; }
-    .social-link:hover { color: var(--accent-color); transform: translateY(-3px); }
-
-    /* Page content */
-    .page-header { padding: 110px 0 30px; text-align:center; background: var(--bg-secondary); }
-    .page-header h1 { font-weight: 700; }
-    .page-header p { opacity: .8; }
-
-    .game-card { background: var(--card-bg); border-radius: 14px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); transition: transform .2s ease, box-shadow .2s ease; height: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
-    [data-theme="dark"] .game-card { border-color: rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    .game-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-
-    .thumb { aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1b2130, #0f1320); border-bottom: 1px solid rgba(0,0,0,0.06); }
-    [data-theme="dark"] .thumb { border-bottom-color: rgba(255,255,255,0.08); }
-    .thumb svg { width: 65%; height: auto; }
-
-    .game-body { padding: 18px; }
-    .game-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 6px; }
-    .game-desc { opacity: 0.8; font-size: .95rem; min-height: 44px; }
-
-    .btn-play { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: linear-gradient(45deg, var(--accent-color), #4ecdc4); color: #fff; font-weight: 600; border: none; }
-    .btn-play:hover { filter: brightness(1.05); transform: translateY(-1px); }
-
-    .badge-keys { font-size: .75rem; background: rgba(102,126,234,0.12); color: #637bdf; border: 1px solid rgba(102,126,234,0.25); border-radius: 999px; padding: 4px 10px; }
-    [data-theme="dark"] .badge-keys { background: rgba(255,255,255,0.08); color: #c9d1f0; border-color: rgba(255,255,255,0.12); }
-  </style>
+  <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
   <div class="main-content">
     
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background: var(--navbar-bg); border-bottom: 1px solid rgba(102, 126, 234, 0.2);">
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
       <div class="container">
         <a class="navbar-brand fw-bold" href="index.html#home" data-translate="nav.brand">João</a>
         <div class="d-flex align-items-center order-lg-2">
