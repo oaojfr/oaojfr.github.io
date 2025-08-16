@@ -172,22 +172,23 @@ body {
 /* =========================
    Games listing page
    ========================= */
-.page-header { padding: 110px 0 30px; text-align:center; background: var(--bg-secondary); }
-.page-header h1 { font-weight: 700; }
-.page-header p { opacity: .8; }
+.page-header { padding: 110px 0 30px; text-align:center; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; }
+.page-header h1 { font-weight: 700; color: #fff; }
+.page-header p { opacity: .9; color: #fff; }
 .game-card { background: var(--card-bg); border-radius: 14px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); transition: transform .2s ease, box-shadow .2s ease; height: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
 [data-theme="dark"] .game-card { border-color: rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 .game-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
-.thumb { aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1b2130, #0f1320); border-bottom: 1px solid rgba(0,0,0,0.06); }
+.thumb { aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-bottom: 1px solid rgba(0,0,0,0.06); }
 [data-theme="dark"] .thumb { border-bottom-color: rgba(255,255,255,0.08); }
 .thumb svg { width: 65%; height: auto; }
 .game-body { padding: 18px; }
 .game-title { font-size: 1.2rem; font-weight: 600; margin: 0 0 6px; }
 .game-desc { opacity: 0.8; font-size: .95rem; min-height: 44px; }
-.btn-play { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: linear-gradient(45deg, var(--accent-color), #4ecdc4); color: #fff; font-weight: 600; border: none; }
+.btn-play { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); color: #fff; font-weight: 600; border: none; }
 .btn-play:hover { filter: brightness(1.05); transform: translateY(-1px); }
 .badge-keys { font-size: .75rem; background: rgba(102,126,234,0.12); color: #637bdf; border: 1px solid rgba(102,126,234,0.25); border-radius: 999px; padding: 4px 10px; }
 [data-theme="dark"] .badge-keys { background: rgba(255,255,255,0.08); color: #c9d1f0; border-color: rgba(255,255,255,0.12); }
+
 
 /* =========================
    Tools page
