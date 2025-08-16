@@ -214,7 +214,7 @@ class SuperHexagon {
         // Variable pour tracker si l'audio a déjà été démarré suite à une interaction
         this.audioInitialized = false;
         
-        document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', (e) => {
             this.keys[e.key.toLowerCase()] = true;
             
             // Essayer de démarrer l'audio dès la première interaction si pas encore fait
@@ -223,12 +223,12 @@ class SuperHexagon {
             // Contrôles du jeu
             if (this.gameState === 'playing') {
                 // Mouvement fluide du joueur
-                if (e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') {
+        if (e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') {
                     this.leftPressed = true;
                     e.preventDefault();
                 }
                 
-                if (e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') {
+        if (e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') {
                     this.rightPressed = true;
                     e.preventDefault();
                 }
@@ -273,9 +273,11 @@ class SuperHexagon {
             // Arrêter le mouvement fluide
             if (e.key.toLowerCase() === 'a' || e.key === 'ArrowLeft') {
                 this.leftPressed = false;
+                e.preventDefault();
             }
             if (e.key.toLowerCase() === 'd' || e.key === 'ArrowRight') {
                 this.rightPressed = false;
+                e.preventDefault();
             }
         });
     }

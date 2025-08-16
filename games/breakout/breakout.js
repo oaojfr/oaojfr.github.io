@@ -158,6 +158,13 @@ class ModernBreakout {
         // Clavier
         document.addEventListener('keydown', (e) => {
             this.keys.add(e.key.toLowerCase());
+
+            // Prevent page scroll on gameplay keys
+            const k = e.key;
+            const kl = k.toLowerCase();
+            if (['ArrowLeft', 'ArrowRight'].includes(k) || ['a','d',' '].includes(kl)) {
+                e.preventDefault();
+            }
             
             if (e.key === ' ') {
                 e.preventDefault();
@@ -186,6 +193,12 @@ class ModernBreakout {
         
         document.addEventListener('keyup', (e) => {
             this.keys.delete(e.key.toLowerCase());
+            // Prevent native behavior on key release for arrows
+            const k = e.key;
+            const kl = k.toLowerCase();
+            if (['ArrowLeft', 'ArrowRight'].includes(k) || ['a','d',' '].includes(kl)) {
+                e.preventDefault();
+            }
         });
         
         // Redimensionnement

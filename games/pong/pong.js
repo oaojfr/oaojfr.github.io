@@ -102,8 +102,18 @@ class PongGame {
     setupEventListeners() {
         document.addEventListener('keydown', (e) => {
             this.keys[e.key.toLowerCase()] = true;
+
+            // Prevent page scroll on gameplay keys (arrows, WASD, OL)
+            const k = e.key;
+            const kl = k.toLowerCase();
+            if (
+                ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k) ||
+                ['w', 's', 'a', 'd', 'o', 'l'].includes(kl)
+            ) {
+                e.preventDefault();
+            }
             
-            if (e.key === ' ') {
+            if (k === ' ') {
                 e.preventDefault();
                 if (this.gameState === 'playing') {
                     this.pauseGame();
@@ -113,13 +123,23 @@ class PongGame {
             }
 
             // Toggle quality
-            if (e.key && e.key.toLowerCase() === 'g') {
+            if (k && kl === 'g') {
                 this.cycleQuality();
             }
         });
         
         document.addEventListener('keyup', (e) => {
             this.keys[e.key.toLowerCase()] = false;
+
+            // Also prevent keyup from triggering any native scroll behavior
+            const k = e.key;
+            const kl = k.toLowerCase();
+            if (
+                ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k) ||
+                ['w', 's', 'a', 'd', 'o', 'l'].includes(kl)
+            ) {
+                e.preventDefault();
+            }
         });
     }
 

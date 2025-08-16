@@ -253,6 +253,14 @@ class RhythmGame {
         document.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
 
+            // Prevent page scroll on gameplay keys and global controls
+            if (
+                ['f','g','j','k','q'].includes(key) ||
+                [' ', 'escape', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)
+            ) {
+                e.preventDefault();
+            }
+
             // Toggle graphics quality on 'Q' (avoid conflict with F/G/J/K)
             if (key === 'q') {
                 this.cycleQuality();
@@ -286,6 +294,12 @@ class RhythmGame {
         
         document.addEventListener('keyup', (e) => {
             const key = e.key.toLowerCase();
+            if (
+                ['f','g','j','k','q'].includes(key) ||
+                [' ', 'escape', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)
+            ) {
+                e.preventDefault();
+            }
             if (this.keyMapping.hasOwnProperty(key)) {
                 const laneIndex = this.keyMapping[key];
                 this.keysPressed[laneIndex] = false;
