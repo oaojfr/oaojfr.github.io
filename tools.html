@@ -20,7 +20,18 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="index.html" data-translate="nav.brand">João</a>
             <div class="d-flex align-items-center order-lg-2">
-                
+                <div class="dropdown me-3">
+                    <button class="language-selector dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-globe"></i>
+                        <span id="currentLang">FR</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                        <li><a class="dropdown-item lang-btn" href="#" data-lang="fr" onclick="changeLanguage('fr'); return false;">🇫🇷 Français</a></li>
+                        <li><a class="dropdown-item lang-btn" href="#" data-lang="en" onclick="changeLanguage('en'); return false;">🇬🇧 English</a></li>
+                        <li><a class="dropdown-item lang-btn" href="#" data-lang="es" onclick="changeLanguage('es'); return false;">🇪🇸 Español</a></li>
+                        <li><a class="dropdown-item lang-btn" href="#" data-lang="pt" onclick="changeLanguage('pt'); return false;">🇵🇹 Português</a></li>
+                    </ul>
+                </div>
                 <button class="theme-toggle me-3" onclick="toggleTheme()">
                     <i class="bi bi-moon-fill" id="theme-icon"></i>
                 </button>
@@ -34,29 +45,10 @@
                         <a class="nav-link" href="index.html" data-translate="nav.home">Accueil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html#about" data-translate="nav.about">À propos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html#projects" data-translate="nav.projects">Projets</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link active" href="tools.html" data-translate="nav.tools">Outils</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="games.html" data-translate="nav.games">Jeux</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="index.html#contact" data-translate="nav.contact">Contact</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-globe"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">Français</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="changeLanguage('pt')">Português</a></li>
-                        </ul>
                     </li>
                 </ul>
             </div>
