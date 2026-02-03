@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Converter • Oaoj</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <style>
+        .tool-wrapper { max-width: 900px; width: 100%; }
+        .tool-card { padding: 2rem; }
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .tool-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .tool-label { display: block; margin-bottom: 0.5rem; color: var(--lightest-purple); font-weight: bold; letter-spacing: 1px; }
+        .tool-input, .tool-select { width: 100%; padding: 0.75rem 1rem; border: 2px solid var(--primary-purple); background: var(--bg-dark); color: var(--text-light); font-family: inherit; }
+        .preview-box { border: 2px dashed var(--accent-purple); padding: 1rem; text-align: center; min-height: 220px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; }
+        .tool-link { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+        .back-link { margin-bottom: 1rem; display: inline-block; color: var(--accent-purple); }
+        .status { color: var(--accent-purple); font-size: 0.9rem; text-align: center; }
+        .cover-preview { width: 120px; height: 120px; border: 2px solid var(--primary-purple); background: var(--bg-darker); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .cover-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .note { font-size: 0.8rem; color: var(--accent-purple); line-height: 1.4; }
+        @media (max-width: 768px) { .tool-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <div class="tool-wrapper">
+            <a class="back-link" href="../index.html">← Retour</a>
+            <div class="pixel-border">
+                <h1 class="title" style="font-size: 2.5rem;">Music Converter</h1>
+            </div>
+
+            <div class="pixel-card tool-card" style="margin-top: 2rem;">
+                <div class="tool-grid">
+                    <div>
+                        <label class="tool-label" for="audioFile">Fichier audio</label>
+                        <input class="tool-input" type="file" id="audioFile" accept="audio/*" />
+
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="formatSelect">Format de sortie</label>
+                            <select id="formatSelect" class="tool-select">
+                                <option value="mp3" selected>MP3</option>
+                                <option value="wav">WAV</option>
+                                <option value="flac">FLAC</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="bitrateSelect">Bitrate</label>
+                            <select id="bitrateSelect" class="tool-select">
+                                <option value="320k">320 kbps</option>
+                                <option value="256k">256 kbps</option>
+                                <option value="192k" selected>192 kbps</option>
+                                <option value="128k">128 kbps</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="titleInput">Titre</label>
+                            <input class="tool-input" id="titleInput" type="text" placeholder="Titre" />
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="artistInput">Artiste</label>
+                            <input class="tool-input" id="artistInput" type="text" placeholder="Artiste" />
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="albumInput">Album</label>
+                            <input class="tool-input" id="albumInput" type="text" placeholder="Album" />
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="coverFile">Pochette (MP3)</label>
+                            <input class="tool-input" type="file" id="coverFile" accept="image/*" />
+                            <div class="note">La pochette est intégrée pour MP3.</div>
+                        </div>
+
+                        <div class="tool-actions" style="margin-top: 1.5rem;">
+                            <button class="tool-btn" id="convertBtn">Convertir</button>
+                            <a class="tool-btn tool-link" id="downloadBtn" href="#" download> Télécharger</a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="tool-label">Aperçu</label>
+                        <div class="preview-box">
+                            <div class="cover-preview" id="coverPreview"><span class="note">Pochette</span></div>
+                            <div class="status" id="statusText">Charge un fichier audio</div>
+                            <div class="status" id="metaText"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/vendor/ffmpeg.min.js"></script>
+    <script src="../assets/vendor/jsmediatags.min.js"></script>
+    <script src="music-converter.js"></script>
+</body>
+</html>
