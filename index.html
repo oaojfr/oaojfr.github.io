@@ -3,1324 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>João - Développeur</title>
-    <meta name="description" content="Passionate about creating innovative solutions and beautiful user experiences.">
+    <title>Oaoj</title>
+    <meta name="description" content="Oaoj - A digital space">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%238b5cf6%22 width=%22100%22 height=%22100%22/><text y=%2275%22 font-size=%2260%22 fill=%22%23c4b5fd%22 text-anchor=%22middle%22 x=%2250%22>◆</text></svg>">
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-    
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#home"><i class="bi bi-code-slash me-2"></i>João</a>
-            <div class="d-flex align-items-center order-lg-2">
-                <div class="dropdown me-3">
-                    <button class="language-selector dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-globe"></i>
-                        <span id="currentLang">FR</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                        <li><a class="dropdown-item lang-btn" href="#" data-lang="fr" onclick="changeLanguage('fr'); return false;">🇫🇷 Français</a></li>
-                        <li><a class="dropdown-item lang-btn" href="#" data-lang="en" onclick="changeLanguage('en'); return false;">🇬🇧 English</a></li>
-                        <li><a class="dropdown-item lang-btn" href="#" data-lang="es" onclick="changeLanguage('es'); return false;">🇪🇸 Español</a></li>
-                        <li><a class="dropdown-item lang-btn" href="#" data-lang="pt" onclick="changeLanguage('pt'); return false;">🇵🇹 Português</a></li>
-                    </ul>
-                </div>
-                <button class="theme-toggle me-3" onclick="toggleTheme()">
-                    <i class="bi bi-moon-fill" id="theme-icon"></i>
-                </button>
-            </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#home" data-translate="nav.home">Accueil</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#projects" data-translate="nav.projects">Projets</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#experience" data-translate="nav.experience">Expérience</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#tools" data-translate="nav.tools">Outils</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact" data-translate="nav.contact">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div class="snowflakes-container">
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">✦</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">✦</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">✦</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">✦</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">✦</div>
+    </div>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <h1 class="hero-title" data-translate="hero.title">DÉVELOPPEUR</h1>
-                    <p class="hero-description" data-translate="hero.description">Passionné par la création d'expériences utilisateur intuitives et engageantes. Spécialisé dans la transformation d'idées en produits magnifiquement conçus.</p>
-                    
-                    <!-- Stats -->
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-number">+5</div>
-                            <div class="stat-label" data-translate="stats.experience">ANNÉES<br>D'EXPÉRIENCE</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">+20</div>
-                            <div class="stat-label" data-translate="stats.projects">PROJETS<br>RÉALISÉS</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">100%</div>
-                            <div class="stat-label" data-translate="stats.clients">COOL</div>
-                        </div>
-                    </div>
+    <div class="container-main">
+        <header class="header">
+            <div class="pixel-border">
+                <h1 class="title">JOAO</h1>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="pixel-card intro-card">
+                <div class="card-content">
+                    <p class="welcome-text">Bienvenue dans mon espace 😊</p>
+                    <div class="divider"></div>
+                    <p class="description">24 ans, touche à tout.</p>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Skills Highlight -->
-    <section class="skills-section">
-        <div class="container">
-            <div class="skill-card">
-                <div class="skill-badge">CLEAN CODE, BEST PRACTICES</div>
-                <a href="#experience" class="skill-link">
-                    <span>View Experience</span>
-                    <i class="bi bi-arrow-right"></i>
+            <div class="links-section">
+                <a href="https://github.com" target="_blank" class="pixel-link" title="GitHub">
+                    <span class="link-icon">⬢</span>
+                    <span>Code</span>
+                </a>
+                <a href="https://twitter.com" target="_blank" class="pixel-link" title="Twitter">
+                    <span class="link-icon">◇</span>
+                    <span>Thoughts</span>
+                </a>
+                <a href="mailto:contact@oaoj.com" class="pixel-link" title="Email">
+                    <span class="link-icon">✉</span>
+                    <span>Email</span>
                 </a>
             </div>
-            <div class="skill-card">
-                <div class="skill-badge">PHP, JAVASCRIPT, PYTHON, REACTJS</div>
-                <a href="#projects" class="skill-link">
-                    <span>View Projects</span>
-                    <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="projects-section">
-        <div class="container">
-            <h2 class="section-title">RECENT<br>PROJECTS</h2>
-            
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="project-card">
-                        <div class="project-image">
-                            <div class="project-icon">🔔</div>
-                        </div>
-                        <div class="project-info">
-                            <h3>MoreAlerts</h3>
-                            <p>Advanced GLPI plugin for IT asset management</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="project-card">
-                        <div class="project-image">
-                            <div class="project-icon">🔄</div>
-                        </div>
-                        <div class="project-info">
-                            <h3>PtitConvert</h3>
-                            <p>Advanced file converter with modern UI</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="project-card">
-                        <div class="project-image">
-                            <div class="project-icon">🛠️</div>
-                        </div>
-                        <div class="project-info">
-                            <h3>Web Tools</h3>
-                            <p>Collection of useful online utilities</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </main>
 
-    <!-- Experience Section -->
-    <section id="experience" class="experience-section">
-        <div class="container">
-            <h2 class="section-title">5 YEARS OF<br>EXPERIENCE</h2>
-            
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-date">2022 - Present</div>
-                    <div class="timeline-content">
-                        <p>Developed and maintained web applications, focusing on clean code and best practices. Specialized in GLPI customization and plugin development.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">2020 - 2022</div>
-                    <div class="timeline-content">
-                        <p>Created custom solutions for clients, including file conversion tools and automation scripts. Worked with Python, PHP, and JavaScript.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">2019 - 2020</div>
-                    <div class="timeline-content">
-                        <p>Started career building web applications and learning modern development practices.</p>
-                    </div>
-                </div>
+        <footer class="footer">
+            <div class="pixel-border-small">
+                <p>© 2026 Oaoj</p>
             </div>
-        </div>
-    </section>
+        </footer>
+    </div>
 
-    <!-- Tools Section -->
-    <section id="tools" class="tools-preview-section">
-        <div class="container">
-            <h2 class="section-title">PREMIUM<br>TOOLS</h2>
+    <!-- Easter Egg Popup -->
+    <div class="konami-popup" id="konamiPopup">
+        <div class="popup-content">
+            <button class="popup-close" id="closePopup">✕</button>
+            <h2 class="popup-title">🎮 SECRET TOOLS</h2>
+            <div class="popup-divider"></div>
             
             <div class="tools-grid">
-                <a href="#" class="tool-item" onclick="openToolModal('qr'); return false;">
-                    <i class="bi bi-qr-code"></i>
-                    <span data-translate="qr.title">QR Generator</span>
-                </a>
-                <a href="#" class="tool-item" onclick="openToolModal('base64'); return false;">
-                    <i class="bi bi-file-code"></i>
-                    <span data-translate="base64.title">Base64 Encoder</span>
-                </a>
-                <a href="#" class="tool-item" onclick="openToolModal('color'); return false;">
-                    <i class="bi bi-palette"></i>
-                    <span data-translate="color.title">Color Generator</span>
-                </a>
-                <a href="#" class="tool-item" onclick="openToolModal('password'); return false;">
-                    <i class="bi bi-lock"></i>
-                    <span data-translate="password.title">Password Generator</span>
-                </a>
-                <a href="#" class="tool-item" onclick="openToolModal('webp'); return false;">
-                    <i class="bi bi-image"></i>
-                    <span data-translate="webp.title">Image Converter</span>
-                </a>
-                <a href="#" class="tool-item" onclick="openToolModal('json'); return false;">
-                    <i class="bi bi-filetype-json"></i>
-                    <span data-translate="json.title">JSON Formatter</span>
-                </a>
-                <a href="#" class="tool-item" onclick="openToolModal('lorem'); return false;">
-                    <i class="bi bi-journal-text"></i>
-                    <span data-translate="lorem.title">Lorem Generator</span>
-                </a>
-                <a href="#" class="tool-item" onclick="openToolModal('hash'); return false;">
-                    <i class="bi bi-shield-check"></i>
-                    <span data-translate="hash.title">Hash Calculator</span>
-                </a>
-                <a href="#" class="tool-item" onclick="openToolModal('uuid'); return false;">
-                    <i class="bi bi-key"></i>
-                    <span data-translate="uuid.title">UUID Generator</span>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <div class="container">
-            <h2 class="section-title">LET'S WORK<br>TOGETHER</h2>
-            
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <form class="contact-form" id="contactForm">
-                        <div class="mb-4">
-                            <input type="text" class="form-control" placeholder="Name" required>
-                        </div>
-                        <div class="mb-4">
-                            <input type="email" class="form-control" placeholder="Email" required>
-                        </div>
-                        <div class="mb-4">
-                            <input type="text" class="form-control" placeholder="Subject">
-                        </div>
-                        <div class="mb-4">
-                            <textarea class="form-control" rows="5" placeholder="Message" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Submit</button>
-                    </form>
+                <div class="tool-item">
+                    <span class="tool-icon">🖼️</span>
+                    <p class="tool-name">Image Converter</p>
+                    <button class="tool-btn" data-tool="image">Ouvrir</button>
+                </div>
+                <div class="tool-item">
+                    <span class="tool-icon">QR</span>
+                    <p class="tool-name">QR Code Generator</p>
+                    <button class="tool-btn" data-tool="qr">Ouvrir</button>
+                </div>
+                <div class="tool-item">
+                    <span class="tool-icon">📏</span>
+                    <p class="tool-name">Unit Converter</p>
+                    <button class="tool-btn" data-tool="converter">Ouvrir</button>
+                </div>
+                <div class="tool-item">
+                    <span class="tool-icon">📁</span>
+                    <p class="tool-name">Office</p>
+                    <a class="tool-btn" href="files/Office.zip" download>Télécharger</a>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h3 class="footer-name">João</h3>
-                    <p class="footer-description">A Software Engineer who has developed innovative solutions.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <div class="social-links">
-                        <a href="https://bsky.app/profile/oaoj.fr" target="_blank" rel="noopener"><i class="bi bi-cloud"></i></a>
-                        <a href="#" target="_blank" rel="noopener"><i class="bi bi-discord"></i></a>
-                        <a href="mailto:contact@example.com" target="_blank" rel="noopener"><i class="bi bi-envelope"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 João. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Tool Modals -->
-    <!-- QR Code Generator Modal -->
-    <div class="modal fade" id="qrModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-qr-code me-2"></i><span data-translate="qr.title">Générateur QR Code</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="qr.description">Générez instantanément des QR codes pour vos URLs, textes ou données.</p>
-                    <input type="text" id="qr-input" class="form-control mb-3" data-translate-placeholder="qr.placeholder" placeholder="Entrez votre texte ou URL...">
-                    <div class="d-flex gap-2 mb-3">
-                        <button class="btn btn-primary" onclick="generateQRCode()"><i class="bi bi-qr-code me-2"></i><span data-translate="qr.generate">Générer</span></button>
-                        <button class="btn btn-outline-primary" onclick="downloadQRCode()"><i class="bi bi-download me-2"></i><span data-translate="qr.download">Télécharger</span></button>
-                    </div>
-                    <div id="qr-code-container" class="text-center p-4 bg-light rounded"></div>
-                </div>
-            </div>
-        </div>
+        <div class="popup-overlay" id="popupOverlay"></div>
     </div>
 
-    <!-- Base64 Encoder Modal -->
-    <div class="modal fade" id="base64Modal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i><span data-translate="base64.title">Encodeur/Décodeur Base64</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="base64.description">Encodez et décodez facilement vos données en Base64.</p>
-                    <textarea id="base64-input" class="form-control mb-3" rows="4" data-translate-placeholder="base64.placeholder" placeholder="Entrez votre texte..."></textarea>
-                    <div class="d-flex gap-2 mb-3">
-                        <button class="btn btn-primary" onclick="encodeBase64()"><i class="bi bi-lock me-2"></i><span data-translate="base64.encode">Encoder</span></button>
-                        <button class="btn btn-primary" onclick="decodeBase64()"><i class="bi bi-unlock me-2"></i><span data-translate="base64.decode">Décoder</span></button>
-                        <button class="btn btn-outline-secondary" onclick="clearBase64()"><i class="bi bi-trash me-2"></i><span data-translate="base64.clear">Effacer</span></button>
-                    </div>
-                    <div id="base64-output" style="display: none;">
-                        <label class="form-label fw-bold">Résultat:</label>
-                        <textarea id="base64-result" class="form-control" rows="4" readonly></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Lorem Ipsum Generator Modal -->
-    <div class="modal fade" id="loremModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-journal-text me-2"></i><span data-translate="lorem.title">Générateur Lorem Ipsum</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="lorem.description">Générez du texte de remplissage personnalisable.</p>
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label" data-translate="lorem.type">Type:</label>
-                            <select id="lorem-type" class="form-select">
-                                <option value="paragraphs" data-translate="lorem.paragraphs">Paragraphes</option>
-                                <option value="words" data-translate="lorem.words">Mots</option>
-                                <option value="sentences" data-translate="lorem.sentences">Phrases</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" data-translate="lorem.count">Nombre:</label>
-                            <input type="number" id="lorem-count" class="form-control" value="3" min="1" max="50">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" data-translate="lorem.start">Commencer par:</label>
-                            <select id="lorem-start" class="form-select">
-                                <option value="yes" data-translate="lorem.yes">Lorem ipsum...</option>
-                                <option value="no" data-translate="lorem.no">Texte aléatoire</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-2 mb-3">
-                        <button class="btn btn-primary" onclick="generateLorem()"><i class="bi bi-file-text me-2"></i><span data-translate="lorem.generate">Générer</span></button>
-                        <button class="btn btn-outline-primary" onclick="copyLorem()"><i class="bi bi-clipboard me-2"></i><span data-translate="lorem.copy">Copier</span></button>
-                    </div>
-                    <textarea id="lorem-output" class="form-control" rows="8" readonly style="display: none;"></textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- WebP Converter Modal -->
-    <div class="modal fade" id="webpModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-image me-2"></i><span data-translate="webp.title">Convertisseur WebP</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="webp.description">Convertissez vos images WebP vers PNG, JPG ou autres formats.</p>
-                    <input type="file" id="webp-input" class="form-control mb-3" accept=".webp,image/*" onchange="handleWebPFile(this)">
-                    <div id="webp-controls" style="display: none;">
-                        <select id="webp-format" class="form-select mb-3">
-                            <option value="png">PNG</option>
-                            <option value="jpeg">JPEG</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="convertWebP()"><i class="bi bi-arrow-repeat me-2"></i><span data-translate="webp.convert">Convertir</span></button>
-                    </div>
-                    <div id="webp-status" class="mt-3"></div>
-                    <canvas id="webp-canvas" style="display: none;"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Color Generator Modal -->
-    <div class="modal fade" id="colorModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-palette me-2"></i><span data-translate="color.title">Générateur de Couleurs</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="color.description">Générez des palettes de couleurs et des harmonies colorées.</p>
-                    <div class="d-flex gap-2 mb-4">
-                        <input type="color" id="color-picker" class="form-control form-control-color" value="#6667ea">
-                        <button class="btn btn-primary" onclick="generatePalette()"><i class="bi bi-palette me-2"></i><span data-translate="color.generate">Générer Palette</span></button>
-                        <button class="btn btn-outline-primary" onclick="randomColor()"><span data-translate="color.random">Couleur Aléatoire</span></button>
-                    </div>
-                    <div id="color-palette" class="row g-3"></div>
-                    <div id="color-info" class="mt-4"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hash Calculator Modal -->
-    <div class="modal fade" id="hashModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-shield-check me-2"></i><span data-translate="hash.title">Calculateur de Hash</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="hash.description">Calculez les hash MD5, SHA-1, SHA-256 et SHA-512.</p>
-                    <textarea id="hash-input" class="form-control mb-3" rows="4" data-translate-placeholder="hash.placeholder" placeholder="Entrez votre texte..."></textarea>
-                    <button class="btn btn-primary mb-3" onclick="calculateHash()"><i class="bi bi-calculator me-2"></i><span data-translate="hash.calculate">Calculer Hash</span></button>
-                    <div id="hash-output" style="display: none;">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">MD5:</label>
-                            <input type="text" id="hash-md5" class="form-control font-monospace" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">SHA-1:</label>
-                            <input type="text" id="hash-sha1" class="form-control font-monospace" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">SHA-256:</label>
-                            <input type="text" id="hash-sha256" class="form-control font-monospace" readonly>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Generator Modal -->
-    <div class="modal fade" id="passwordModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-lock me-2"></i><span data-translate="password.title">Générateur de Mots de Passe</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="password.description">Générez des mots de passe sécurisés.</p>
-                    <div class="mb-3">
-                        <label class="form-label" data-translate="password.length">Longueur:</label>
-                        <input type="range" id="password-length" class="form-range" min="8" max="32" value="16" oninput="document.getElementById('password-length-value').textContent = this.value">
-                        <span id="password-length-value" class="badge bg-primary">16</span>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="password-uppercase" checked>
-                            <label class="form-check-label" for="password-uppercase" data-translate="password.uppercase">Majuscules (A-Z)</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="password-lowercase" checked>
-                            <label class="form-check-label" for="password-lowercase" data-translate="password.lowercase">Minuscules (a-z)</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="password-numbers" checked>
-                            <label class="form-check-label" for="password-numbers" data-translate="password.numbers">Chiffres (0-9)</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="password-symbols" checked>
-                            <label class="form-check-label" for="password-symbols" data-translate="password.symbols">Symboles (!@#$%)</label>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-2 mb-3">
-                        <button class="btn btn-primary" onclick="generatePassword()"><i class="bi bi-key me-2"></i><span data-translate="password.generate">Générer</span></button>
-                        <button class="btn btn-outline-primary" onclick="copyPassword()"><i class="bi bi-clipboard me-2"></i><span data-translate="password.copy">Copier</span></button>
-                    </div>
-                    <input type="text" id="password-output" class="form-control font-monospace" readonly style="display: none;">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JSON Formatter Modal -->
-    <div class="modal fade" id="jsonModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-filetype-json me-2"></i><span data-translate="json.title">Formatter JSON</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="json.description">Formatez, minifiez et validez vos données JSON.</p>
-                    <textarea id="json-input" class="form-control mb-3 font-monospace" rows="8" data-translate-placeholder="json.placeholder" placeholder='{"key": "value"}'></textarea>
-                    <div class="d-flex gap-2 mb-3">
-                        <button class="btn btn-primary" onclick="formatJSON()"><i class="bi bi-code me-2"></i><span data-translate="json.format">Formatter</span></button>
-                        <button class="btn btn-primary" onclick="minifyJSON()"><i class="bi bi-dash-square me-2"></i><span data-translate="json.minify">Minifier</span></button>
-                        <button class="btn btn-outline-primary" onclick="validateJSON()"><i class="bi bi-check-circle me-2"></i><span data-translate="json.validate">Valider</span></button>
-                    </div>
-                    <div id="json-status" class="alert" style="display: none;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- UUID Generator Modal -->
-    <div class="modal fade" id="uuidModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="bi bi-key me-2"></i><span data-translate="uuid.title">Générateur UUID</span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-secondary mb-4" data-translate="uuid.description">Générez des UUID/GUID uniques.</p>
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label" data-translate="uuid.count">Nombre:</label>
-                            <input type="number" id="uuid-count" class="form-control" value="5" min="1" max="20">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" data-translate="uuid.format">Format:</label>
-                            <select id="uuid-format" class="form-select">
-                                <option value="uuid">UUID v4</option>
-                                <option value="guid">GUID</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-2 mb-3">
-                        <button class="btn btn-primary" onclick="generateUUIDs()"><i class="bi bi-key me-2"></i><span data-translate="uuid.generate">Générer</span></button>
-                        <button class="btn btn-outline-primary" onclick="copyUUIDs()"><i class="bi bi-clipboard me-2"></i><span data-translate="uuid.copy">Copier Tout</span></button>
-                    </div>
-                    <textarea id="uuid-output" class="form-control font-monospace" rows="8" readonly style="display: none;"></textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Konami Code Easter Egg
+        const konamiSequence = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+        let konamiCount = 0;
+
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+
+            if (key === konamiSequence[konamiCount]) {
+                konamiCount++;
+
+                if (konamiCount === konamiSequence.length) {
+                    activateKonami();
+                    konamiCount = 0;
                 }
-            });
-        });
-
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
             } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Form submission
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Merci pour votre message ! Je vous répondrai bientôt.');
-            this.reset();
-        });
-
-        // Theme toggle function
-        function toggleTheme() {
-            const html = document.documentElement;
-            const themeIcon = document.getElementById('theme-icon');
-            const currentTheme = html.getAttribute('data-theme');
-            
-            if (currentTheme === 'light') {
-                html.setAttribute('data-theme', 'dark');
-                themeIcon.classList.remove('bi-sun-fill');
-                themeIcon.classList.add('bi-moon-fill');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                html.setAttribute('data-theme', 'light');
-                themeIcon.classList.remove('bi-moon-fill');
-                themeIcon.classList.add('bi-sun-fill');
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // Translations
-        const translations = {
-            fr: {
-                'nav.home': 'Accueil',
-                'nav.projects': 'Projets',
-                'nav.experience': 'Expérience',
-                'nav.tools': 'Outils',
-                'nav.contact': 'Contact',
-                'hero.title': 'DÉVELOPPEUR',
-                'hero.description': 'Passionné par la création d\'expériences utilisateur intuitives et engageantes. Spécialisé dans la transformation d\'idées en produits magnifiquement conçus.',
-                'stats.experience': 'ANNÉES<br>D\'EXPÉRIENCE',
-                'stats.projects': 'PROJETS<br>RÉALISÉS',
-                'stats.clients': 'COOL',
-                'qr.title': 'Générateur QR Code',
-                'qr.description': 'Générez instantanément des QR codes pour vos URLs, textes ou données.',
-                'qr.placeholder': 'Entrez votre texte ou URL...',
-                'qr.generate': 'Générer',
-                'qr.download': 'Télécharger',
-                'base64.title': 'Encodeur/Décodeur Base64',
-                'base64.description': 'Encodez et décodez facilement vos données en Base64.',
-                'base64.placeholder': 'Entrez votre texte...',
-                'base64.encode': 'Encoder',
-                'base64.decode': 'Décoder',
-                'base64.clear': 'Effacer',
-                'lorem.title': 'Générateur Lorem Ipsum',
-                'lorem.description': 'Générez du texte de remplissage personnalisable.',
-                'lorem.type': 'Type:',
-                'lorem.paragraphs': 'Paragraphes',
-                'lorem.words': 'Mots',
-                'lorem.sentences': 'Phrases',
-                'lorem.count': 'Nombre:',
-                'lorem.start': 'Commencer par:',
-                'lorem.yes': 'Lorem ipsum...',
-                'lorem.no': 'Texte aléatoire',
-                'lorem.generate': 'Générer',
-                'lorem.copy': 'Copier',
-                'webp.title': 'Convertisseur Image',
-                'webp.description': 'Convertissez vos images WebP vers PNG, JPG ou autres formats.',
-                'webp.convert': 'Convertir',
-                'color.title': 'Générateur de Couleurs',
-                'color.description': 'Générez des palettes de couleurs et des harmonies colorées.',
-                'color.generate': 'Générer Palette',
-                'color.random': 'Couleur Aléatoire',
-                'hash.title': 'Calculateur de Hash',
-                'hash.description': 'Calculez les hash MD5, SHA-1, SHA-256 et SHA-512.',
-                'hash.placeholder': 'Entrez votre texte...',
-                'hash.calculate': 'Calculer Hash',
-                'password.title': 'Générateur de Mots de Passe',
-                'password.description': 'Générez des mots de passe sécurisés.',
-                'password.length': 'Longueur:',
-                'password.uppercase': 'Majuscules (A-Z)',
-                'password.lowercase': 'Minuscules (a-z)',
-                'password.numbers': 'Chiffres (0-9)',
-                'password.symbols': 'Symboles (!@#$%)',
-                'password.generate': 'Générer',
-                'password.copy': 'Copier',
-                'json.title': 'Formatter JSON',
-                'json.description': 'Formatez, minifiez et validez vos données JSON.',
-                'json.placeholder': '{"key": "value"}',
-                'json.format': 'Formatter',
-                'json.minify': 'Minifier',
-                'json.validate': 'Valider',
-                'uuid.title': 'Générateur UUID',
-                'uuid.description': 'Générez des UUID/GUID uniques.',
-                'uuid.count': 'Nombre:',
-                'uuid.format': 'Format:',
-                'uuid.generate': 'Générer',
-                'uuid.copy': 'Copier Tout'
-            },
-            en: {
-                'nav.home': 'Home',
-                'nav.projects': 'Projects',
-                'nav.experience': 'Experience',
-                'nav.tools': 'Tools',
-                'nav.contact': 'Contact',
-                'hero.title': 'DEVELOPER',
-                'hero.description': 'Passionate about creating intuitive and engaging user experiences. Specialize in transforming ideas into beautifully crafted products.',
-                'stats.experience': 'YEARS OF<br>EXPERIENCE',
-                'stats.projects': 'PROJECTS<br>COMPLETED',
-                'stats.clients': 'COOL',
-                'qr.title': 'QR Code Generator',
-                'qr.description': 'Instantly generate QR codes for your URLs, texts or data.',
-                'qr.placeholder': 'Enter your text or URL...',
-                'qr.generate': 'Generate',
-                'qr.download': 'Download',
-                'base64.title': 'Base64 Encoder/Decoder',
-                'base64.description': 'Easily encode and decode your data in Base64.',
-                'base64.placeholder': 'Enter your text...',
-                'base64.encode': 'Encode',
-                'base64.decode': 'Decode',
-                'base64.clear': 'Clear',
-                'lorem.title': 'Lorem Ipsum Generator',
-                'lorem.description': 'Generate customizable placeholder text.',
-                'lorem.type': 'Type:',
-                'lorem.paragraphs': 'Paragraphs',
-                'lorem.words': 'Words',
-                'lorem.sentences': 'Sentences',
-                'lorem.count': 'Count:',
-                'lorem.start': 'Start with:',
-                'lorem.yes': 'Lorem ipsum...',
-                'lorem.no': 'Random text',
-                'lorem.generate': 'Generate',
-                'lorem.copy': 'Copy',
-                'webp.title': 'Image Converter',
-                'webp.description': 'Convert your WebP images to PNG, JPG or other formats.',
-                'webp.convert': 'Convert',
-                'color.title': 'Color Generator',
-                'color.description': 'Generate color palettes and color harmonies.',
-                'color.generate': 'Generate Palette',
-                'color.random': 'Random Color',
-                'hash.title': 'Hash Calculator',
-                'hash.description': 'Calculate MD5, SHA-1, SHA-256 and SHA-512 hashes.',
-                'hash.placeholder': 'Enter your text...',
-                'hash.calculate': 'Calculate Hash',
-                'password.title': 'Password Generator',
-                'password.description': 'Generate secure passwords.',
-                'password.length': 'Length:',
-                'password.uppercase': 'Uppercase (A-Z)',
-                'password.lowercase': 'Lowercase (a-z)',
-                'password.numbers': 'Numbers (0-9)',
-                'password.symbols': 'Symbols (!@#$%)',
-                'password.generate': 'Generate',
-                'password.copy': 'Copy',
-                'json.title': 'JSON Formatter',
-                'json.description': 'Format, minify and validate your JSON data.',
-                'json.placeholder': '{"key": "value"}',
-                'json.format': 'Format',
-                'json.minify': 'Minify',
-                'json.validate': 'Validate',
-                'uuid.title': 'UUID Generator',
-                'uuid.description': 'Generate unique UUIDs/GUIDs.',
-                'uuid.count': 'Count:',
-                'uuid.format': 'Format:',
-                'uuid.generate': 'Generate',
-                'uuid.copy': 'Copy All'
-            },
-            es: {
-                'nav.home': 'Inicio',
-                'nav.projects': 'Proyectos',
-                'nav.experience': 'Experiencia',
-                'nav.tools': 'Herramientas',
-                'nav.contact': 'Contacto',
-                'hero.title': 'DESARROLLADOR',
-                'hero.description': 'Apasionado por crear experiencias de usuario intuitivas y atractivas. Especializado en transformar ideas en productos bellamente diseñados.',
-                'stats.experience': 'AÑOS DE<br>EXPERIENCIA',
-                'stats.projects': 'PROYECTOS<br>COMPLETADOS',
-                'stats.clients': 'COOL',
-                'qr.title': 'Generador QR',
-                'qr.description': 'Genere códigos QR instantáneamente.',
-                'qr.placeholder': 'Ingrese su texto o URL...',
-                'qr.generate': 'Generar',
-                'qr.download': 'Descargar',
-                'base64.title': 'Codificador/Decodificador Base64',
-                'base64.description': 'Codifique y decodifique datos en Base64.',
-                'base64.placeholder': 'Ingrese su texto...',
-                'base64.encode': 'Codificar',
-                'base64.decode': 'Decodificar',
-                'base64.clear': 'Borrar',
-                'lorem.title': 'Generador Lorem Ipsum',
-                'lorem.description': 'Genere texto de relleno personalizable.',
-                'lorem.type': 'Tipo:',
-                'lorem.paragraphs': 'Párrafos',
-                'lorem.words': 'Palabras',
-                'lorem.sentences': 'Frases',
-                'lorem.count': 'Cantidad:',
-                'lorem.start': 'Comenzar con:',
-                'lorem.yes': 'Lorem ipsum...',
-                'lorem.no': 'Texto aleatorio',
-                'lorem.generate': 'Generar',
-                'lorem.copy': 'Copiar',
-                'webp.title': 'Convertidor de Imágenes',
-                'webp.description': 'Convierta sus imágenes WebP a PNG, JPG u otros formatos.',
-                'webp.convert': 'Convertir',
-                'color.title': 'Generador de Colores',
-                'color.description': 'Genere paletas de colores y armonías.',
-                'color.generate': 'Generar Paleta',
-                'color.random': 'Color Aleatorio',
-                'hash.title': 'Calculadora Hash',
-                'hash.description': 'Calcule hash MD5, SHA-1, SHA-256 y SHA-512.',
-                'hash.placeholder': 'Ingrese su texto...',
-                'hash.calculate': 'Calcular Hash',
-                'password.title': 'Generador de Contraseñas',
-                'password.description': 'Genere contraseñas seguras.',
-                'password.length': 'Longitud:',
-                'password.uppercase': 'Mayúsculas (A-Z)',
-                'password.lowercase': 'Minúsculas (a-z)',
-                'password.numbers': 'Números (0-9)',
-                'password.symbols': 'Símbolos (!@#$%)',
-                'password.generate': 'Generar',
-                'password.copy': 'Copiar',
-                'json.title': 'Formateador JSON',
-                'json.description': 'Formatee, minifique y valide datos JSON.',
-                'json.placeholder': '{"clave": "valor"}',
-                'json.format': 'Formatear',
-                'json.minify': 'Minificar',
-                'json.validate': 'Validar',
-                'uuid.title': 'Generador UUID',
-                'uuid.description': 'Genere UUIDs/GUIDs únicos.',
-                'uuid.count': 'Cantidad:',
-                'uuid.format': 'Formato:',
-                'uuid.generate': 'Generar',
-                'uuid.copy': 'Copiar Todo'
-            },
-            pt: {
-                'nav.home': 'Início',
-                'nav.projects': 'Projetos',
-                'nav.experience': 'Experiência',
-                'nav.tools': 'Ferramentas',
-                'nav.contact': 'Contato',
-                'hero.title': 'DESENVOLVEDOR',
-                'hero.description': 'Apaixonado por criar experiências de usuário intuitivas e envolventes. Especializado em transformar ideias em produtos lindamente elaborados.',
-                'stats.experience': 'ANOS DE<br>EXPERIÊNCIA',
-                'stats.projects': 'PROJETOS<br>CONCLUÍDOS',
-                'stats.clients': 'COOL',
-                'qr.title': 'Gerador QR',
-                'qr.description': 'Gere códigos QR instantaneamente.',
-                'qr.placeholder': 'Digite seu texto ou URL...',
-                'qr.generate': 'Gerar',
-                'qr.download': 'Baixar',
-                'base64.title': 'Codificador/Decodificador Base64',
-                'base64.description': 'Codifique e decodifique dados em Base64.',
-                'base64.placeholder': 'Digite seu texto...',
-                'base64.encode': 'Codificar',
-                'base64.decode': 'Decodificar',
-                'base64.clear': 'Limpar',
-                'lorem.title': 'Gerador Lorem Ipsum',
-                'lorem.description': 'Gere texto de preenchimento personalizável.',
-                'lorem.type': 'Tipo:',
-                'lorem.paragraphs': 'Parágrafos',
-                'lorem.words': 'Palavras',
-                'lorem.sentences': 'Frases',
-                'lorem.count': 'Quantidade:',
-                'lorem.start': 'Começar com:',
-                'lorem.yes': 'Lorem ipsum...',
-                'lorem.no': 'Texto aleatório',
-                'lorem.generate': 'Gerar',
-                'lorem.copy': 'Copiar',
-                'webp.title': 'Conversor de Imagens',
-                'webp.description': 'Converta suas imagens WebP para PNG, JPG ou outros formatos.',
-                'webp.convert': 'Converter',
-                'color.title': 'Gerador de Cores',
-                'color.description': 'Gere paletas de cores e harmonias.',
-                'color.generate': 'Gerar Paleta',
-                'color.random': 'Cor Aleatória',
-                'hash.title': 'Calculadora Hash',
-                'hash.description': 'Calcule hashes MD5, SHA-1, SHA-256 e SHA-512.',
-                'hash.placeholder': 'Digite seu texto...',
-                'hash.calculate': 'Calcular Hash',
-                'password.title': 'Gerador de Senhas',
-                'password.description': 'Gere senhas seguras.',
-                'password.length': 'Comprimento:',
-                'password.uppercase': 'Maiúsculas (A-Z)',
-                'password.lowercase': 'Minúsculas (a-z)',
-                'password.numbers': 'Números (0-9)',
-                'password.symbols': 'Símbolos (!@#$%)',
-                'password.generate': 'Gerar',
-                'password.copy': 'Copiar',
-                'json.title': 'Formatador JSON',
-                'json.description': 'Formate, minifique e valide dados JSON.',
-                'json.placeholder': '{"chave": "valor"}',
-                'json.format': 'Formatar',
-                'json.minify': 'Minificar',
-                'json.validate': 'Validar',
-                'uuid.title': 'Gerador UUID',
-                'uuid.description': 'Gere UUIDs/GUIDs únicos.',
-                'uuid.count': 'Quantidade:',
-                'uuid.format': 'Formato:',
-                'uuid.generate': 'Gerar',
-                'uuid.copy': 'Copiar Tudo'
-            }
-        };
-
-        // Language change function
-        function changeLanguage(lang) {
-            localStorage.setItem('language', lang);
-            
-            // Update current language display
-            const langMap = { 'fr': 'FR', 'en': 'EN', 'es': 'ES', 'pt': 'PT' };
-            document.getElementById('currentLang').textContent = langMap[lang];
-            
-            // Update active language button
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.lang === lang) {
-                    btn.classList.add('active');
+                konamiCount = 0;
+                if (key === konamiSequence[0]) {
+                    konamiCount = 1;
                 }
-            });
-            
-            // Apply translations
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.dataset.translate;
-                if (translations[lang][key]) {
-                    element.innerHTML = translations[lang][key];
-                }
-            });
-            
-            // Update document title
-            const titleMap = {
-                'fr': 'João - Développeur',
-                'en': 'João - Developer',
-                'es': 'João - Desarrollador',
-                'pt': 'João - Desenvolvedor'
-            };
-            document.title = titleMap[lang] || document.title;
-            
-            // Update HTML lang attribute
-            document.documentElement.lang = lang;
-        }
-
-        // Load saved theme and language
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            const themeIcon = document.getElementById('theme-icon');
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            
-            if (savedTheme === 'light') {
-                themeIcon.classList.remove('bi-moon-fill');
-                themeIcon.classList.add('bi-sun-fill');
-            }
-            
-            // Load saved language
-            const savedLang = localStorage.getItem('language') || 'fr';
-            if (savedLang !== 'fr') {
-                changeLanguage(savedLang);
-            } else {
-                // Set initial active state for FR
-                document.querySelector('.lang-btn[data-lang="fr"]')?.classList.add('active');
             }
         });
 
-        // ===== TOOL MODAL FUNCTIONS =====
-        
-        // Open tool modal function
-        function openToolModal(toolId) {
-            const modalMap = {
-                'qr': 'qrModal',
-                'base64': 'base64Modal',
-                'lorem': 'loremModal',
-                'webp': 'webpModal',
-                'color': 'colorModal',
-                'hash': 'hashModal',
-                'password': 'passwordModal',
-                'json': 'jsonModal',
-                'uuid': 'uuidModal'
-            };
-            
-            const modalId = modalMap[toolId];
-            if (modalId) {
-                const modal = new bootstrap.Modal(document.getElementById(modalId));
-                modal.show();
+        function activateKonami() {
+            const popup = document.getElementById('konamiPopup');
+            if (popup) {
+                popup.classList.add('active');
             }
         }
 
-        // QR Code Generator
-        let qrCodeDataURL = '';
-        function generateQRCode() {
-            const text = document.getElementById('qr-input').value.trim();
-            if (!text) {
-                alert('Veuillez entrer du texte ou une URL');
-                return;
-            }
-            const qrContainer = document.getElementById('qr-code-container');
-            qrContainer.innerHTML = '';
-            const qrImg = document.createElement('img');
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}`;
-            qrImg.style.maxWidth = '100%';
-            qrImg.onload = function() {
-                qrCodeDataURL = qrImg.src;
-            };
-            qrContainer.appendChild(qrImg);
-        }
-
-        function downloadQRCode() {
-            if (!qrCodeDataURL) {
-                alert('Générez d\'abord un QR code');
-                return;
-            }
-            const link = document.createElement('a');
-            link.download = 'qrcode.png';
-            link.href = qrCodeDataURL;
-            link.click();
-        }
-
-        // Base64 Encoder/Decoder
-        function encodeBase64() {
-            const input = document.getElementById('base64-input').value;
-            if (!input) {
-                alert('Veuillez entrer du texte');
-                return;
-            }
-            try {
-                const encoded = btoa(unescape(encodeURIComponent(input)));
-                const output = document.getElementById('base64-output');
-                document.getElementById('base64-result').value = encoded;
-                output.style.display = 'block';
-            } catch (error) {
-                alert('Erreur lors de l\'encodage');
-            }
-        }
-
-        function decodeBase64() {
-            const input = document.getElementById('base64-input').value;
-            if (!input) {
-                alert('Veuillez entrer du texte encodé');
-                return;
-            }
-            try {
-                const decoded = decodeURIComponent(escape(atob(input)));
-                const output = document.getElementById('base64-output');
-                document.getElementById('base64-result').value = decoded;
-                output.style.display = 'block';
-            } catch (error) {
-                alert('Erreur lors du décodage - vérifiez que le texte est valide en Base64');
-            }
-        }
-
-        function clearBase64() {
-            document.getElementById('base64-input').value = '';
-            document.getElementById('base64-output').style.display = 'none';
-        }
-
-        // Lorem Ipsum Generator
-        const loremWords = ['lorem','ipsum','dolor','sit','amet','consectetur','adipiscing','elit','sed','do','eiusmod','tempor','incididunt','ut','labore','et','dolore','magna','aliqua','enim','ad','minim','veniam','quis','nostrud','exercitation','ullamco','laboris','nisi','aliquip','ex','ea','commodo','consequat','duis','aute','irure','in','reprehenderit','voluptate','velit','esse','cillum','fugiat','nulla','pariatur','excepteur','sint','occaecat','cupidatat','non','proident','sunt','culpa','qui','officia','deserunt','mollit','anim','id','est','laborum'];
-
-        function generateLorem() {
-            const type = document.getElementById('lorem-type').value;
-            const count = parseInt(document.getElementById('lorem-count').value);
-            const startWithLorem = document.getElementById('lorem-start').value === 'yes';
-            let result = '';
-            
-            if (type === 'words') {
-                const words = startWithLorem ? ['Lorem','ipsum','dolor','sit','amet'] : [];
-                for (let i = words.length; i < count; i++) {
-                    words.push(loremWords[Math.floor(Math.random() * loremWords.length)]);
-                }
-                result = words.join(' ') + '.';
-            } else if (type === 'sentences') {
-                for (let i = 0; i < count; i++) {
-                    const sentenceLength = Math.floor(Math.random() * 10) + 5;
-                    const words = (i === 0 && startWithLorem) ? ['Lorem','ipsum','dolor','sit','amet'] : [];
-                    for (let j = words.length; j < sentenceLength; j++) {
-                        words.push(loremWords[Math.floor(Math.random() * loremWords.length)]);
-                    }
-                    words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
-                    result += words.join(' ') + '. ';
-                }
-            } else {
-                for (let i = 0; i < count; i++) {
-                    const sentences = Math.floor(Math.random() * 5) + 3;
-                    let paragraph = '';
-                    for (let j = 0; j < sentences; j++) {
-                        const sentenceLength = Math.floor(Math.random() * 10) + 5;
-                        const words = (i === 0 && j === 0 && startWithLorem) ? ['Lorem','ipsum','dolor','sit','amet'] : [];
-                        for (let k = words.length; k < sentenceLength; k++) {
-                            words.push(loremWords[Math.floor(Math.random() * loremWords.length)]);
-                        }
-                        words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
-                        paragraph += words.join(' ') + '. ';
-                    }
-                    result += paragraph + '\\n\\n';
-                }
-            }
-            
-            const output = document.getElementById('lorem-output');
-            output.value = result.trim();
-            output.style.display = 'block';
-        }
-
-        function copyLorem() {
-            const output = document.getElementById('lorem-output');
-            if (!output.value) {
-                alert('Générez d\'abord du texte');
-                return;
-            }
-            output.select();
-            document.execCommand('copy');
-            alert('Texte copié !');
-        }
-
-        // WebP Converter
-        let webpImage = null;
-        function handleWebPFile(input) {
-            const file = input.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    webpImage = img;
-                    document.getElementById('webp-controls').style.display = 'block';
-                    document.getElementById('webp-status').innerHTML = '<div class="alert alert-success">Image chargée: ' + file.name + '</div>';
-                    document.getElementById('webp-status').style.display = 'block';
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function convertWebP() {
-            if (!webpImage) {
-                alert('Veuillez d\'abord sélectionner une image');
-                return;
-            }
-            
-            const format = document.getElementById('webp-format').value;
-            const canvas = document.getElementById('webp-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = webpImage.width;
-            canvas.height = webpImage.height;
-            ctx.drawImage(webpImage, 0, 0);
-            
-            canvas.toBlob(function(blob) {
-                const link = document.createElement('a');
-                link.download = 'converted.' + format;
-                link.href = URL.createObjectURL(blob);
-                link.click();
-                document.getElementById('webp-status').innerHTML = '<div class="alert alert-success">Image convertie et téléchargée !</div>';
-            }, 'image/' + format);
-        }
-
-        // Color Generator
-        function generatePalette() {
-            const baseColor = document.getElementById('color-picker').value;
-            const palette = document.getElementById('color-palette');
-            palette.innerHTML = '';
-            
-            const colors = [baseColor];
-            for (let i = 1; i < 6; i++) {
-                const hsl = hexToHSL(baseColor);
-                hsl.h = (hsl.h + (i * 60)) % 360;
-                colors.push(hslToHex(hsl.h, hsl.s, hsl.l));
-            }
-            
-            colors.forEach(color => {
-                const col = document.createElement('div');
-                col.className = 'col-md-4 col-6';
-                col.innerHTML = `
-                    <div class="p-4 rounded text-center" style="background: ${color}; color: ${getContrastColor(color)};">
-                        <strong>${color}</strong>
-                    </div>
-                `;
-                palette.appendChild(col);
+        // Close popup
+        const closeBtn = document.getElementById('closePopup');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                document.getElementById('konamiPopup').classList.remove('active');
             });
         }
 
-        function randomColor() {
-            const randomHex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-            document.getElementById('color-picker').value = randomHex;
-            generatePalette();
-        }
-
-        function hexToHSL(hex) {
-            const r = parseInt(hex.substr(1,2), 16) / 255;
-            const g = parseInt(hex.substr(3,2), 16) / 255;
-            const b = parseInt(hex.substr(5,2), 16) / 255;
-            const max = Math.max(r, g, b), min = Math.min(r, g, b);
-            let h, s, l = (max + min) / 2;
-            if (max === min) { h = s = 0; }
-            else {
-                const d = max - min;
-                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                switch(max) {
-                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-                    case g: h = ((b - r) / d + 2) / 6; break;
-                    case b: h = ((r - g) / d + 4) / 6; break;
-                }
-            }
-            return { h: h * 360, s: s * 100, l: l * 100 };
-        }
-
-        function hslToHex(h, s, l) {
-            h /= 360; s /= 100; l /= 100;
-            let r, g, b;
-            if (s === 0) { r = g = b = l; }
-            else {
-                const hue2rgb = (p, q, t) => {
-                    if (t < 0) t += 1;
-                    if (t > 1) t -= 1;
-                    if (t < 1/6) return p + (q - p) * 6 * t;
-                    if (t < 1/2) return q;
-                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-                    return p;
-                };
-                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                const p = 2 * l - q;
-                r = hue2rgb(p, q, h + 1/3);
-                g = hue2rgb(p, q, h);
-                b = hue2rgb(p, q, h - 1/3);
-            }
-            return '#' + [r, g, b].map(x => Math.round(x * 255).toString(16).padStart(2, '0')).join('');
-        }
-
-        function getContrastColor(hex) {
-            const r = parseInt(hex.substr(1,2), 16);
-            const g = parseInt(hex.substr(3,2), 16);
-            const b = parseInt(hex.substr(5,2), 16);
-            return ((r * 299 + g * 587 + b * 114) / 1000) > 128 ? '#000' : '#fff';
-        }
-
-        // Hash Calculator
-        function calculateHash() {
-            const text = document.getElementById('hash-input').value;
-            if (!text) {
-                alert('Veuillez entrer du texte');
-                return;
-            }
-            
-            document.getElementById('hash-md5').value = CryptoJS.MD5(text).toString();
-            document.getElementById('hash-sha1').value = CryptoJS.SHA1(text).toString();
-            document.getElementById('hash-sha256').value = CryptoJS.SHA256(text).toString();
-            document.getElementById('hash-output').style.display = 'block';
-        }
-
-        // Password Generator
-        function generatePassword() {
-            const length = parseInt(document.getElementById('password-length').value);
-            const useUpper = document.getElementById('password-uppercase').checked;
-            const useLower = document.getElementById('password-lowercase').checked;
-            const useNumbers = document.getElementById('password-numbers').checked;
-            const useSymbols = document.getElementById('password-symbols').checked;
-            
-            let chars = '';
-            if (useUpper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            if (useLower) chars += 'abcdefghijklmnopqrstuvwxyz';
-            if (useNumbers) chars += '0123456789';
-            if (useSymbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
-            
-            if (!chars) {
-                alert('Sélectionnez au moins une option');
-                return;
-            }
-            
-            let password = '';
-            for (let i = 0; i < length; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            
-            const output = document.getElementById('password-output');
-            output.value = password;
-            output.style.display = 'block';
-        }
-
-        function copyPassword() {
-            const output = document.getElementById('password-output');
-            if (!output.value) {
-                alert('Générez d\'abord un mot de passe');
-                return;
-            }
-            output.select();
-            document.execCommand('copy');
-            alert('Mot de passe copié !');
-        }
-
-        // JSON Formatter
-        function formatJSON() {
-            const input = document.getElementById('json-input').value;
-            if (!input) {
-                alert('Veuillez entrer du JSON');
-                return;
-            }
-            
-            try {
-                const parsed = JSON.parse(input);
-                document.getElementById('json-input').value = JSON.stringify(parsed, null, 2);
-                showJSONStatus('success', 'JSON formaté avec succès !');
-            } catch (e) {
-                showJSONStatus('danger', 'Erreur: JSON invalide - ' + e.message);
-            }
-        }
-
-        function minifyJSON() {
-            const input = document.getElementById('json-input').value;
-            if (!input) {
-                alert('Veuillez entrer du JSON');
-                return;
-            }
-            
-            try {
-                const parsed = JSON.parse(input);
-                document.getElementById('json-input').value = JSON.stringify(parsed);
-                showJSONStatus('success', 'JSON minifié avec succès !');
-            } catch (e) {
-                showJSONStatus('danger', 'Erreur: JSON invalide - ' + e.message);
-            }
-        }
-
-        function validateJSON() {
-            const input = document.getElementById('json-input').value;
-            if (!input) {
-                alert('Veuillez entrer du JSON');
-                return;
-            }
-            
-            try {
-                JSON.parse(input);
-                showJSONStatus('success', 'JSON valide ✓');
-            } catch (e) {
-                showJSONStatus('danger', 'JSON invalide: ' + e.message);
-            }
-        }
-
-        function showJSONStatus(type, message) {
-            const status = document.getElementById('json-status');
-            status.className = 'alert alert-' + type;
-            status.textContent = message;
-            status.style.display = 'block';
-        }
-
-        // UUID Generator
-        function generateUUIDs() {
-            const count = parseInt(document.getElementById('uuid-count').value);
-            const uuids = [];
-            
-            for (let i = 0; i < count; i++) {
-                uuids.push(generateUUID());
-            }
-            
-            const output = document.getElementById('uuid-output');
-            output.value = uuids.join('\\n');
-            output.style.display = 'block';
-        }
-
-        function generateUUID() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.random() * 16 | 0;
-                const v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
+        const overlay = document.getElementById('popupOverlay');
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                document.getElementById('konamiPopup').classList.remove('active');
             });
         }
 
-        function copyUUIDs() {
-            const output = document.getElementById('uuid-output');
-            if (!output.value) {
-                alert('Générez d\'abord des UUIDs');
-                return;
-            }
-            output.select();
-            document.execCommand('copy');
-            alert('UUIDs copiés !');
-        }
+        // Tool buttons
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tool = e.target.dataset.tool;
+                console.log('Opening tool:', tool);
+                // À ajouter : logique pour chaque outil
+            });
+        });
     </script>
+
 </body>
 </html>
