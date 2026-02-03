@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit Converter • Oaoj</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <style>
+        .tool-wrapper { max-width: 900px; width: 100%; }
+        .tool-card { padding: 2rem; }
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .tool-label { display: block; margin-bottom: 0.5rem; color: var(--lightest-purple); font-weight: bold; letter-spacing: 1px; }
+        .tool-input, .tool-select { width: 100%; padding: 0.75rem 1rem; border: 2px solid var(--primary-purple); background: var(--bg-dark); color: var(--text-light); font-family: inherit; }
+        .back-link { margin-bottom: 1rem; display: inline-block; color: var(--accent-purple); }
+        .result-box { border: 2px dashed var(--accent-purple); padding: 1.5rem; text-align: center; font-size: 1.2rem; }
+        @media (max-width: 768px) { .tool-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <div class="tool-wrapper">
+            <a class="back-link" href="../index.html">← Retour</a>
+            <div class="pixel-border">
+                <h1 class="title" style="font-size: 2.5rem;">Unit Converter</h1>
+            </div>
+
+            <div class="pixel-card tool-card" style="margin-top: 2rem;">
+                <div class="tool-grid">
+                    <div>
+                        <label class="tool-label" for="category">Catégorie</label>
+                        <select id="category" class="tool-select">
+                            <option value="length">Longueur</option>
+                            <option value="weight">Poids</option>
+                            <option value="temperature">Température</option>
+                        </select>
+
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="valueInput">Valeur</label>
+                            <input id="valueInput" class="tool-input" type="number" step="any" value="1" />
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="fromUnit">De</label>
+                            <select id="fromUnit" class="tool-select"></select>
+                        </div>
+
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="toUnit">Vers</label>
+                            <select id="toUnit" class="tool-select"></select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="tool-label">Résultat</label>
+                        <div class="result-box" id="resultBox">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="unit-converter.js"></script>
+</body>
+</html>
