@@ -32,9 +32,9 @@ function updateMeta(message) {
 async function ensureFfmpegLoaded() {
     if (ffmpegLoaded) return;
     await ffmpeg.load({
-        coreURL: '../assets/vendor/ffmpeg-core.js',
-        wasmURL: '../assets/vendor/ffmpeg-core.wasm',
-        workerURL: '../assets/vendor/814.ffmpeg.js'
+        coreURL: '/assets/vendor/ffmpeg-core.js',
+        wasmURL: '/assets/vendor/ffmpeg-core.wasm',
+        workerURL: '/assets/vendor/814.ffmpeg.js'
     });
     ffmpegLoaded = true;
 }
