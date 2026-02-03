@@ -79,17 +79,17 @@
                 <div class="tool-item">
                     <span class="tool-icon">🖼️</span>
                     <p class="tool-name">Image Converter</p>
-                    <button class="tool-btn" data-tool="image">Ouvrir</button>
+                    <button class="tool-btn" data-tool="image" data-url="tools/image-converter.html">Ouvrir</button>
                 </div>
                 <div class="tool-item">
                     <span class="tool-icon">QR</span>
                     <p class="tool-name">QR Code Generator</p>
-                    <button class="tool-btn" data-tool="qr">Ouvrir</button>
+                    <button class="tool-btn" data-tool="qr" data-url="tools/qr-generator.html">Ouvrir</button>
                 </div>
                 <div class="tool-item">
                     <span class="tool-icon">📏</span>
                     <p class="tool-name">Unit Converter</p>
-                    <button class="tool-btn" data-tool="converter">Ouvrir</button>
+                    <button class="tool-btn" data-tool="converter" data-url="tools/unit-converter.html">Ouvrir</button>
                 </div>
                 <div class="tool-item">
                     <span class="tool-icon">📁</span>
@@ -149,9 +149,10 @@
         // Tool buttons
         document.querySelectorAll('.tool-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const tool = e.target.dataset.tool;
-                console.log('Opening tool:', tool);
-                // À ajouter : logique pour chaque outil
+                const url = e.currentTarget.dataset.url;
+                if (url) {
+                    window.open(url, '_blank');
+                }
             });
         });
     </script>

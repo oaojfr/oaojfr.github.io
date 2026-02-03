@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Converter • Oaoj</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <style>
+        .tool-wrapper { max-width: 900px; width: 100%; }
+        .tool-card { padding: 2rem; }
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .tool-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .tool-label { display: block; margin-bottom: 0.5rem; color: var(--lightest-purple); font-weight: bold; letter-spacing: 1px; }
+        .tool-input, .tool-select, .tool-range { width: 100%; padding: 0.75rem 1rem; border: 2px solid var(--primary-purple); background: var(--bg-dark); color: var(--text-light); font-family: inherit; }
+        .preview-box { border: 2px dashed var(--accent-purple); padding: 1rem; text-align: center; min-height: 220px; display: flex; align-items: center; justify-content: center; }
+        .preview-box img { max-width: 100%; max-height: 280px; }
+        .tool-link { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+        .back-link { margin-bottom: 1rem; display: inline-block; color: var(--accent-purple); }
+        .quality-row { display: flex; align-items: center; gap: 1rem; }
+        @media (max-width: 768px) { .tool-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <div class="tool-wrapper">
+            <a class="back-link" href="../index.html">← Retour</a>
+            <div class="pixel-border">
+                <h1 class="title" style="font-size: 2.5rem;">Image Converter</h1>
+            </div>
+
+            <div class="pixel-card tool-card" style="margin-top: 2rem;">
+                <div class="tool-grid">
+                    <div>
+                        <label class="tool-label" for="imageFile">Image</label>
+                        <input class="tool-input" type="file" id="imageFile" accept="image/*" />
+
+                        <div style="margin-top: 1rem;">
+                            <label class="tool-label" for="formatSelect">Format de sortie</label>
+                            <select id="formatSelect" class="tool-select">
+                                <option value="png">PNG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="webp">WEBP</option>
+                            </select>
+                        </div>
+
+                        <div style="margin-top: 1rem;" id="qualityBlock">
+                            <label class="tool-label" for="qualityRange">Qualité</label>
+                            <div class="quality-row">
+                                <input class="tool-range" type="range" id="qualityRange" min="0.4" max="1" step="0.05" value="0.9" />
+                                <span id="qualityValue">0.90</span>
+                            </div>
+                        </div>
+
+                        <div class="tool-actions" style="margin-top: 1.5rem;">
+                            <button class="tool-btn" id="convertBtn">Convertir</button>
+                            <a class="tool-btn tool-link" id="downloadBtn" href="#" download> Télécharger</a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="tool-label">Aperçu</label>
+                        <div class="preview-box">
+                            <img id="outputPreview" alt="Aperçu" />
+                        </div>
+                        <canvas id="outputCanvas" style="display:none;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="image-converter.js"></script>
+</body>
+</html>
